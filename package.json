@@ -12,8 +12,10 @@
     "test": "lerna run test --stream --no-sort"
   },
   "devDependencies": {
+    "css-loader": "^7.1.2",
     "lerna": "^2.9.0",
-    "prettier": "^2.0.5"
+    "prettier": "^2.0.5",
+    "style-loader": "^4.0.0"
   },
   "workspaces": [
     "packages/*"

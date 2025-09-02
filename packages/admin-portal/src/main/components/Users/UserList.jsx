@@ -75,35 +75,48 @@ const UserList = () => {
     <div className="user-list-container">
       <style>{`
         .user-list-container {
-          padding: 20px;
-          background: #fff;
+          padding: 16px;
+          background-color: #ffffff;
           border-radius: 8px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .user-list-container h1 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #333333;
+          margin-bottom: 16px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #e0e0e0;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 20px;
-          padding-bottom: 15px;
-          border-bottom: 1px solid #eee;
         }
         .error {
-          padding: 12px;
-          background-color: #ffeded;
-          border-left: 4px solid #ff5252;
-          margin-bottom: 20px;
+          padding: 10px 12px;
+          background-color: #fdecea;
+          border-left: 4px solid #f44336;
           border-radius: 4px;
+          margin-bottom: 16px;
           display: flex;
           justify-content: space-between;
           align-items: center;
+          font-weight: 500;
+          color: #c62828;
         }
         .add-button {
-          background-color: #4caf50;
-          color: white;
+          padding: 8px 16px;
+          background-color: #28a745;
+          color: #ffffff;
+          border: none;
+          border-radius: 6px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          margin-bottom: 12px;
         }
         .add-button:hover {
-          background-color: #388e3c;
+          background-color: #218838;
         }
         .user-table {
           width: 100%;
@@ -113,30 +126,41 @@ const UserList = () => {
         }
         .user-table th, 
         .user-table td {
-          background-color: #f7f7f7;
-          padding: 12px 15px;
+          padding: 8px 12px;
           text-align: left;
-          font-weight: 600;
-          color: #333;
-          border-bottom: 2px solid #eee;
-          cursor: pointer;
+          font-weight: 500;
+          color: #333333;
+          border-bottom: 1px solid #e0e0e0;
         }
         .user-table tr:hover {
-          background-color: #f9f9f9;
+          background-color: #f5f5f5;
         }
         .edit-button {
-          background-color: #fff8e1;
-          color: #f57f17;
+          padding: 4px 10px;
+          background-color: #fff3cd;
+          color: #856404;
+          border: none;
+          border-radius: 4px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          margin-right: 6px;
         }
         .edit-button:hover {
-          background-color: #ffecb3;
+          background-color: #ffe8a1;
         }
         .delete-button {
-          background-color: #ffebee;
-          color: #c62828;
+          padding: 4px 10px;
+          background-color: #f8d7da;
+          color: #721c24;
+          border: none;
+          border-radius: 4px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
         }
         .delete-button:hover {
-          background-color: #ffcdd2;
+          background-color: #f5c6cb;
         }
       `}</style>
 

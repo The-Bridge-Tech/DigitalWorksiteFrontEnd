@@ -188,6 +188,192 @@ const SiteForm = ({ onSaveComplete }) => {
 
   return (
     <div className="site-form">
+      <style>{`
+      .site-form {
+        padding: 24px;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        color: #343a40;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .site-form h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #007bff;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 8px;
+        text-align: center;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #495057;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .form-group input:focus,
+      .form-group select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+      }
+
+      .help-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 4px;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .reset-button {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .reset-button:hover:not(:disabled) {
+        background-color: #495057;
+        transform: translateY(-1px);
+      }
+
+      .submit-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .submit-button:hover:not(:disabled) {
+        background-color: #0056b3;
+        transform: translateY(-1px);
+      }
+
+      .submit-button:disabled,
+      .reset-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      .error-message,
+      .success-message {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .error-message {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .success-message {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .dismiss-button {
+        background: none;
+        border: none;
+        font-weight: bold;
+        color: inherit;
+        cursor: pointer;
+        margin-left: 12px;
+      }
+
+      .qr-code-result {
+        margin-top: 24px;
+        padding: 16px;
+        background-color: #f7f7f7;
+        border-radius: 8px;
+      }
+
+      .qr-code-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        margin-top: 12px;
+      }
+
+      .qr-code-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+      }
+
+      .qr-code-info p {
+        margin: 4px 0;
+        font-size: 0.95rem;
+      }
+
+      .download-button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .download-button:hover {
+        background-color: #0056b3;
+      }
+
+      .qr-code-usage h4 {
+        margin-top: 16px;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .qr-code-usage ol {
+        padding-left: 20px;
+        margin-top: 8px;
+      }
+      `}
+
+      </style>
       <h2>Create Construction Site</h2>
       
       {error && (

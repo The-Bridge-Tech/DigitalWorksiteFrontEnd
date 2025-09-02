@@ -4,6 +4,120 @@
 import React, { useState, useEffect } from 'react';
 import { createUser, updateUser, getUser } from '../../services/users.service';
 import { saveToStorage, loadFromStorage } from '../../utils/storage';
+import styled from 'styled-components';
+
+// Styled components
+const FormContainer = styled.div`
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  color: #343a40;
+
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+    text-align: center;
+  }
+`;
+
+const FormGroup = styled.div`
+  margin-bottom: 1.5rem;
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #495057;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+  }
+`;
+
+const FormActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+`;
+
+const CancelButton = styled.button`
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: #343a40;
+  }
+`;
+
+const SaveButton = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+`;
+
+const FormError = styled.div`
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+`;
+
+const DismissButton = styled.button`
+  background: none;
+  border: none;
+  color: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 1rem;
+`;
 
 const UserForm = ({ userId, onSave, onCancel }) => {
   // Form data state
@@ -127,20 +241,20 @@ const UserForm = ({ userId, onSave, onCancel }) => {
   }
 
   return (
-    <div className="user-form">
+    <FormContainer>
       <h2>{isEditing ? 'Edit User' : 'Create New User'}</h2>
 
       {error && (
-        <div className="form-error">
+        <FormError>
           <p>{error}</p>
-          <button onClick={() => setError(null)} className="dismiss-button">
+          <DismissButton onClick={() => setError(null)}>
             Dismiss
-          </button>
-        </div>
+          </DismissButton>
+        </FormError>
       )}
 
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <FormGroup>
           <label htmlFor="user-name">Name:</label>
           <input
             id="user-name"
@@ -151,9 +265,9 @@ const UserForm = ({ userId, onSave, onCancel }) => {
             placeholder="Enter full name"
             required
           />
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
+        <FormGroup>
           <label htmlFor="user-email">Email Address:</label>
           <input
             id="user-email"
@@ -164,9 +278,9 @@ const UserForm = ({ userId, onSave, onCancel }) => {
             placeholder="Enter email address"
             required
           />
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
+        <FormGroup>
           <label htmlFor="user-company">Company Name:</label>
           <input
             id="user-company"
@@ -176,9 +290,9 @@ const UserForm = ({ userId, onSave, onCancel }) => {
             onChange={handleChange}
             placeholder="Enter company name"
           />
-        </div>
+        </FormGroup>
 
-        <div className="form-group">
+        <FormGroup>
           <label htmlFor="user-role">Role:</label>
           <select
             id="user-role"
@@ -193,29 +307,29 @@ const UserForm = ({ userId, onSave, onCancel }) => {
             <option value="inspector">Inspector</option>
             <option value="admin">Admin</option>
           </select>
-        </div>
+        </FormGroup>
 
 
-        <div className="form-actions">
-          <button
+        <FormActions>
+          <CancelButton
             type="button"
             onClick={handleDiscard}
             className="cancel-button"
             disabled={isSaving}
           >
             {isEditing ? 'Cancel' : 'Discard'}
-          </button>
+          </CancelButton>
 
-          <button
+          <SaveButton
             type="submit"
             className="save-button"
             disabled={isSaving}
           >
             {isSaving ? 'Saving...' : (isEditing ? 'Update User' : 'Save User')}
-          </button>
-        </div>
+          </SaveButton>
+        </FormActions>
       </form>
-    </div>
+    </FormContainer>
   );
 };
 

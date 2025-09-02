@@ -289,6 +289,203 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
   }
 
   return (
+    <>
+    <style>{`
+  .template-form {
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    color: #343a40;
+  }
+
+  .template-form h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #495057;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .cancel-button {
+    background: none;
+    border: none;
+    color: #6c757d;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+  }
+
+  .cancel-button:hover:not(:disabled) {
+    color: #343a40;
+  }
+
+  .save-button,
+  .pdf-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .save-button:hover:not(:disabled),
+  .pdf-button:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  .save-button:disabled,
+  .pdf-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .form-error,
+  .form-success {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+  }
+
+  .form-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .form-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .dismiss-button {
+    background: none;
+    border: none;
+    color: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 1rem;
+  }
+
+  .questions-container {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+  }
+
+  .question-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+  }
+
+  .question-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .remove-question-button {
+    background-color: #ffebee;
+    color: #c62828;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .remove-question-button:hover:not(:disabled) {
+    background-color: #ffcdd2;
+  }
+
+  .question-content input,
+  .question-content select,
+  .question-content textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    font-size: 0.95rem;
+  }
+
+  .options-help {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .add-question-button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .add-question-button:hover {
+    background-color: #218838;
+  }
+`}</style>
+
     <div className="template-form">
       <h2>{isEditing ? 'Edit Template' : 'Create New Inspection Template'}</h2>
 
@@ -470,6 +667,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 

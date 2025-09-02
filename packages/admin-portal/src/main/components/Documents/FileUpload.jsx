@@ -169,6 +169,35 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
             Sign in with Google
           </button>
         </div>
+        <style>{`
+          .file-upload {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 20px auto;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+          }
+          .auth-required {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+          }
+          .sign-in-button {
+            background-color: #4285f4;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+          }
+          .sign-in-button:hover {
+            background-color: #357ae8;
+          }
+        `}</style>
+
       </div>
     );
   }
@@ -231,6 +260,92 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
           </button>
         </div>
       )}
+      <style>{`
+        .file-upload {
+          background-color: #fff;
+          padding: 24px;
+          border-radius: 10px;
+          max-width: 600px;
+          margin: 20px auto;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+        .upload-form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-top: 16px;
+        }
+        .file-input-container {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .file-input {
+          padding: 8px;
+        }
+        .selected-file {
+          font-size: 0.9rem;
+          color: #4a5568;
+        }
+        .upload-button {
+          padding: 10px 16px;
+          background-color: #3182ce;
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+        }
+        .upload-button.uploading {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+        .upload-button:hover:not(.uploading) {
+          background-color: #2b6cb0;
+        }
+        .upload-progress {
+          margin-top: 16px;
+        }
+        .progress-bar {
+          width: 100%;
+          background-color: #e2e8f0;
+          border-radius: 6px;
+          overflow: hidden;
+        }
+        .progress-bar-fill {
+          height: 12px;
+          background-color: #38a169;
+          width: 0%;
+          transition: width 0.3s ease;
+        }
+        .progress-text {
+          font-size: 0.85rem;
+          color: #4a5568;
+          margin-top: 4px;
+        }
+        .upload-error, .upload-success {
+          margin-top: 16px;
+          padding: 12px;
+          border-radius: 6px;
+          font-size: 0.9rem;
+        }
+        .upload-error {
+          background-color: #fff5f5;
+          color: #e53e3e;
+        }
+        .upload-success {
+          background-color: #f0fff4;
+          color: #38a169;
+        }
+        .dismiss-button {
+          margin-top: 8px;
+          background: none;
+          border: none;
+          color: #4a5568;
+          text-decoration: underline;
+          cursor: pointer;
+          font-size: 0.85rem;
+        }
+      `}</style>
     </div>
   );
 };
