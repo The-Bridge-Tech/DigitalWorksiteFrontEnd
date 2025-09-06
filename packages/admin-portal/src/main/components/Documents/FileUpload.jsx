@@ -169,35 +169,6 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
             Sign in with Google
           </button>
         </div>
-        <style>{`
-          .file-upload {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 500px;
-            margin: 20px auto;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-          }
-          .auth-required {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-top: 16px;
-          }
-          .sign-in-button {
-            background-color: #4285f4;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-          }
-          .sign-in-button:hover {
-            background-color: #357ae8;
-          }
-        `}</style>
-
       </div>
     );
   }
