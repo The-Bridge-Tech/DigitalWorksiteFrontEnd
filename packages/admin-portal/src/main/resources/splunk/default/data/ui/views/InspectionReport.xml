@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<view template="admin-portal:/templates/InspectionReport.html" type="html">
+	<label>Inspection Report</label>
+</view>
