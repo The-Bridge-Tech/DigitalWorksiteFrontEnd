@@ -12,7 +12,7 @@ import SiteForm from './Sites/SiteForm';
 import UserForm from './Users/UserForm';
 import UserList from './Users/UserList';
 import InspectionReport from '../../../../inspection-report/src/InspectionReport';
-import ReportingCenter from '../../../../reporting-center/src/ReportingCenter';
+import ReportingCenter from '../../../../reporting-center/ReportingCenter';
 import { initGoogleApiClient, isSignedIn, debugAuthState } from '../services/auth.service';
 import InspectionCalendar from './Calendar/InspectionCalendar';
 import styled from "styled-components";
