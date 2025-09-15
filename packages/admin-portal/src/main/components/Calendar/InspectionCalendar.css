@@ -1,27 +1,41 @@
 /* InspectionCalendar.css */
 
 /* Main container */
-.inspection-calendar {
+.inspection-dashboard {
   font-family: Arial, sans-serif;
   padding: 20px;
   background-color: #f9f9f9;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
 
-/* Header */
-.inspection-calendar h2 {
+/* Each section (calendar + map) */
+.calendar-section,
+.map-section {
+  flex: 1;
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Section headers */
+.calendar-section h2,
+.map-section h2 {
   margin-bottom: 15px;
-  font-size: 24px;
+  font-size: 22px;
   color: #333;
 }
 
 /* Calendar container: flex layout */
-.inspection-calendar .calendar-container {
+.calendar-container {
   display: flex;
   gap: 20px;
 }
 
 /* External events (draggable sites) */
-.inspection-calendar .external-events {
+.external-events {
   width: 200px;
   border: 1px solid #ccc;
   padding: 10px;
@@ -29,14 +43,14 @@
   background-color: #fff;
 }
 
-.inspection-calendar .external-events h4 {
+.external-events h4 {
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 16px;
   color: #555;
 }
 
-.inspection-calendar .external-event {
+.external-event {
   margin-bottom: 8px;
   padding: 6px 10px;
   border: 1px solid #0073e6;
@@ -48,26 +62,41 @@
   transition: background-color 0.2s, color 0.2s;
 }
 
-.inspection-calendar .external-event:hover {
+.external-event:hover {
   background-color: #0073e6;
   color: #fff;
 }
 
 /* Calendar wrapper */
-.inspection-calendar .calendar-wrapper {
+.calendar-wrapper {
   flex: 1;
   min-width: 0; /* fix flex overflow issues */
 }
 
 /* Optional: fix FullCalendar event styles locally */
-.inspection-calendar .fc .fc-event {
+.fc .fc-event {
   font-size: 14px;
   border-radius: 3px;
   padding: 2px 4px;
 }
 
 /* Optional: adjust FullCalendar header */
-.inspection-calendar .fc .fc-toolbar-title {
+.fc .fc-toolbar-title {
   font-size: 18px;
   color: #333;
+}
+
+/* Map container */
+.map-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-section .leaflet-container {
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+.leaflet-container {
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
