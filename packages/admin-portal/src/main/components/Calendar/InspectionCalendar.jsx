@@ -5,9 +5,74 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import { getSites } from '../../services/site.service'; // same service used in Site List
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import { getSites } from '../../services/site.service';
 
-import './InspectionCalendar.css'; // custom styles scoped to this page
+import './InspectionCalendar.css';
+
+// Define city → coordinates (since we don’t have exact lat/long)
+const cityCoordinates = {
+  Nairobi: [-1.286389, 36.817223],
+  Nakuru: [-0.3031, 36.0800],
+  Mombasa: [-4.0435, 39.6682],
+  Kisumu: [-0.0917, 34.7680],
+  Eldoret: [0.5143, 35.2698],
+};
+
+// Define color-coded icons by status
+const statusIcons = {
+  completed: new L.DivIcon({
+    className: 'custom-icon',
+    html: '✅',
+    iconSize: [24, 24],
+    iconAnchor: [12, 24],
+  }),
+  pending: new L.DivIcon({
+    className: 'custom-icon',
+    html: '🟡',
+    iconSize: [24, 24],
+    iconAnchor: [12, 24],
+  }),
+  overdue: new L.DivIcon({
+    className: 'custom-icon',
+    html: '🔴',
+    iconSize: [24, 24],
+    iconAnchor: [12, 24],
+  }),
+};
+
+// ---- AI Suggestions Function ----
+const getAISuggestions = (sites, events) => {
+  const suggestions = [];
+
+  // Group by city
+  const groupedByCity = sites.reduce((acc, site) => {
+    acc[site.location] = acc[site.location] || [];
+    acc[site.location].push(site);
+    return acc;
+  }, {});
+
+  // Loop through grouped sites
+  Object.entries(groupedByCity).forEach(([city, citySites]) => {
+    citySites.forEach((site, index) => {
+      const priority = city === 'Nairobi' ? 'High' : 'Normal';
+
+      // Suggest next available slot (just sequential days for now)
+      const nextAvailableDate = new Date();
+      nextAvailableDate.setDate(nextAvailableDate.getDate() + suggestions.length);
+
+      suggestions.push({
+        siteName: site.name,
+        location: site.location,
+        priority,
+        suggestedDate: nextAvailableDate.toDateString(),
+      });
+    });
+  });
+
+  return suggestions;
+};
 
 const InspectionCalendar = () => {
   const [sites, setSites] = useState([]);
@@ -23,6 +88,8 @@ const InspectionCalendar = () => {
         const normalizedSites = (Array.isArray(loadedSites) ? loadedSites : []).map(site => ({
           id: site.id || site.site_id || site.siteId,
           name: site.name || site.site_name || '',
+          location: site.location || 'Nairobi',
+          status: 'pending', // default for now
         })).filter(Boolean);
         setSites(normalizedSites);
       } catch (err) {
@@ -78,12 +145,13 @@ const InspectionCalendar = () => {
     }
   };
 
+  // AI Suggestions
+  const suggestions = getAISuggestions(sites, events);
+
   return (
     <div className="inspection-calendar">
-      
-
-
       <h2>Inspection Calendar</h2>
+
       <div className="calendar-container">
         {/* Draggable sites */}
         <div className="external-events" ref={externalRef}>
@@ -95,7 +163,7 @@ const InspectionCalendar = () => {
               data-site-id={site.id}
               data-title={site.name}
             >
-              {site.name}
+              {site.name} ({site.location})
             </div>
           ))}
         </div>
@@ -120,6 +188,56 @@ const InspectionCalendar = () => {
             height="auto"
           />
         </div>
+      </div>
+
+      {/* Map Section */}
+      <div className="map-section">
+        <h3>Inspection Map</h3>
+        <MapContainer
+          center={[-1.286389, 36.817223]}
+          zoom={6}
+          style={{ height: '400px', width: '100%' }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap contributors"
+          />
+          {sites.map(site => {
+            const coords = cityCoordinates[site.location];
+            if (!coords) return null;
+
+            return (
+              <Marker
+                key={site.id}
+                position={coords}
+                icon={statusIcons[site.status || 'pending']}
+              >
+                <Popup>
+                  <strong>{site.name}</strong><br />
+                  Location: {site.location}<br />
+                  Status: {site.status}
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </div>
+
+      {/* AI Suggestions Section */}
+      <div className="ai-suggestions">
+        <h3>AI Suggestions</h3>
+        {suggestions.length > 0 ? (
+          <ul>
+            {suggestions.map((s, idx) => (
+              <li key={idx}>
+                <strong>{s.siteName}</strong> ({s.location}) → 
+                <em> {s.priority} Priority</em>, Suggested: {s.suggestedDate}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No suggestions available.</p>
+        )}
       </div>
     </div>
   );
