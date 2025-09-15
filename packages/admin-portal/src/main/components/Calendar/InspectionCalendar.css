@@ -1,41 +1,27 @@
 /* InspectionCalendar.css */
 
 /* Main container */
-.inspection-dashboard {
+.inspection-calendar {
   font-family: Arial, sans-serif;
   padding: 20px;
   background-color: #f9f9f9;
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
 }
 
-/* Each section (calendar + map) */
-.calendar-section,
-.map-section {
-  flex: 1;
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-/* Section headers */
-.calendar-section h2,
-.map-section h2 {
+/* Header */
+.inspection-calendar h2 {
   margin-bottom: 15px;
-  font-size: 22px;
+  font-size: 24px;
   color: #333;
 }
 
 /* Calendar container: flex layout */
-.calendar-container {
+.inspection-calendar .calendar-container {
   display: flex;
   gap: 20px;
 }
 
 /* External events (draggable sites) */
-.external-events {
+.inspection-calendar .external-events {
   width: 200px;
   border: 1px solid #ccc;
   padding: 10px;
@@ -43,14 +29,14 @@
   background-color: #fff;
 }
 
-.external-events h4 {
+.inspection-calendar .external-events h4 {
   margin-top: 0;
   margin-bottom: 10px;
   font-size: 16px;
   color: #555;
 }
 
-.external-event {
+.inspection-calendar .external-event {
   margin-bottom: 8px;
   padding: 6px 10px;
   border: 1px solid #0073e6;
@@ -62,41 +48,94 @@
   transition: background-color 0.2s, color 0.2s;
 }
 
-.external-event:hover {
+.inspection-calendar .external-event:hover {
   background-color: #0073e6;
   color: #fff;
 }
 
 /* Calendar wrapper */
-.calendar-wrapper {
+.inspection-calendar .calendar-wrapper {
   flex: 1;
   min-width: 0; /* fix flex overflow issues */
 }
 
 /* Optional: fix FullCalendar event styles locally */
-.fc .fc-event {
+.inspection-calendar .fc .fc-event {
   font-size: 14px;
   border-radius: 3px;
   padding: 2px 4px;
 }
 
 /* Optional: adjust FullCalendar header */
-.fc .fc-toolbar-title {
+.inspection-calendar .fc .fc-toolbar-title {
   font-size: 18px;
   color: #333;
 }
 
-/* Map container */
-.map-section {
-  display: flex;
-  flex-direction: column;
+/* Map section */
+.inspection-calendar .map-container {
+  margin-top: 30px;
 }
 
-.map-section .leaflet-container {
-  border-radius: 8px;
+.inspection-calendar .map-container h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.inspection-calendar .leaflet-container {
+  width: 100%;
+  height: 400px;
+  border-radius: 6px;
   border: 1px solid #ccc;
 }
-.leaflet-container {
-  border: 1px solid #ccc;
+
+/* AI Suggestions section */
+.inspection-calendar .suggestions-container {
+  margin-top: 30px;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid #ddd;
   border-radius: 6px;
+}
+
+.inspection-calendar .suggestions-container h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.inspection-calendar .suggestion-item {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inspection-calendar .suggestion-priority {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+/* Priority colors */
+.inspection-calendar .priority-high {
+  background-color: #ff4d4d; /* red */
+  color: #fff;
+}
+
+.inspection-calendar .priority-normal {
+  background-color: #ffcc00; /* yellow */
+  color: #333;
+}
+
+.inspection-calendar .priority-low {
+  background-color: #4caf50; /* green */
+  color: #fff;
 }
