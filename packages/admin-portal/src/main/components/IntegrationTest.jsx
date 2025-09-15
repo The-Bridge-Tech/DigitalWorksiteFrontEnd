@@ -130,11 +130,10 @@ const IntegrationTest = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 
-  // Render test navigation
-  const renderNavigation = () => (
-    <div className="test-navigation">
-      <h3>Test Components</h3>
-      <div className="nav-buttons">
+  // Render top navigation bar with all buttons
+  const renderTopNavigation = () => (
+    <div className="top-navigation">
+      <div className="nav-buttons-horizontal">
         <button 
           onClick={() => setActiveTest('auth')}
           className={activeTest === 'auth' ? 'active' : ''}
@@ -183,44 +182,43 @@ const IntegrationTest = () => {
         >
           Site List
         </button>
-
         <button 
-        onClick={() => setActiveTest('user-form')}
-        className={activeTest === 'user-form' ? 'active' : ''}
-        disabled={!authenticated}
-      >
-        Create User
-      </button>
-      <button 
-        onClick={() => setActiveTest('user-list')}
-        className={activeTest === 'user-list' ? 'active' : ''}
-        disabled={!authenticated}
-      >
-        User List
-      </button>
-      <button 
-        onClick={() => setActiveTest('calendar')}
-        className={activeTest === 'calendar' ? 'active' : ''}
-        disabled={!authenticated}
-      >
-        Inspection Calendar
-      </button>
-      <button
-        onClick={() => setActiveTest('inspection-report')}
-        className={activeTest === 'inspection-report' ? 'active' : ''}
-        disabled={!authenticated}
-      >
-        Inspection Report
-      </button>
-      <button
-        onClick={() => setActiveTest('reporting-center')}
-        className={activeTest === 'reporting-center' ? 'active' : ''}
-        disabled={!authenticated}
-      >
-        Reporting Center
-      </button>
+          onClick={() => setActiveTest('user-form')}
+          className={activeTest === 'user-form' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Create User
+        </button>
+        <button 
+          onClick={() => setActiveTest('user-list')}
+          className={activeTest === 'user-list' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          User List
+        </button>
+        <button 
+          onClick={() => setActiveTest('calendar')}
+          className={activeTest === 'calendar' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Inspection Calendar
+        </button>
+        <button
+          onClick={() => setActiveTest('inspection-report')}
+          className={activeTest === 'inspection-report' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Inspection Report
+        </button>
+        <button
+          onClick={() => setActiveTest('reporting-center')}
+          className={activeTest === 'reporting-center' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Reporting Center
+        </button>
       </div>
-      <div className="debug-actions" style={{ marginTop: '20px' }}>
+      <div className="debug-actions" style={{ marginTop: '20px', textAlign: 'center' }}>
         <button 
           onClick={() => {
             console.log('IntegrationTest: Manual debug requested');
@@ -513,11 +511,10 @@ case 'user-list':
         </div>
       )}
       
-      <div className="test-container">
-        {renderNavigation()}
-        <div className="test-content">
-          {renderTestComponent()}
-        </div>
+      {renderTopNavigation()}
+      
+      <div className="content-area">
+        {renderTestComponent()}
       </div>
       
       <div className="test-footer">

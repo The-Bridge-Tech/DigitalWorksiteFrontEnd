@@ -93,25 +93,69 @@
   opacity: 1;
 }
 
-/* Main Console Layout */
-.test-console {
-  display: flex;
-  gap: 2rem;
+/* Top Navigation Layout */
+.top-navigation {
   background-color: var(--bg-light);
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: var(--shadow-sm);
-  min-height: 500px;
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem 0;
+  margin-bottom: 2rem;
 }
 
-.test-navigation {
-  flex-basis: 250px;
-  flex-shrink: 0;
-  padding-right: 2rem;
-  border-right: 1px solid var(--border-color);
+.nav-buttons-horizontal {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  padding: 0.5rem 0;
 }
 
-.test-navigation h3 {
+.nav-buttons-horizontal button {
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  color: var(--text-medium);
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nav-buttons-horizontal button:hover:not(:disabled) {
+  background-color: var(--bg-medium);
+  transform: translateY(-2px);
+}
+
+.nav-buttons-horizontal button.active {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.nav-buttons-horizontal button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f1f3f5;
+  color: #adb5bd;
+}
+
+/* Main Content Layout */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.admin-navigation {
+  background-color: var(--bg-light);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.admin-navigation h3 {
   color: var(--text-light);
   text-transform: uppercase;
   font-size: 1rem;
@@ -120,13 +164,13 @@
   margin-bottom: 1rem;
 }
 
-.nav-buttons {
-  display: flex;
-  flex-direction: column;
+.admin-navigation .nav-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 0.75rem;
 }
 
-.nav-buttons button {
+.admin-navigation .nav-buttons button {
   background-color: #fff;
   border: 1px solid var(--border-color);
   color: var(--text-medium);
@@ -138,25 +182,25 @@
   font-weight: 500;
 }
 
-.nav-buttons button:hover:not(:disabled) {
+.admin-navigation .nav-buttons button:hover:not(:disabled) {
   background-color: var(--bg-medium);
 }
 
-.nav-buttons button.active {
+.admin-navigation .nav-buttons button.active {
   background-color: var(--primary-color);
   color: #fff;
   border-color: var(--primary-color);
   box-shadow: 0 2px 8px rgba(0, 123, 255, 0.2);
 }
 
-.nav-buttons button:disabled {
+.admin-navigation .nav-buttons button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   background-color: #f1f3f5;
   color: #adb5bd;
 }
 
-.test-content-area {
+.content-area {
   flex-grow: 1;
   padding: 0;
   overflow-y: auto;
@@ -164,6 +208,7 @@
 
 .test-component {
   padding: 0;
+  width: 100%;
 }
 
 .test-component h2 {
@@ -174,6 +219,16 @@
   font-weight: 600;
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 0.5rem;
+}
+
+/* Full width for main components */
+.test-component.inspection-report-test,
+.test-component.reporting-center-test,
+.test-component.calendar-test {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Form Groups and Inputs */
