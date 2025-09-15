@@ -1,0 +1,73 @@
+/* InspectionCalendar.css */
+
+/* Main container */
+.inspection-calendar {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* Header */
+.inspection-calendar h2 {
+  margin-bottom: 15px;
+  font-size: 24px;
+  color: #333;
+}
+
+/* Calendar container: flex layout */
+.inspection-calendar .calendar-container {
+  display: flex;
+  gap: 20px;
+}
+
+/* External events (draggable sites) */
+.inspection-calendar .external-events {
+  width: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: #fff;
+}
+
+.inspection-calendar .external-events h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #555;
+}
+
+.inspection-calendar .external-event {
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border: 1px solid #0073e6;
+  border-radius: 3px;
+  background-color: #e6f0ff;
+  cursor: grab;
+  font-size: 14px;
+  color: #0073e6;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.inspection-calendar .external-event:hover {
+  background-color: #0073e6;
+  color: #fff;
+}
+
+/* Calendar wrapper */
+.inspection-calendar .calendar-wrapper {
+  flex: 1;
+  min-width: 0; /* fix flex overflow issues */
+}
+
+/* Optional: fix FullCalendar event styles locally */
+.inspection-calendar .fc .fc-event {
+  font-size: 14px;
+  border-radius: 3px;
+  padding: 2px 4px;
+}
+
+/* Optional: adjust FullCalendar header */
+.inspection-calendar .fc .fc-toolbar-title {
+  font-size: 18px;
+  color: #333;
+}

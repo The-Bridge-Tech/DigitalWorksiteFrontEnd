@@ -1,3 +1,8 @@
 <nav>
+<<<<<<< HEAD
     <view name="start" default="true"/>
+=======
+  <view name="start" default="true"/>
+  <view name="InspectionReport"/>
+>>>>>>> 8cc40611d5efb3a54e5c33ee30507102ed224601
 </nav>

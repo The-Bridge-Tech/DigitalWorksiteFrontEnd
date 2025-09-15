@@ -11,9 +11,13 @@ import SiteList from './Sites/SiteList';
 import SiteForm from './Sites/SiteForm';
 import UserForm from './Users/UserForm';
 import UserList from './Users/UserList';
+import InspectionReport from '../../../../inspection-report/src/InspectionReport';
+import ReportingCenter from '../../../../reporting-center/src/ReportingCenter';
 import { initGoogleApiClient, isSignedIn, debugAuthState } from '../services/auth.service';
+import InspectionCalendar from './Calendar/InspectionCalendar';
 import styled from "styled-components";
 import './IntegrationTest.css';
+import 'leaflet/dist/leaflet.css';
 
 
 const IntegrationTest = () => {
@@ -194,6 +198,27 @@ const IntegrationTest = () => {
       >
         User List
       </button>
+      <button 
+        onClick={() => setActiveTest('calendar')}
+        className={activeTest === 'calendar' ? 'active' : ''}
+        disabled={!authenticated}
+      >
+        Inspection Calendar
+      </button>
+      <button
+        onClick={() => setActiveTest('inspection-report')}
+        className={activeTest === 'inspection-report' ? 'active' : ''}
+        disabled={!authenticated}
+      >
+        Inspection Report
+      </button>
+      <button
+        onClick={() => setActiveTest('reporting-center')}
+        className={activeTest === 'reporting-center' ? 'active' : ''}
+        disabled={!authenticated}
+      >
+        Reporting Center
+      </button>
       </div>
       <div className="debug-actions" style={{ marginTop: '20px' }}>
         <button 
@@ -282,7 +307,15 @@ const IntegrationTest = () => {
           </div>
         );
         
-        case 'user-form':
+      case 'calendar':
+        return (
+          <div className="test-component calendar-test">
+            <h2>Inspection Calendar Test</h2>
+            <InspectionCalendar />
+          </div>
+        );
+        
+      case 'user-form':
   return (
     <div className="test-component user-form-test">
       <h2>User Form Test</h2>
@@ -423,6 +456,22 @@ case 'user-list':
                 Create New Site
               </button>
             </div>
+          </div>
+        );
+        
+      case 'inspection-report':
+        return (
+          <div className="test-component inspection-report-test">
+            <h2>Inspection Report</h2>
+            <InspectionReport />
+          </div>
+        );
+
+      case 'reporting-center':
+        return (
+          <div className="test-component reporting-center-test">
+            <h2>Reporting Center</h2>
+            <ReportingCenter />
           </div>
         );
         
