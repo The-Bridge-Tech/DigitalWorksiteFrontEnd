@@ -14,21 +14,16 @@
     "stylelint": "stylelint \"src/**/*.{js,jsx}\" --config stylelint.config.js"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "jspdf": "^3.0.2",
-    "react-qr-code": "^2.0.18"
-=======
     "@fullcalendar/daygrid": "^6.1.19",
     "@fullcalendar/interaction": "^6.1.19",
     "@fullcalendar/list": "^6.1.19",
     "@fullcalendar/react": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
+    "@splunk/inspection-report": "^0.0.1",
     "jspdf": "^3.0.2",
     "leaflet": "^1.9.4",
     "react-leaflet": "^5.0.0",
-    "react-qr-code": "^2.0.18",
-    "@splunk/inspection-report": "^0.0.1"
->>>>>>> 8cc40611d5efb3a54e5c33ee30507102ed224601
+    "react-qr-code": "^2.0.18"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
