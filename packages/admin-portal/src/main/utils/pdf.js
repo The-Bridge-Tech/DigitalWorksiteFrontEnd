@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 
 export const generateTemplatePDF = (formData) => {
+  console.log('Generating PDF for template:', formData);
   const doc = new jsPDF();
 
   // Header
@@ -43,7 +44,23 @@ export const generateTemplatePDF = (formData) => {
     }
 
     doc.text(wrappedQuestion, 20, y);
-    y += wrappedQuestion.length * 7 + 5; // spacing between questions
+    y += wrappedQuestion.length * 7;
+
+    // Add options if they exist
+    if (Array.isArray(q.options) && q.options.length > 0) {
+      const optionsText = q.options.map(opt => `   • ${opt}`).join('\n');
+      const wrappedOptions = doc.splitTextToSize(optionsText, 170);
+      
+      if (y + wrappedOptions.length * 7 > 280) {
+        doc.addPage();
+        y = 20;
+      }
+      
+      doc.text(wrappedOptions, 20, y + 3);
+      y += wrappedOptions.length * 7;
+    }
+    
+    y += 5; // spacing between questions
   });
 
   // Return as Blob (for uploading)

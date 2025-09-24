@@ -10,21 +10,29 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
   const [sortField, setSortField] = useState('modifiedTime');
   const [sortDirection, setSortDirection] = useState('desc');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState('');
 
-  // Fetch templates
+  // Fetch templates on refresh trigger
   useEffect(() => {
-    fetchTemplates();
+    if (selectedFolder) {
+      fetchTemplates();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
 
   // Fetch templates from Google Drive
   const fetchTemplates = async () => {
+    if (!selectedFolder) {
+      setTemplates([]);
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
       setIsRefreshing(true);
 
-      const fetchedTemplates = await getTemplates();
+      const fetchedTemplates = await getTemplates(selectedFolder);
       setTemplates(Array.isArray(fetchedTemplates) ? fetchedTemplates : []);
       
       // Clear refresh animation after a short delay
@@ -39,6 +47,21 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
       setIsLoading(false);
     }
   };
+
+  // Handle folder selection
+  const handleFolderSelect = () => {
+    const folderId = prompt('Enter Google Drive folder ID for templates:');
+    if (folderId && folderId.trim()) {
+      setSelectedFolder(folderId.trim());
+    }
+  };
+
+  // Fetch templates when folder changes
+  useEffect(() => {
+    if (selectedFolder) {
+      fetchTemplates();
+    }
+  }, [selectedFolder]);
 
   // Filter templates by category and search query
   const filteredTemplates = templates.filter((template) => {
@@ -123,18 +146,32 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
 
       <div className="template-list-header">
         <h2>Inspection Templates</h2>
-        <button 
-          onClick={fetchTemplates} 
-          disabled={isLoading} 
-          className="refresh-button"
-        >
-          <span className="refresh-icon">
-            {/* Simple refresh icon using unicode */}
-            {isRefreshing ? '↻' : '⟳'}
-          </span>
-          {isLoading ? 'Loading...' : 'Refresh'}
-        </button>
+        <div className="header-actions">
+          <button 
+            onClick={handleFolderSelect}
+            className="folder-select-button"
+          >
+            📁 Select Folder
+          </button>
+          <button 
+            onClick={fetchTemplates} 
+            disabled={isLoading || !selectedFolder} 
+            className="refresh-button"
+          >
+            <span className="refresh-icon">
+              {/* Simple refresh icon using unicode */}
+              {isRefreshing ? '↻' : '⟳'}
+            </span>
+            {isLoading ? 'Loading...' : 'Refresh'}
+          </button>
+        </div>
       </div>
+
+      {selectedFolder && (
+        <div className="selected-folder-info">
+          <p>📁 Templates from folder: <code>{selectedFolder}</code></p>
+        </div>
+      )}
 
       {error && (
         <div className="error-message">
@@ -172,7 +209,11 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
         </div>
       </div>
 
-      {isLoading && templates.length === 0 ? (
+      {!selectedFolder ? (
+        <div className="empty-message">
+          <p>Please select a Google Drive folder to view templates.</p>
+        </div>
+      ) : isLoading && templates.length === 0 ? (
         <div className="loading-indicator">
           <p>Loading templates...</p>
         </div>
@@ -181,7 +222,7 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
           <p>
             {searchQuery || selectedCategory !== 'all'
               ? 'No templates match your filters. Try changing your search criteria.'
-              : 'No templates found. Create your first template to get started!'}
+              : 'No templates found in this folder. Create your first template to get started!'}
           </p>
         </div>
       ) : (
@@ -262,6 +303,7 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
                         <button
                           onClick={() => handleDelete(template.fileId, template.name)}
                           className="delete-button"
+                          disabled={!selectedFolder}
                         >
                           Delete
                         </button>

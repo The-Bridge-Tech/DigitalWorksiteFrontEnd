@@ -11,6 +11,10 @@ import SiteList from './Sites/SiteList';
 import SiteForm from './Sites/SiteForm';
 import UserForm from './Users/UserForm';
 import UserList from './Users/UserList';
+import CheckIn from './CheckIn/CheckIn';
+import CheckInList from './CheckIn/CheckInList';
+
+import AnalyticsDashboard from './Analytics/AnalyticsDashboard';
 import InspectionReport from '../../../../inspection-report/src/InspectionReport';
 import ReportingCenter from '../../../../reporting-center/ReportingCenter';
 import { initGoogleApiClient, isSignedIn, debugAuthState } from '../services/auth.service';
@@ -69,6 +73,10 @@ const IntegrationTest = () => {
         if (signedIn) {
           console.log('IntegrationTest: User is signed in');
           setTestMessage('Successfully authenticated with Google');
+          // Auto-hide success message after 3 seconds
+          setTimeout(() => {
+            setTestMessage('');
+          }, 3000);
         } else {
           console.log('IntegrationTest: User is not signed in');
         }
@@ -216,6 +224,28 @@ const IntegrationTest = () => {
           disabled={!authenticated}
         >
           Reporting Center
+        </button>
+        <button
+          onClick={() => setActiveTest('checkin')}
+          className={activeTest === 'checkin' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Check-In
+        </button>
+        <button
+          onClick={() => setActiveTest('checkin-list')}
+          className={activeTest === 'checkin-list' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Check-In List
+        </button>
+
+        <button
+          onClick={() => setActiveTest('analytics')}
+          className={activeTest === 'analytics' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Analytics
         </button>
       </div>
       <div className="debug-actions" style={{ marginTop: '20px', textAlign: 'center' }}>
@@ -460,7 +490,6 @@ case 'user-list':
       case 'inspection-report':
         return (
           <div className="test-component inspection-report-test">
-            <h2>Inspection Report</h2>
             <InspectionReport />
           </div>
         );
@@ -470,6 +499,30 @@ case 'user-list':
           <div className="test-component reporting-center-test">
             <h2>Reporting Center</h2>
             <ReportingCenter />
+          </div>
+        );
+        
+      case 'checkin':
+        return (
+          <div className="test-component checkin-test">
+            <h2>Site Check-In</h2>
+            <CheckIn />
+          </div>
+        );
+        
+      case 'checkin-list':
+        return (
+          <div className="test-component checkin-list-test">
+            <h2>Check-In History</h2>
+            <CheckInList />
+          </div>
+        );
+        
+
+      case 'analytics':
+        return (
+          <div className="test-component analytics-test">
+            <AnalyticsDashboard />
           </div>
         );
         

@@ -8,6 +8,23 @@ import listPlugin from '@fullcalendar/list';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { getSites } from '../../services/site.service';
+import { authFetch } from '../../services/auth.service';
+
+// Fix Leaflet default icons
+import 'leaflet/dist/leaflet.css';
+
+// Fix Leaflet icon issue
+const DefaultIcon = L.icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 import './InspectionCalendar.css';
 
@@ -77,27 +94,97 @@ const getAISuggestions = (sites, events) => {
 const InspectionCalendar = () => {
   const [sites, setSites] = useState([]);
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const externalRef = useRef(null);
   const calendarRef = useRef(null);
 
-  // Load sites dynamically
+  // API functions for persistence
+  const saveTask = async (eventData) => {
+    try {
+      const taskData = {
+        title: eventData.title,
+        asset_id: eventData.extendedProps?.siteId || eventData.title,
+        frequency: 'once',
+        assigned_to: 'System',
+        next_run: eventData.start.toISOString()
+      };
+      
+      const response = await authFetch('http://localhost:5004/tasks/create', {
+        method: 'POST',
+        body: JSON.stringify(taskData)
+      });
+      
+      const data = await response.json();
+      console.log('Save task response:', data);
+      return data;
+    } catch (error) {
+      console.error('Error saving task:', error);
+      throw error;
+    }
+  };
+
+  const loadTasks = async () => {
+    try {
+      const response = await authFetch('http://localhost:5004/tasks');
+      const data = await response.json();
+      console.log('Loaded tasks:', data);
+      return Array.isArray(data) ? data : [];
+    } catch (error) {
+      console.error('Error loading tasks:', error);
+      return [];
+    }
+  };
+
+  const deleteTask = async (taskId) => {
+    try {
+      await authFetch(`http://localhost:5004/tasks/${taskId}`, {
+        method: 'DELETE'
+      });
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      throw error;
+    }
+  };
+
+  // Load sites and existing calendar events
   useEffect(() => {
-    const loadSites = async () => {
+    const loadData = async () => {
       try {
+        setLoading(true);
+        
+        // Load sites
         const loadedSites = await getSites();
         const normalizedSites = (Array.isArray(loadedSites) ? loadedSites : []).map(site => ({
           id: site.id || site.site_id || site.siteId,
           name: site.name || site.site_name || '',
           location: site.location || 'Nairobi',
-          status: 'pending', // default for now
+          status: 'pending',
         })).filter(Boolean);
         setSites(normalizedSites);
+        
+        // Load existing tasks/events
+        const tasks = await loadTasks();
+        console.log('Converting tasks to events:', tasks);
+        const calendarEvents = tasks.map(task => ({
+          id: task.task_id,
+          title: task.title,
+          start: task.next_run,
+          extendedProps: {
+            siteId: task.asset_id,
+            taskId: task.task_id
+          }
+        }));
+        console.log('Calendar events:', calendarEvents);
+        setEvents(calendarEvents);
+        
       } catch (err) {
-        console.error('Failed to load sites for calendar:', err);
+        console.error('Failed to load calendar data:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadSites();
+    loadData();
   }, []);
 
   // Make external sites draggable
@@ -115,16 +202,46 @@ const InspectionCalendar = () => {
     return () => draggable.destroy();
   }, [sites]);
 
-  // Add event when dropped onto calendar
-  const handleEventReceive = (info) => {
-    const newEvent = {
-      id: String(events.length + 1),
-      title: info.event.title,
-      start: info.event.start,
-      end: info.event.end,
-      extendedProps: info.event.extendedProps,
-    };
-    setEvents([...events, newEvent]);
+  // Add event when dropped onto calendar and save to backend
+  const handleEventReceive = async (info) => {
+    try {
+      const eventData = {
+        title: info.event.title,
+        start: info.event.start,
+        end: info.event.end,
+        extendedProps: info.event.extendedProps,
+      };
+      
+      // Save to backend
+      const response = await saveTask(eventData);
+      
+      // Check if save was successful
+      if (!response.ok) {
+        throw new Error(response.error || 'Failed to save task');
+      }
+      
+      const savedTask = response.task;
+      
+      // Add to local state with backend ID
+      const newEvent = {
+        id: savedTask.task_id,
+        title: info.event.title,
+        start: info.event.start,
+        end: info.event.end,
+        extendedProps: {
+          ...info.event.extendedProps,
+          taskId: savedTask.task_id
+        },
+      };
+      
+      setEvents([...events, newEvent]);
+      console.log('Event saved successfully:', savedTask);
+    } catch (error) {
+      console.error('Failed to save event:', error);
+      // Remove the event from calendar if save failed
+      info.revert();
+      alert('Failed to save inspection to calendar. Please try again.');
+    }
   };
 
   // Update event when dragged
@@ -138,10 +255,24 @@ const InspectionCalendar = () => {
     );
   };
 
-  // Delete event on click
-  const handleEventClick = (info) => {
+  // Delete event on click and remove from backend
+  const handleEventClick = async (info) => {
     if (window.confirm(`Delete "${info.event.title}"?`)) {
-      setEvents(events.filter((e) => e.id !== info.event.id));
+      try {
+        const taskId = info.event.extendedProps?.taskId || info.event.id;
+        
+        // Delete from backend if it has a taskId
+        if (taskId) {
+          await deleteTask(taskId);
+        }
+        
+        // Remove from local state
+        setEvents(events.filter((e) => e.id !== info.event.id));
+        console.log('Event deleted successfully');
+      } catch (error) {
+        console.error('Failed to delete event:', error);
+        alert('Failed to delete inspection from calendar. Please try again.');
+      }
     }
   };
 
@@ -151,6 +282,12 @@ const InspectionCalendar = () => {
   return (
     <div className="inspection-calendar">
       <h2>Inspection Calendar</h2>
+      
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '20px' }}>
+          Loading calendar data...
+        </div>
+      )}
 
       <div className="calendar-container">
         {/* Draggable sites */}
@@ -193,34 +330,36 @@ const InspectionCalendar = () => {
       {/* Map Section */}
       <div className="map-section">
         <h3>Inspection Map</h3>
-        <MapContainer
-          center={[-1.286389, 36.817223]}
-          zoom={6}
-          style={{ height: '400px', width: '100%' }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
-            attribution="&copy; OpenStreetMap contributors"
-          />
-          {sites.map(site => {
-            const coords = cityCoordinates[site.location];
-            if (!coords) return null;
+        {sites.length > 0 && (
+          <MapContainer
+            center={[-1.286389, 36.817223]}
+            zoom={6}
+            style={{ height: '400px', width: '100%' }}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+              attribution="&copy; OpenStreetMap contributors"
+            />
+            {sites.map(site => {
+              const coords = cityCoordinates[site.location];
+              if (!coords) return null;
 
-            return (
-              <Marker
-                key={site.id}
-                position={coords}
-                icon={statusIcons[site.status || 'pending']}
-              >
-                <Popup>
-                  <strong>{site.name}</strong><br />
-                  Location: {site.location}<br />
-                  Status: {site.status}
-                </Popup>
-              </Marker>
-            );
-          })}
-        </MapContainer>
+              return (
+                <Marker
+                  key={site.id}
+                  position={coords}
+                  icon={statusIcons[site.status || 'pending']}
+                >
+                  <Popup>
+                    <strong>{site.name}</strong><br />
+                    Location: {site.location}<br />
+                    Status: {site.status}
+                  </Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
+        )}
       </div>
 
       {/* AI Suggestions Section */}

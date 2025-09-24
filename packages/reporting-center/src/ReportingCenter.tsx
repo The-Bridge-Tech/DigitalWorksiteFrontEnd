@@ -1,5 +1,5 @@
 // ReportingCenter.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 // @ts-ignore
 import Pie from '@splunk/visualizations/Pie';
 import { SplunkThemeProvider } from '@splunk/themes';
@@ -183,7 +183,8 @@ function ReportingCenterContent() {
   async function handleExportPDF(report: ReportMeta) {
     try {
       // Calls backend API to export report as PDF
-      const resp = await fetch(`/api/reports/${report.id}/export-pdf`);
+      // Use inspections endpoint since no reports endpoint exists
+      const resp = await fetch(`/inspections/${report.id}/export-pdf`);
       if (!resp.ok) throw new Error("Export failed");
       const blob = await resp.blob();
       const url = URL.createObjectURL(blob);
@@ -208,6 +209,8 @@ function ReportingCenterContent() {
         fontFamily: "Inter, Arial",
       }}
     >
+      {loading && <div>Loading reports...</div>}
+      {error && <div style={{ color: 'red' }}>Error: {error}</div>}
       {/* ---------------- Header ---------------- */}
       <header
         style={{
@@ -243,7 +246,7 @@ function ReportingCenterContent() {
           label="Project"
           title="Filter by project"
           value={projectFilter}
-          onChange={(e) => setProjectFilter(e.target.value as any)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setProjectFilter(e.target.value as string | "All")}
           options={projects}
           includeAll
         />
@@ -251,7 +254,7 @@ function ReportingCenterContent() {
           label="Location"
           title="Filter by location"
           value={locationFilter}
-          onChange={(e) => setLocationFilter(e.target.value as any)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setLocationFilter(e.target.value as string | "All")}
           options={locations}
           includeAll
         />
@@ -259,7 +262,7 @@ function ReportingCenterContent() {
           label="User"
           title="Filter by user"
           value={userFilter}
-          onChange={(e) => setUserFilter(e.target.value as any)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setUserFilter(e.target.value as string | "All")}
           options={users}
           includeAll
         />
@@ -267,7 +270,7 @@ function ReportingCenterContent() {
           label="Report Type"
           title="Filter by report type"
           value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value as any)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setTypeFilter(e.target.value as ReportType | "All")}
           options={REPORT_TYPES}
           includeAll
         />
@@ -275,7 +278,7 @@ function ReportingCenterContent() {
           label="Status"
           title="Filter by report status"
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as any)}
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as Status | "All")}
           options={STATUSES}
           includeAll
         />

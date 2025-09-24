@@ -17,8 +17,9 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
     name: '',
     category: '',
     description: '',
-    questions: [{ question: '', type: 'text', required: false }]
+    questions: [{ question: '', type: 'text', required: false, options: [] }]
   });
+  const [selectedFolder, setSelectedFolder] = useState('');
 
   // Form state
   const [isLoading, setIsLoading] = useState(false);
@@ -64,13 +65,21 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
 
       const template = await getTemplate(id);
 
+      // Ensure questions have proper structure
+      const processedQuestions = template.questions && template.questions.length > 0
+        ? template.questions.map((q) => ({
+            question: q.question || '',
+            type: q.type || 'text',
+            required: q.required || false,
+            options: Array.isArray(q.options) ? q.options : (q.options ? q.options.split('\n').filter(opt => opt.trim()).map(opt => opt.trim()) : [''])
+          }))
+        : [{ question: '', type: 'text', required: false, options: [''] }];
+
       setFormData({
         name: template.name || '',
         category: template.category || '',
         description: template.description || '',
-        questions: template.questions && template.questions.length > 0
-          ? template.questions
-          : [{ question: '', type: 'text', required: false }]
+        questions: processedQuestions
       });
     } catch (error) {
       console.error('Error loading template:', error);
@@ -93,6 +102,14 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // Handle folder selection
+  const handleFolderSelect = () => {
+    const folderId = prompt('Enter Google Drive folder ID where templates will be saved:');
+    if (folderId && folderId.trim()) {
+      setSelectedFolder(folderId.trim());
+    }
+  };
+
   // Handle question field changes
   const handleQuestionChange = (index, field, value) => {
     const updatedQuestions = [...formData.questions];
@@ -104,7 +121,12 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
   const addQuestion = () => {
     setFormData({
       ...formData,
-      questions: [...formData.questions, { question: '', type: 'text', required: false }]
+      questions: [...formData.questions, { 
+        question: '', 
+        type: 'text', 
+        required: false, 
+        options: [''] 
+      }]
     });
   };
 
@@ -126,32 +148,32 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
         return;
       }
       
+      // Ask for folder ID
+      const folderId = prompt('Enter Google Drive folder ID (leave empty for root folder):');
+      
       // Generate PDF blob
       const pdfBlob = generateTemplatePDF(formData);
+      
+      // Convert blob to base64 for proper binary handling
+      const base64Data = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result.split(',')[1]; // Remove data:application/pdf;base64, prefix
+          resolve(base64);
+        };
+        reader.readAsDataURL(pdfBlob);
+      });
       
       // Upload PDF to Drive
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const pdfName = `${formData.name}_${timestamp}.pdf`;
       
-      // Get parent folder from template
-      let parentFolder = null;
-      if (templateId) {
-        try {
-          const template = await getTemplate(templateId);
-          if (template.parentFolderId) {
-            parentFolder = template.parentFolderId;
-          }
-        } catch (err) {
-          console.warn('Could not get parent folder from template:', err);
-        }
-      }
-      
-      // Create file in Drive
+      // Create file in Drive with base64 content
       await createFile({
         name: pdfName,
         mimeType: 'application/pdf',
-        parents: parentFolder ? [parentFolder] : [],
-        content: pdfBlob
+        parents: folderId ? [folderId.trim()] : [],
+        contentBase64: base64Data
       });
       
       setPdfGenerated(true);
@@ -178,8 +200,9 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
         name: '',
         category: '',
         description: '',
-        questions: [{ question: '', type: 'text', required: false }]
+        questions: [{ question: '', type: 'text', required: false, options: [''] }]
       });
+      setSelectedFolder('');
     }
 
     // Call onCancel callback if provided
@@ -209,6 +232,11 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
       return;
     }
 
+    if (!selectedFolder.trim() && !isEditing) {
+      setError('Please select a folder to save the template');
+      return;
+    }
+
     if (formData.questions.some(q => !q.question.trim())) {
       setError('All questions must have content');
       return;
@@ -224,25 +252,44 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
         // Update existing template
         result = await updateTemplate(templateId, formData);
       } else {
-        // Create new template
-        result = await createTemplate(formData);
+        // Create new template with folder
+        result = await createTemplate(formData, selectedFolder);
       }
       
       // Also generate PDF
       try {
-        const pdfBlob = generateTemplatePDF(formData);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const pdfName = `${formData.name}_${timestamp}.pdf`;
-        
-        // Upload PDF to Drive
-        await createFile({
-          name: pdfName,
-          mimeType: 'application/pdf',
-          parents: result.fileId ? [result.fileId] : [],
-          content: pdfBlob
-        });
-        
-        console.log('PDF generated and uploaded successfully');
+        const shouldGeneratePdf = confirm('Generate PDF for this template?');
+        if (shouldGeneratePdf) {
+          const folderId = prompt('Enter Google Drive folder ID for PDF (leave empty for root folder):');
+          
+          const pdfBlob = generateTemplatePDF(formData);
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+          const pdfName = `${formData.name}_${timestamp}.pdf`;
+          
+          // Convert blob to base64
+          const base64Data = await new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+              const base64 = reader.result.split(',')[1];
+              resolve(base64);
+            };
+            reader.readAsDataURL(pdfBlob);
+          });
+          
+          console.log('PDF base64 length:', base64Data.length);
+          
+          // Upload PDF to Drive
+          const uploadResult = await createFile({
+            name: pdfName,
+            mimeType: 'application/pdf',
+            parents: folderId ? [folderId.trim()] : [],
+            contentBase64: base64Data
+          });
+          
+          console.log('PDF upload result:', uploadResult);
+          
+          console.log('PDF generated and uploaded successfully');
+        }
       } catch (pdfError) {
         console.error('Error generating PDF:', pdfError);
         // Don't fail the whole save if PDF generation fails
@@ -356,6 +403,26 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
           />
         </div>
 
+        {!isEditing && (
+          <div className="form-group">
+            <label>Save Location:</label>
+            <div className="folder-selection">
+              <button
+                type="button"
+                onClick={handleFolderSelect}
+                className="folder-select-button"
+              >
+                📁 Select Folder
+              </button>
+              {selectedFolder && (
+                <div className="selected-folder">
+                  <span>Folder: <code>{selectedFolder}</code></span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         <div className="form-group">
           <label>Questions:</label>
 
@@ -419,15 +486,44 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                   {/* Options for select, radio, or checkbox types */}
                   {['select', 'radio', 'checkbox'].includes(question.type) && (
                     <div className="question-options">
-                      <label htmlFor={`question-options-${index}`}>Options:</label>
-                      <textarea
-                        id={`question-options-${index}`}
-                        value={question.options || ''}
-                        onChange={(e) => handleQuestionChange(index, 'options', e.target.value)}
-                        placeholder="Enter options, one per line"
-                        rows={3}
-                      />
-                      <small className="options-help">Enter each option on a new line</small>
+                      <label>Options:</label>
+                      <div className="options-list">
+                        {(question.options || ['']).map((option, optIndex) => (
+                          <div key={optIndex} className="option-item">
+                            <input
+                              type="text"
+                              value={option}
+                              onChange={(e) => {
+                                const newOptions = [...(question.options || [''])];
+                                newOptions[optIndex] = e.target.value;
+                                handleQuestionChange(index, 'options', newOptions);
+                              }}
+                              placeholder={`Option ${optIndex + 1}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newOptions = (question.options || ['']).filter((_, i) => i !== optIndex);
+                                handleQuestionChange(index, 'options', newOptions.length > 0 ? newOptions : ['']);
+                              }}
+                              className="remove-option-button"
+                              disabled={(question.options || ['']).length <= 1}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newOptions = [...(question.options || ['']), ''];
+                            handleQuestionChange(index, 'options', newOptions);
+                          }}
+                          className="add-option-button"
+                        >
+                          Add Option
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>

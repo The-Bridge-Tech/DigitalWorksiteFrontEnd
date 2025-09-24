@@ -1,16 +1,22 @@
+// TypeScript configuration file
 {
   "compilerOptions": {
     "esModuleInterop": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "lib": ["es2017", "dom"],
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "types": ["@testing-library/jest-dom", "@testing-library/react", "jest", "webpack-env"],
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false,
+    "types": ["jest", "webpack-env"],
     "rootDir": ".",
     "emitDeclarationOnly": true,
     "declaration": true,
     "declarationDir": "./types"
   },
-  "include": ["unit-test-setup-testing-library.ts", "src"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "types"]
 }

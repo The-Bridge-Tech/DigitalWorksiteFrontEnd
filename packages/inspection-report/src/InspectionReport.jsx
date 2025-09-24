@@ -1,9 +1,34 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { getSites, getUsers } from "./services/api.service";
 
 export default function InspectionReportForm() {
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState("");
+  const [sites, setSites] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const formRef = useRef(null); // 🔹 ref to reset form safely
+
+  // Load sites and users on component mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [sitesData, usersData] = await Promise.all([
+          getSites(),
+          getUsers()
+        ]);
+        setSites(sitesData || []);
+        setUsers(usersData || []);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setMessage('❌ Failed to load sites and users data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   // Handle text/date/textarea inputs
   const handleChange = (e) => {
@@ -11,6 +36,18 @@ export default function InspectionReportForm() {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  // Handle site selection and auto-populate location
+  const handleSiteChange = (e) => {
+    const siteId = e.target.value;
+    const selectedSite = sites.find(site => site.id === siteId);
+    
+    setFormData((prev) => ({
+      ...prev,
+      site_name: siteId,
+      site_location: selectedSite ? selectedSite.location : ''
     }));
   };
 
@@ -158,12 +195,21 @@ export default function InspectionReportForm() {
         .form-row { margin-bottom: 15px; }
         .form-row label { font-weight: 500; display: block; margin-bottom: 6px; }
         .options { display: flex; gap: 20px; margin-top: 5px; }
-        input[type="text"], input[type="date"], textarea {
+        input[type="text"], input[type="date"], textarea, select {
           padding: 8px 10px;
           border: 1px solid #ccc;
           border-radius: 6px;
           font-size: 14px;
           width: 100%;
+        }
+        select {
+          background-color: white;
+          cursor: pointer;
+        }
+        .loading {
+          text-align: center;
+          padding: 20px;
+          color: #666;
         }
         textarea { min-height: 70px; resize: vertical; }
         .form-actions { display: flex; justify-content: flex-end; gap: 15px; }
@@ -178,16 +224,30 @@ export default function InspectionReportForm() {
 
       <h1 className="form-title">INSPECTION REPORT</h1>
 
+      {loading && <div className="loading">Loading sites and users...</div>}
+
       {/* General Info */}
       <section className="form-section">
         <h2>I. General Information</h2>
         <div className="form-row">
           <label>Project / Site Name:</label>
-          <input type="text" name="site_name" onChange={handleChange} />
+          <select name="site_name" value={formData.site_name || ''} onChange={handleSiteChange} disabled={loading}>
+            <option value="">Select a site...</option>
+            {sites.map(site => (
+              <option key={site.id} value={site.id}>{site.name}</option>
+            ))}
+          </select>
         </div>
         <div className="form-row">
           <label>Location / Address:</label>
-          <input type="text" name="site_location" onChange={handleChange} />
+          <input 
+            type="text" 
+            name="site_location" 
+            value={formData.site_location || ''} 
+            onChange={handleChange}
+            readOnly
+            placeholder="Location will auto-populate when site is selected"
+          />
         </div>
         <div className="form-row">
           <label>Date of Inspection:</label>
@@ -195,7 +255,12 @@ export default function InspectionReportForm() {
         </div>
         <div className="form-row">
           <label>Inspector Name:</label>
-          <input type="text" name="inspector" onChange={handleChange} />
+          <select name="inspector" value={formData.inspector || ''} onChange={handleChange} disabled={loading}>
+            <option value="">Select an inspector...</option>
+            {users.map(user => (
+              <option key={user.fileId} value={user.name}>{user.name} ({user.email})</option>
+            ))}
+          </select>
         </div>
       </section>
 

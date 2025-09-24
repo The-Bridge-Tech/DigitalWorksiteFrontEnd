@@ -2,7 +2,7 @@
 // Google Drive API Service for Admin Portal (Using Backend API)
 
 // API base URL - adjust this to your actual backend URL
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5004';
 
 /**
  * Helper function for making authenticated API requests
@@ -11,23 +11,32 @@ const API_BASE_URL = 'http://localhost:5000';
  * @returns {Promise<any>} Promise that resolves with the response data
  */
 async function fetchWithAuth(url, options = {}) {
+  const token = localStorage.getItem('auth_token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   const response = await fetch(url, {
     ...options,
-    credentials: 'include', // Important for sending cookies/session
-    headers: {
-      ...options.headers,
-      'Content-Type': 'application/json'
-    }
+    headers
   });
   
   if (!response.ok) {
     // For 401 errors, redirect to authentication
     if (response.status === 401) {
+      // Remove invalid token
+      localStorage.removeItem('auth_token');
+      
       // Store the current URL to redirect back after auth
       localStorage.setItem('auth_redirect', window.location.pathname);
       
       // Redirect to auth endpoint
-      window.location.href = `${API_BASE_URL}/auth/google`;
+      window.location.href = `${API_BASE_URL}/adm/auth/google`;
       
       // Throw a friendly error
       throw new Error('Authentication required. Redirecting to login...');
@@ -90,7 +99,7 @@ export const listFiles = async (options = {}) => {
     if (pageSize) params.append('pageSize', pageSize);
     if (fields) params.append('fields', fields);
 
-    return await fetchWithAuth(`${API_BASE_URL}/api/files?${params.toString()}`);
+    return await fetchWithAuth(`${API_BASE_URL}/adm/files?${params.toString()}`);
   } catch (error) {
     console.error('Error listing files:', error);
     throw error;
@@ -108,7 +117,7 @@ export const getFile = async (fileId, fields = "id,name,mimeType,createdTime,mod
     const params = new URLSearchParams();
     if (fields) params.append('fields', fields);
     
-    return await fetchWithAuth(`${API_BASE_URL}/api/files/${fileId}?${params.toString()}`);
+    return await fetchWithAuth(`${API_BASE_URL}/adm/files/${fileId}?${params.toString()}`);
   } catch (error) {
     console.error('Error getting file:', error);
     throw error;
@@ -122,7 +131,7 @@ export const getFile = async (fileId, fields = "id,name,mimeType,createdTime,mod
  */
 export const getFileContent = async (fileId) => {
   try {
-    return await fetchWithAuth(`${API_BASE_URL}/api/files/${fileId}/content`);
+    return await fetchWithAuth(`${API_BASE_URL}/adm/files/${fileId}/content`);
   } catch (error) {
     console.error('Error getting file content:', error);
     throw error;
@@ -157,7 +166,8 @@ export const createFile = async (options) => {
     name,
     mimeType = "text/plain",
     parents: rawParents = [],
-    content
+    content,
+    contentBase64
   } = options;
   
   // Process parents to extract IDs if they're URLs
@@ -169,22 +179,35 @@ export const createFile = async (options) => {
   }
   
   try {
-    // Handle different content types
-    let contentToSend = content;
+    const requestBody = {
+      name,
+      mimeType,
+      parents
+    };
     
-    // Convert Blob to base64 if needed
-    if (content instanceof Blob) {
-      contentToSend = await blobToBase64(content);
+    // Add content in the correct format
+    if (contentBase64) {
+      console.log('Sending contentBase64, length:', contentBase64.length);
+      requestBody.contentBase64 = contentBase64;
+    } else if (content) {
+      // Handle different content types
+      let contentToSend = content;
+      
+      // Convert Blob to base64 if needed
+      if (content instanceof Blob) {
+        contentToSend = await blobToBase64(content);
+      }
+      
+      console.log('Sending content, type:', typeof contentToSend);
+      requestBody.content = contentToSend;
     }
     
-    return await fetchWithAuth(`${API_BASE_URL}/api/files`, {
+    console.log('Final request body keys:', Object.keys(requestBody));
+    
+    console.log('Making request to /adm/files with body:', requestBody);
+    return await fetchWithAuth(`${API_BASE_URL}/adm/files`, {
       method: 'POST',
-      body: JSON.stringify({
-        name,
-        mimeType,
-        parents,
-        content: contentToSend
-      })
+      body: JSON.stringify(requestBody)
     });
   } catch (error) {
     console.error('Error creating file:', error);
@@ -210,16 +233,24 @@ export const uploadFile = async (options) => {
     formData.append('file', file);
     formData.append('folder', folderId);
     
-    const response = await fetch(`${API_BASE_URL}/api/files/upload`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/files/upload`, {
       method: 'POST',
-      credentials: 'include',
+      headers,
       body: formData
     });
     
     if (!response.ok) {
       if (response.status === 401) {
+        localStorage.removeItem('auth_token');
         localStorage.setItem('auth_redirect', window.location.pathname);
-        window.location.href = `${API_BASE_URL}/auth/google`;
+        window.location.href = `${API_BASE_URL}/adm/auth/google`;
         throw new Error('Authentication required. Redirecting to login...');
       }
       
@@ -260,7 +291,7 @@ export const updateFile = async (options) => {
       contentToSend = await blobToBase64(content);
     }
     
-    return await fetchWithAuth(`${API_BASE_URL}/api/files/${fileId}`, {
+    return await fetchWithAuth(`${API_BASE_URL}/adm/files/${fileId}`, {
       method: 'PUT',
       body: JSON.stringify({
         name,
@@ -281,7 +312,7 @@ export const updateFile = async (options) => {
  */
 export const deleteFile = async (fileId) => {
   try {
-    return await fetchWithAuth(`${API_BASE_URL}/api/files/${fileId}`, {
+    return await fetchWithAuth(`${API_BASE_URL}/adm/files/${fileId}`, {
       method: 'DELETE'
     });
   } catch (error) {
@@ -325,7 +356,7 @@ export const createFolder = async (options) => {
   }
   
   try {
-    return await fetchWithAuth(`${API_BASE_URL}/api/folders`, {
+    return await fetchWithAuth(`${API_BASE_URL}/adm/folders`, {
       method: 'POST',
       body: JSON.stringify({
         name,
@@ -347,7 +378,7 @@ export const createFolder = async (options) => {
  */
 export const createShareableLink = async (fileId, role = "reader", type = "anyone") => {
   try {
-    const result = await fetchWithAuth(`${API_BASE_URL}/api/share`, {
+    const result = await fetchWithAuth(`${API_BASE_URL}/adm/share`, {
       method: 'POST',
       body: JSON.stringify({
         fileId,

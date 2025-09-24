@@ -2,7 +2,7 @@
 // Authentication service for Google Drive integration
 
 // API base URL - adjust this to your actual backend URL
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5004';
 
 /**
  * Initialize Google API client
@@ -10,9 +10,7 @@ const API_BASE_URL = 'http://localhost:5000';
  */
 export const initGoogleApiClient = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/status`, {
-      credentials: 'include'
-    });
+    const response = await fetch(`${API_BASE_URL}/adm/status`);
     
     const data = await response.json();
     return data.status === 'ok';
@@ -47,16 +45,15 @@ export const debugAuthState = async () => {
       cookies: document.cookie,
       localStorage: {
         auth_redirect: localStorage.getItem('auth_redirect'),
-        auth_status: localStorage.getItem('auth_status')
+        auth_status: localStorage.getItem('auth_status'),
+        auth_token: localStorage.getItem('auth_token') ? 'present' : 'missing'
       }
     };
     console.log('Session Info:', sessionInfo);
     
     // Check API status
     try {
-      const response = await fetch(`${API_BASE_URL}/api/status`, {
-        credentials: 'include'
-      });
+      const response = await fetch(`${API_BASE_URL}/adm/status`);
       const apiStatus = await response.json();
       console.log('API Status:', apiStatus);
     } catch (error) {
@@ -65,11 +62,15 @@ export const debugAuthState = async () => {
     
     // Check auth status
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/status`, {
-        credentials: 'include'
+      const token = localStorage.getItem('auth_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      
+      const response = await fetch(`${API_BASE_URL}/adm/auth/status`, {
+        headers
       });
       const authStatus = await response.json();
       console.log('Auth Status:', authStatus);
+      console.log('Has Token:', !!token);
     } catch (error) {
       console.error('Auth Status Error:', error);
     }
@@ -93,11 +94,25 @@ export const debugAuthState = async () => {
  */
 export const checkAuthStatus = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/status`, {
-      credentials: 'include' // Important for cookies/session
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      return false;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/auth/status`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
     
     const data = await response.json();
+    
+    if (!data.authenticated) {
+      // Token might be expired, remove it
+      localStorage.removeItem('auth_token');
+    }
+    
     return data.authenticated || false;
   } catch (error) {
     console.error('Error checking auth status:', error);
@@ -111,8 +126,16 @@ export const checkAuthStatus = async () => {
  */
 export const getUserInfo = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/status`, {
-      credentials: 'include'
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      return null;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/auth/status`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
     
     const data = await response.json();
@@ -137,9 +160,12 @@ export const getCurrentUser = async () => {
  */
 export const logout = async () => {
   try {
-    await fetch(`${API_BASE_URL}/auth/logout`, {
-      credentials: 'include'
-    });
+    // Remove token from localStorage
+    localStorage.removeItem('auth_token');
+    
+    // Call logout endpoint (optional since JWT is stateless)
+    await fetch(`${API_BASE_URL}/adm/auth/logout`);
+    
     return true;
   } catch (error) {
     console.error('Error logging out:', error);
@@ -175,7 +201,7 @@ export const redirectToAuth = (returnUrl) => {
   }
   
   // Redirect to auth endpoint
-  window.location.href = `${API_BASE_URL}/auth/google`;
+  window.location.href = `${API_BASE_URL}/adm/auth/google`;
 };
 
 /**
@@ -276,13 +302,25 @@ export const requiresAuth = (route, protectedRoutes = []) => {
  */
 export const authFetch = async (url, options = {}) => {
   try {
+    const token = localStorage.getItem('auth_token');
+    
+    const headers = {
+      'Content-Type': 'application/json',
+      ...options.headers
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
     const response = await fetch(url, {
       ...options,
-      credentials: 'include'
+      headers
     });
     
     if (response.status === 401) {
-      // Redirect to auth page
+      // Token might be expired, remove it and redirect to auth
+      localStorage.removeItem('auth_token');
       redirectToAuth(window.location.pathname);
       throw new Error('Authentication required');
     }
@@ -295,25 +333,32 @@ export const authFetch = async (url, options = {}) => {
 };
 
 /**
- * Check for existing token (compatibility function)
- * @returns {boolean} Always returns false since we're using session-based auth
+ * Check for existing token
+ * @returns {boolean} True if auth token exists in localStorage
  */
 export const checkForToken = () => {
-  return false;
+  return !!localStorage.getItem('auth_token');
 };
 
 /**
- * Get access token (compatibility function)
- * @returns {null} Always returns null since we're using session-based auth
+ * Get access token
+ * @returns {string|null} JWT token from localStorage or null
  */
 export const getAccessToken = () => {
-  return null;
+  return localStorage.getItem('auth_token');
 };
 
 /**
- * Get valid access token (compatibility function)
- * @returns {Promise<null>} Always resolves with null since we're using session-based auth
+ * Get valid access token
+ * @returns {Promise<string|null>} Promise that resolves with valid token or null
  */
 export const getValidAccessToken = async () => {
-  return null;
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    return null;
+  }
+  
+  // Check if token is still valid by making a status request
+  const isValid = await checkAuthStatus();
+  return isValid ? token : null;
 };

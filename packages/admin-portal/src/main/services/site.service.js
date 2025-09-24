@@ -2,7 +2,7 @@
 // Site management service using backend API
 
 // API base URL
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5004';
 
 /**
  * Get all sites 
@@ -10,8 +10,15 @@ const API_BASE_URL = 'http://localhost:5000';
  */
 export const getSites = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/sites`, {
-      credentials: 'include'  // Add credentials
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/sites`, {
+      headers
     });
     
     if (!response.ok) {
@@ -38,8 +45,15 @@ export const getSites = async () => {
  */
 export const getSite = async (siteId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/sites/${siteId}`, {
-      credentials: 'include'  // Add credentials
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/sites/${siteId}`, {
+      headers
     });
     
     if (!response.ok) {
@@ -70,13 +84,19 @@ export const createSite = async (siteData) => {
     if (!siteData?.location?.trim()) throw new Error('Site location is required');
     if (!siteData?.folder_link?.trim()) throw new Error('Folder link is required');
 
-    const response = await fetch(`${API_BASE_URL}/api/sites`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adm/sites`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(siteData),
-      credentials: 'include'  // Add credentials
+      headers,
+      body: JSON.stringify(siteData)
     });
 
     if (!response.ok) {
@@ -104,13 +124,19 @@ export const createSite = async (siteData) => {
  */
 export const updateSite = async (siteId, siteData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/sites/${siteId}`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adm/sites/${siteId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(siteData),
-      credentials: 'include'  // Add credentials
+      headers,
+      body: JSON.stringify(siteData)
     });
 
     if (!response.ok) {
@@ -137,9 +163,16 @@ export const updateSite = async (siteId, siteData) => {
  */
 export const deleteSite = async (siteId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/sites/${siteId}`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/adm/sites/${siteId}`, {
       method: 'DELETE',
-      credentials: 'include'  // Add credentials
+      headers
     });
 
     if (!response.ok) {

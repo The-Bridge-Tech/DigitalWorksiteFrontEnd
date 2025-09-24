@@ -2,20 +2,32 @@
 // Service for managing inspection templates (Using Backend API)
 
 // API base URL
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5004';
 
 // templates.service.js - Update these functions
 
 /**
- * Get all templates
+ * Get all templates from a specific folder
+ * @param {string} folderId - Google Drive folder ID
  * @returns {Promise<Array>} Promise that resolves with templates array
  */
-export const getTemplates = async () => {
+export const getTemplates = async (folderId) => {
   try {
-    console.log('templates.service: Getting all templates...');
+    console.log(`templates.service: Getting templates from folder ${folderId}...`);
     
-    const response = await fetch(`${API_BASE_URL}/api/templates`, {
-      credentials: 'include' // Add this
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const url = folderId 
+      ? `${API_BASE_URL}/adm/templates?folderId=${encodeURIComponent(folderId)}`
+      : `${API_BASE_URL}/adm/templates`;
+    
+    const response = await fetch(url, {
+      headers
     });
     
     if (!response.ok) {
@@ -47,8 +59,15 @@ export const getTemplate = async (templateId) => {
   try {
     console.log(`templates.service: Getting template with ID ${templateId}`);
     
-    const response = await fetch(`${API_BASE_URL}/api/templates/${templateId}`, {
-      credentials: 'include' // Add this
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/templates/${templateId}`, {
+      headers
     });
     
     if (!response.ok) {
@@ -71,9 +90,10 @@ export const getTemplate = async (templateId) => {
 /**
  * Create a new template
  * @param {Object} templateData - Template data
+ * @param {string} folderId - Google Drive folder ID to save template in
  * @returns {Promise<Object>} Promise that resolves with created template data
  */
-export const createTemplate = async (templateData) => {
+export const createTemplate = async (templateData, folderId) => {
   try {
     console.log('templates.service: Creating new template:', templateData.name);
     
@@ -82,14 +102,27 @@ export const createTemplate = async (templateData) => {
     if (!templateData.questions || !Array.isArray(templateData.questions)) {
       throw new Error('Questions must be an array');
     }
+    if (!folderId) throw new Error('Folder ID is required');
     
-    const response = await fetch(`${API_BASE_URL}/api/templates`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    // Include folder ID in the request
+    const requestData = {
+      ...templateData,
+      folderId: folderId
+    };
+    
+    const response = await fetch(`${API_BASE_URL}/adm/templates`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(templateData),
-      credentials: 'include' // Add this
+      headers,
+      body: JSON.stringify(requestData)
     });
     
     if (!response.ok) {
@@ -122,13 +155,19 @@ export const updateTemplate = async (templateId, templateData) => {
   try {
     console.log(`templates.service: Updating template with ID ${templateId}`);
     
-    const response = await fetch(`${API_BASE_URL}/api/templates/${templateId}`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/templates/${templateId}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(templateData),
-      credentials: 'include' // Add this
+      headers,
+      body: JSON.stringify(templateData)
     });
     
     if (!response.ok) {
@@ -160,9 +199,16 @@ export const deleteTemplate = async (templateId) => {
   try {
     console.log(`templates.service: Deleting template with ID ${templateId}`);
     
-    const response = await fetch(`${API_BASE_URL}/api/templates/${templateId}`, {
+    const token = localStorage.getItem('auth_token');
+    const headers = {};
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const response = await fetch(`${API_BASE_URL}/adm/templates/${templateId}`, {
       method: 'DELETE',
-      credentials: 'include' // Add this
+      headers
     });
     
     if (!response.ok) {

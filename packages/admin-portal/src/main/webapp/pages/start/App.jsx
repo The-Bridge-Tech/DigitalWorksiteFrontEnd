@@ -35,7 +35,7 @@ const App = () => {
   return (
     <div style={appStyles}>
       {/* Header */}
-      <h1 style={headerStyles}>Splunk Admin Portal</h1>
+      <h1 style={headerStyles}>Admin Portal</h1>
 
       {/* IntegrationTest Component */}
       <IntegrationTest />

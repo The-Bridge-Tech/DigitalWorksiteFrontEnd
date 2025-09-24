@@ -11,10 +11,21 @@ const GoogleAuth = () => {
   const [showDebug, setShowDebug] = useState(false);
 
   // Backend URL - make sure this matches your Flask server
-  const API_URL = 'http://localhost:5000';
+  const API_URL = 'http://localhost:5004';
 
   // Check authentication status on component mount
   useEffect(() => {
+    // Check for auth token in URL parameters first
+    const urlParams = new URLSearchParams(window.location.search);
+    const authToken = urlParams.get('auth_token');
+    
+    if (authToken) {
+      // Store token in localStorage
+      localStorage.setItem('auth_token', authToken);
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
     checkAuthStatus();
   }, []);
 
@@ -25,8 +36,26 @@ const GoogleAuth = () => {
     
     try {
       console.log('Checking auth status...');
-      const response = await fetch(`${API_URL}/auth/status`, {
-        credentials: 'include' // Important for cookies/session
+      
+      // Get token from localStorage
+      const token = localStorage.getItem('auth_token');
+      
+      if (!token) {
+        console.log('No auth token found');
+        setIsAuthenticated(false);
+        setUser(null);
+        setDebugInfo({
+          message: 'No auth token in localStorage',
+          timestamp: new Date().toISOString()
+        });
+        return;
+      }
+      
+      const response = await fetch(`${API_URL}/adm/auth/status`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       const data = await response.json();
@@ -36,6 +65,9 @@ const GoogleAuth = () => {
       setIsAuthenticated(data.authenticated);
       if (data.authenticated && data.user) {
         setUser(data.user);
+      } else {
+        // Token might be expired or invalid, remove it
+        localStorage.removeItem('auth_token');
       }
       
       // Store debug info
@@ -43,7 +75,8 @@ const GoogleAuth = () => {
         status: response.status,
         statusText: response.statusText,
         data: data,
-        cookies: document.cookie,
+        hasToken: !!token,
+        tokenLength: token ? token.length : 0,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
@@ -63,7 +96,7 @@ const GoogleAuth = () => {
   const handleLogin = () => {
     console.log('Initiating Google sign-in...');
     // Redirect to the OAuth endpoint
-    window.location.href = `${API_URL}/auth/google`;
+    window.location.href = `${API_URL}/adm/auth/google`;
   };
 
   // Handle logout button click
@@ -72,9 +105,12 @@ const GoogleAuth = () => {
     
     try {
       console.log('Logging out...');
-      await fetch(`${API_URL}/auth/logout`, {
-        credentials: 'include' // Important for cookies/session
-      });
+      
+      // Remove token from localStorage
+      localStorage.removeItem('auth_token');
+      
+      // Call logout endpoint (optional since JWT is stateless)
+      await fetch(`${API_URL}/adm/auth/logout`);
       
       setIsAuthenticated(false);
       setUser(null);
