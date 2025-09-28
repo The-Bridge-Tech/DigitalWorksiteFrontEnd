@@ -9,6 +9,9 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { getSites } from '../../services/site.service';
 import { authFetch } from '../../services/auth.service';
+import { getUsers } from '../../services/users.service';
+import { sendInspectionReminder } from '../Notifications/NotificationTrigger';
+import { API_BASE_URL, API_ENDPOINTS } from '../../config/api.config';
 
 // Fix Leaflet default icons
 import 'leaflet/dist/leaflet.css';
@@ -94,22 +97,26 @@ const getAISuggestions = (sites, events) => {
 const InspectionCalendar = () => {
   const [sites, setSites] = useState([]);
   const [events, setEvents] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [pendingEvent, setPendingEvent] = useState(null);
+  const [selectedUser, setSelectedUser] = useState('');
   const externalRef = useRef(null);
   const calendarRef = useRef(null);
 
   // API functions for persistence
-  const saveTask = async (eventData) => {
+  const saveTask = async (eventData, assignedUserEmail) => {
     try {
       const taskData = {
         title: eventData.title,
         asset_id: eventData.extendedProps?.siteId || eventData.title,
         frequency: 'once',
-        assigned_to: 'System',
+        assigned_to: assignedUserEmail,
         next_run: eventData.start.toISOString()
       };
       
-      const response = await authFetch('http://localhost:5004/tasks/create', {
+      const response = await authFetch(`${API_BASE_URL}${API_ENDPOINTS.TASK_CREATE}`, {
         method: 'POST',
         body: JSON.stringify(taskData)
       });
@@ -125,7 +132,7 @@ const InspectionCalendar = () => {
 
   const loadTasks = async () => {
     try {
-      const response = await authFetch('http://localhost:5004/tasks');
+      const response = await authFetch(`${API_BASE_URL}${API_ENDPOINTS.TASKS}`);
       const data = await response.json();
       console.log('Loaded tasks:', data);
       return Array.isArray(data) ? data : [];
@@ -137,7 +144,7 @@ const InspectionCalendar = () => {
 
   const deleteTask = async (taskId) => {
     try {
-      await authFetch(`http://localhost:5004/tasks/${taskId}`, {
+      await authFetch(`${API_BASE_URL}${API_ENDPOINTS.TASK_BY_ID(taskId)}`, {
         method: 'DELETE'
       });
     } catch (error) {
@@ -161,6 +168,10 @@ const InspectionCalendar = () => {
           status: 'pending',
         })).filter(Boolean);
         setSites(normalizedSites);
+        
+        // Load users
+        const loadedUsers = await getUsers();
+        setUsers(Array.isArray(loadedUsers) ? loadedUsers : []);
         
         // Load existing tasks/events
         const tasks = await loadTasks();
@@ -202,18 +213,29 @@ const InspectionCalendar = () => {
     return () => draggable.destroy();
   }, [sites]);
 
-  // Add event when dropped onto calendar and save to backend
-  const handleEventReceive = async (info) => {
+  // Add event when dropped onto calendar - show assignment modal
+  const handleEventReceive = (info) => {
+    const eventData = {
+      title: info.event.title,
+      start: info.event.start,
+      end: info.event.end,
+      extendedProps: info.event.extendedProps,
+    };
+    
+    setPendingEvent({ eventData, info });
+    setSelectedUser('');
+    setShowAssignModal(true);
+  };
+  
+  // Handle user assignment and save task
+  const handleAssignUser = async () => {
+    if (!selectedUser || !pendingEvent) return;
+    
     try {
-      const eventData = {
-        title: info.event.title,
-        start: info.event.start,
-        end: info.event.end,
-        extendedProps: info.event.extendedProps,
-      };
+      const { eventData, info } = pendingEvent;
       
-      // Save to backend
-      const response = await saveTask(eventData);
+      // Save to backend with assigned user
+      const response = await saveTask(eventData, selectedUser);
       
       // Check if save was successful
       if (!response.ok) {
@@ -221,6 +243,18 @@ const InspectionCalendar = () => {
       }
       
       const savedTask = response.task;
+      
+      // Find selected user's name
+      const selectedUserObj = users.find(u => u.email === selectedUser);
+      const userName = selectedUserObj ? selectedUserObj.name : selectedUser;
+      
+      // Send inspection reminder notification
+      sendInspectionReminder({
+        asset_id: savedTask.asset_id,
+        scheduled_for: eventData.start.toISOString(),
+        inspector: selectedUser,
+        inspector_name: userName
+      });
       
       // Add to local state with backend ID
       const newEvent = {
@@ -230,18 +264,35 @@ const InspectionCalendar = () => {
         end: info.event.end,
         extendedProps: {
           ...info.event.extendedProps,
-          taskId: savedTask.task_id
+          taskId: savedTask.task_id,
+          assignedTo: selectedUser
         },
       };
       
       setEvents([...events, newEvent]);
       console.log('Event saved successfully:', savedTask);
+      
+      // Close modal
+      setShowAssignModal(false);
+      setPendingEvent(null);
     } catch (error) {
       console.error('Failed to save event:', error);
       // Remove the event from calendar if save failed
-      info.revert();
+      pendingEvent.info.revert();
       alert('Failed to save inspection to calendar. Please try again.');
+      setShowAssignModal(false);
+      setPendingEvent(null);
     }
+  };
+  
+  // Handle modal cancel
+  const handleCancelAssign = () => {
+    if (pendingEvent) {
+      pendingEvent.info.revert();
+    }
+    setShowAssignModal(false);
+    setPendingEvent(null);
+    setSelectedUser('');
   };
 
   // Update event when dragged
@@ -286,6 +337,83 @@ const InspectionCalendar = () => {
       {loading && (
         <div style={{ textAlign: 'center', padding: '20px' }}>
           Loading calendar data...
+        </div>
+      )}
+      
+      {/* User Assignment Modal */}
+      {showAssignModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            padding: '30px',
+            borderRadius: '8px',
+            minWidth: '400px',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
+          }}>
+            <h3>Assign Inspection</h3>
+            <p>Assign this inspection to:</p>
+            
+            <select
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '10px',
+                marginBottom: '20px',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                fontSize: '14px'
+              }}
+            >
+              <option value="">Select a user...</option>
+              {users.map(user => (
+                <option key={user.email} value={user.email}>
+                  {user.name} ({user.email})
+                </option>
+              ))}
+            </select>
+            
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleCancelAssign}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAssignUser}
+                disabled={!selectedUser}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: selectedUser ? '#007bff' : '#ccc',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: selectedUser ? 'pointer' : 'not-allowed'
+                }}
+              >
+                Assign
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

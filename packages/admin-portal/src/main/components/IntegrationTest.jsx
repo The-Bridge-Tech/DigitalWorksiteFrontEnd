@@ -13,6 +13,7 @@ import UserForm from './Users/UserForm';
 import UserList from './Users/UserList';
 import CheckIn from './CheckIn/CheckIn';
 import CheckInList from './CheckIn/CheckInList';
+import NotificationsTab from './Notifications/NotificationsTab';
 
 import AnalyticsDashboard from './Analytics/AnalyticsDashboard';
 import InspectionReport from '../../../../inspection-report/src/InspectionReport';
@@ -247,6 +248,13 @@ const IntegrationTest = () => {
         >
           Analytics
         </button>
+        <button
+          onClick={() => setActiveTest('notifications')}
+          className={activeTest === 'notifications' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          🔔 Notifications
+        </button>
       </div>
       <div className="debug-actions" style={{ marginTop: '20px', textAlign: 'center' }}>
         <button 
@@ -338,7 +346,6 @@ const IntegrationTest = () => {
       case 'calendar':
         return (
           <div className="test-component calendar-test">
-            <h2>Inspection Calendar Test</h2>
             <InspectionCalendar />
           </div>
         );
@@ -523,6 +530,13 @@ case 'user-list':
         return (
           <div className="test-component analytics-test">
             <AnalyticsDashboard />
+          </div>
+        );
+        
+      case 'notifications':
+        return (
+          <div className="test-component notifications-test">
+            <NotificationsTab />
           </div>
         );
         

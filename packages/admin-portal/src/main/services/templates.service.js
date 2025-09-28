@@ -1,8 +1,7 @@
 // templates.service.js
 // Service for managing inspection templates (Using Backend API)
 
-// API base URL
-const API_BASE_URL = 'http://localhost:5004';
+import { API_BASE_URL } from '../config/api.config.js';
 
 // templates.service.js - Update these functions
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import jsQR from 'jsqr';
 import { getSites } from '../../services/site.service';
 import { getUsers } from '../../services/users.service';
+import { sendSafetyAlert } from '../Notifications/NotificationTrigger';
+import { API_BASE_URL } from '../../config/api.config.js';
 
 const CheckIn = () => {
   const [scanning, setScanning] = useState(false);
@@ -178,7 +180,7 @@ const CheckIn = () => {
 
   const submitCheckIn = async (checkInData, site) => {
     try {
-      const response = await fetch('http://localhost:5004/checkins/scan', {
+      const response = await fetch(`${API_BASE_URL}/checkins/scan`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,6 +193,17 @@ const CheckIn = () => {
 
       if (data.success) {
         setMessage(`✅ Check-in successful at ${site.name}\n📍 ${site.location}\n🕐 ${new Date().toLocaleString()}`);
+        
+        // Check for severe weather and trigger safety alert
+        if (weather && (weather.toLowerCase().includes('storm') || 
+            weather.toLowerCase().includes('severe') || 
+            weather.toLowerCase().includes('heavy rain') ||
+            weather.toLowerCase().includes('snow'))) {
+          sendSafetyAlert({
+            site_id: site.id,
+            weather_conditions: weather
+          });
+        }
       } else {
         setMessage(`❌ Check-in failed: ${data.error}`);
       }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api.config.js';
 
 const CheckInList = () => {
   const [checkins, setCheckins] = useState([]);
@@ -12,7 +13,7 @@ const CheckInList = () => {
   const loadCheckins = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5004/checkins', {
+      const response = await fetch(`${API_BASE_URL}/checkins`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
         }

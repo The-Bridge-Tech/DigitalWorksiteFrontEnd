@@ -1,8 +1,7 @@
 // drive.service.js
 // Google Drive API Service for Admin Portal (Using Backend API)
 
-// API base URL - adjust this to your actual backend URL
-const API_BASE_URL = 'http://localhost:5004';
+import { API_BASE_URL } from '../config/api.config.js';
 
 /**
  * Helper function for making authenticated API requests

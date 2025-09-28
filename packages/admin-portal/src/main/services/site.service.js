@@ -1,8 +1,7 @@
 // site.service.js
 // Site management service using backend API
 
-// API base URL
-const API_BASE_URL = 'http://localhost:5004';
+import { API_BASE_URL } from '../config/api.config.js';
 
 /**
  * Get all sites 

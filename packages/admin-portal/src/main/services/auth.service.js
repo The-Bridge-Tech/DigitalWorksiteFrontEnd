@@ -1,8 +1,7 @@
 // auth.service.js
 // Authentication service for Google Drive integration
 
-// API base URL - adjust this to your actual backend URL
-const API_BASE_URL = 'http://localhost:5004';
+import { API_BASE_URL } from '../config/api.config.js';
 
 /**
  * Initialize Google API client

@@ -136,7 +136,8 @@ export default function InspectionReportForm() {
       payload.append("checklist", JSON.stringify(checklist));
 
       // Submit to Flask backend
-      const res = await fetch("http://127.0.0.1:5004/inspections/submit", {
+      const API_BASE_URL = 'http://localhost:5004';
+      const res = await fetch(`${API_BASE_URL}/inspections/submit`, {
         method: "POST",
         body: payload,
       });
