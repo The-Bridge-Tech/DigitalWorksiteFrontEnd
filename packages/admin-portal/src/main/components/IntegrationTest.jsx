@@ -14,6 +14,7 @@ import UserList from './Users/UserList';
 import CheckIn from './CheckIn/CheckIn';
 import CheckInList from './CheckIn/CheckInList';
 import NotificationsTab from './Notifications/NotificationsTab';
+import DocumentVault from './Documents/DocumentVault';
 
 import AnalyticsDashboard from './Analytics/AnalyticsDashboard';
 import InspectionReport from '../../../../inspection-report/src/InspectionReport';
@@ -43,6 +44,7 @@ const IntegrationTest = () => {
   const [testMessage, setTestMessage] = useState('');
   const [testError, setTestError] = useState('');
   const [userId, setUserId] = useState(null);
+  const [selectedSiteId, setSelectedSiteId] = useState(null);
 
   // Initialize Google API
   useEffect(() => {
@@ -253,7 +255,14 @@ const IntegrationTest = () => {
           className={activeTest === 'notifications' ? 'active' : ''}
           disabled={!authenticated}
         >
-          🔔 Notifications
+          Notifications
+        </button>
+        <button
+          onClick={() => setActiveTest('document-vault')}
+          className={activeTest === 'document-vault' ? 'active' : ''}
+          disabled={!authenticated}
+        >
+          Document Vault
         </button>
       </div>
       <div className="debug-actions" style={{ marginTop: '20px', textAlign: 'center' }}>
@@ -462,21 +471,10 @@ case 'user-list':
               }}
               onViewDocuments={(site) => {
                 console.log('IntegrationTest: View documents requested for site:', site);
-                // Extract folder ID from Google Drive link if available
-                if (site.folder_type === 'GoogleDrive' && site.folder_link) {
-                  const folderIdMatch = site.folder_link.match(/folders\/([^/?]+)/);
-                  if (folderIdMatch && folderIdMatch[1]) {
-                    const extractedFolderId = folderIdMatch[1];
-                    console.log('IntegrationTest: Extracted folder ID:', extractedFolderId);
-                    setFolderId(extractedFolderId);
-                    setActiveTest('file-list');
-                    setTestMessage(`Viewing documents for site: ${site.name}`);
-                  } else {
-                    console.log('IntegrationTest: Could not extract folder ID from link:', site.folder_link);
-                  }
-                } else {
-                  console.log('IntegrationTest: Site does not have a Google Drive link:', site);
-                }
+                // Set selected site and switch to document vault
+                setSelectedSiteId(site.id);
+                setActiveTest('document-vault');
+                setTestMessage(`Viewing documents for site: ${site.name}`);
               }}
               refreshTrigger={refreshTrigger}
             />
@@ -537,6 +535,13 @@ case 'user-list':
         return (
           <div className="test-component notifications-test">
             <NotificationsTab />
+          </div>
+        );
+        
+      case 'document-vault':
+        return (
+          <div className="test-component document-vault-test">
+            <DocumentVault siteId={selectedSiteId} />
           </div>
         );
         
