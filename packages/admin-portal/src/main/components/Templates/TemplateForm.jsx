@@ -316,151 +316,329 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
 
   // If checking authentication or loading, show loading state
   if (!authChecked || (templateId && isLoading && !error)) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '4px solid #f3f3f3', 
+            borderTop: '4px solid #6f42c1', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 10px'
+          }}></div>
+          <p style={{ color: '#666', margin: 0 }}>Loading...</p>
+        </div>
+      </div>
+    );
   }
 
-  // If not authenticated, show login message (though redirectToAuth should handle this)
+  // If not authenticated, show login message
   if (!isAuthenticated) {
     return (
-      <div className="auth-required">
-        <h3>Authentication Required</h3>
-        <p>Please sign in to access this feature.</p>
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '60px 40px',
+        textAlign: 'center',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef',
+        maxWidth: '400px',
+        margin: '50px auto'
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔐</div>
+        <h3 style={{ margin: '0 0 8px 0', color: '#495057' }}>Authentication Required</h3>
+        <p style={{ margin: '0 0 24px 0', color: '#6c757d' }}>Please sign in to access this feature.</p>
         <button 
           onClick={() => redirectToAuth()}
-          className="sign-in-button"
+          style={{
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            fontSize: '16px',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}
         >
-          Sign in with Google
+          🔑 Sign in with Google
         </button>
       </div>
     );
   }
 
   return (
-    <>
-  
+    <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+        textAlign: 'center'
+      }}>
+        <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
+          📋 {isEditing ? 'Edit Template' : 'Create New Inspection Template'}
+        </h1>
+        <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
+          {isEditing ? 'Update template questions and settings' : 'Design a new inspection template with custom questions'}
+        </p>
+      </div>
 
-    <div className="template-form">
-      <h2>{isEditing ? 'Edit Template' : 'Create New Inspection Template'}</h2>
-
+      {/* Error Message */}
       {error && (
-        <div className="form-error">
-          <p>{error}</p>
-          <button onClick={() => setError(null)} className="dismiss-button">
-            Dismiss
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #f5c6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Error:</strong> {error}</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#721c24',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
           </button>
         </div>
       )}
       
+      {/* Success Message */}
       {pdfGenerated && (
-        <div className="form-success">
-          <p>PDF generated and uploaded successfully</p>
-          <button onClick={() => setPdfGenerated(false)} className="dismiss-button">
-            Dismiss
+        <div style={{
+          backgroundColor: '#d4edda',
+          color: '#155724',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #c3e6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Success:</strong> PDF generated and uploaded successfully</span>
+          <button 
+            onClick={() => setPdfGenerated(false)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#155724',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
           </button>
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="template-name">Template Name:</label>
-          <input
-            id="template-name"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter template name"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="template-category">Category:</label>
-          <select
-            id="template-category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-          >
-            <option value="">-- Select a Category --</option>
-            <option value="Safety Inspections">Safety Inspections</option>
-            <option value="Quality Inspections">Quality Inspections</option>
-            <option value="Compliance Inspections">Compliance Inspections</option>
-            <option value="Progress Inspections">Progress Inspections</option>
-            <option value="Specialised Inspections">Specialised Inspections</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="template-description">Description:</label>
-          <textarea
-            id="template-description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Enter template description"
-            rows={3}
-          />
-        </div>
-
-        {!isEditing && (
-          <div className="form-group">
-            <label>Save Location:</label>
-            <div className="folder-selection">
-              <button
-                type="button"
-                onClick={handleFolderSelect}
-                className="folder-select-button"
-              >
-                📁 Select Folder
-              </button>
-              {selectedFolder && (
-                <div className="selected-folder">
-                  <span>Folder: <code>{selectedFolder}</code></span>
-                </div>
-              )}
-            </div>
+      {/* Form Card */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '30px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef',
+        marginBottom: '20px'
+      }}>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Template Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter template name"
+              required
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#6f42c1'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
           </div>
-        )}
 
-        <div className="form-group">
-          <label>Questions:</label>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Category:</label>
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="">-- Select a Category --</option>
+              <option value="Safety Inspections">Safety Inspections</option>
+              <option value="Quality Inspections">Quality Inspections</option>
+              <option value="Compliance Inspections">Compliance Inspections</option>
+              <option value="Progress Inspections">Progress Inspections</option>
+              <option value="Specialised Inspections">Specialised Inspections</option>
+            </select>
+          </div>
 
-          <div className="questions-container">
-            {formData.questions.map((question, index) => (
-              <div key={index} className="question-item">
-                <div className="question-header">
-                  <span className="question-number">Question {index + 1}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeQuestion(index)}
-                    className="remove-question-button"
-                    disabled={formData.questions.length <= 1}
-                  >
-                    Remove
-                  </button>
-                </div>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Description:</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Enter template description"
+              rows={3}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box',
+                resize: 'vertical'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#6f42c1'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
 
-                <div className="question-content">
-                  <div className="question-text">
-                    <label htmlFor={`question-${index}`}>Question:</label>
+          {!isEditing && (
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Save Location:</label>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handleFolderSelect}
+                  style={{
+                    backgroundColor: '#6f42c1',
+                    color: 'white',
+                    border: 'none',
+                    padding: '10px 16px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#5a32a3'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#6f42c1'}
+                >
+                  📁 Select Folder
+                </button>
+                {selectedFolder && (
+                  <div style={{
+                    backgroundColor: '#e3f2fd',
+                    color: '#1976d2',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #bbdefb',
+                    fontSize: '14px'
+                  }}>
+                    Folder: <code style={{ backgroundColor: 'rgba(255,255,255,0.7)', padding: '2px 4px', borderRadius: '3px' }}>{selectedFolder}</code>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div style={{ marginBottom: '32px' }}>
+            <label style={{ display: 'block', marginBottom: '16px', color: '#495057', fontWeight: '600', fontSize: '18px' }}>Questions:</label>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {formData.questions.map((question, index) => (
+                <div key={index} style={{
+                  backgroundColor: '#f8f9fa',
+                  border: '2px solid #e9ecef',
+                  borderRadius: '12px',
+                  padding: '20px',
+                  transition: 'border-color 0.3s ease'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <span style={{ color: '#6f42c1', fontWeight: '600', fontSize: '16px' }}>❓ Question {index + 1}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeQuestion(index)}
+                      disabled={formData.questions.length <= 1}
+                      style={{
+                        backgroundColor: formData.questions.length <= 1 ? '#ccc' : '#dc3545',
+                        color: 'white',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        cursor: formData.questions.length <= 1 ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      🗑️ Remove
+                    </button>
+                  </div>
+
+                  <div style={{ marginBottom: '16px' }}>
+                    <label style={{ display: 'block', marginBottom: '6px', color: '#495057', fontWeight: '500' }}>Question:</label>
                     <input
-                      id={`question-${index}`}
                       type="text"
                       value={question.question}
                       onChange={(e) => handleQuestionChange(index, 'question', e.target.value)}
                       placeholder="Enter question"
                       required
+                      style={{
+                        width: '100%',
+                        padding: '10px 12px',
+                        border: '1px solid #dee2e6',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        boxSizing: 'border-box'
+                      }}
                     />
                   </div>
 
-                  <div className="question-settings">
-                    <div className="question-type">
-                      <label htmlFor={`question-type-${index}`}>Type:</label>
+                  <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                    <div style={{ flex: '1', minWidth: '150px' }}>
+                      <label style={{ display: 'block', marginBottom: '6px', color: '#495057', fontWeight: '500' }}>Type:</label>
                       <select
-                        id={`question-type-${index}`}
                         value={question.type}
                         onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
+                        style={{
+                          width: '100%',
+                          padding: '10px 12px',
+                          border: '1px solid #dee2e6',
+                          borderRadius: '6px',
+                          fontSize: '14px',
+                          backgroundColor: 'white',
+                          boxSizing: 'border-box'
+                        }}
                       >
                         <option value="text">Text</option>
                         <option value="number">Number</option>
@@ -471,25 +649,25 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                       </select>
                     </div>
 
-                    <div className="question-required">
-                      <label>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '24px' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#495057', fontWeight: '500', cursor: 'pointer' }}>
                         <input
                           type="checkbox"
                           checked={question.required}
                           onChange={(e) => handleQuestionChange(index, 'required', e.target.checked)}
+                          style={{ marginRight: '4px' }}
                         />
                         Required
                       </label>
                     </div>
                   </div>
 
-                  {/* Options for select, radio, or checkbox types */}
                   {['select', 'radio', 'checkbox'].includes(question.type) && (
-                    <div className="question-options">
-                      <label>Options:</label>
-                      <div className="options-list">
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '500' }}>Options:</label>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         {(question.options || ['']).map((option, optIndex) => (
-                          <div key={optIndex} className="option-item">
+                          <div key={optIndex} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                             <input
                               type="text"
                               value={option}
@@ -499,6 +677,13 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                                 handleQuestionChange(index, 'options', newOptions);
                               }}
                               placeholder={`Option ${optIndex + 1}`}
+                              style={{
+                                flex: 1,
+                                padding: '8px 10px',
+                                border: '1px solid #dee2e6',
+                                borderRadius: '4px',
+                                fontSize: '14px'
+                              }}
                             />
                             <button
                               type="button"
@@ -506,10 +691,18 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                                 const newOptions = (question.options || ['']).filter((_, i) => i !== optIndex);
                                 handleQuestionChange(index, 'options', newOptions.length > 0 ? newOptions : ['']);
                               }}
-                              className="remove-option-button"
                               disabled={(question.options || ['']).length <= 1}
+                              style={{
+                                backgroundColor: (question.options || ['']).length <= 1 ? '#ccc' : '#dc3545',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 10px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                cursor: (question.options || ['']).length <= 1 ? 'not-allowed' : 'pointer'
+                              }}
                             >
-                              Remove
+                              ×
                             </button>
                           </div>
                         ))}
@@ -519,57 +712,138 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                             const newOptions = [...(question.options || ['']), ''];
                             handleQuestionChange(index, 'options', newOptions);
                           }}
-                          className="add-option-button"
+                          style={{
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            padding: '6px 12px',
+                            borderRadius: '4px',
+                            fontSize: '12px',
+                            fontWeight: '500',
+                            cursor: 'pointer',
+                            alignSelf: 'flex-start'
+                          }}
                         >
-                          Add Option
+                          ➕ Add Option
                         </button>
                       </div>
                     </div>
                   )}
                 </div>
-              </div>
-            ))}
+              ))}
 
+              <button
+                type="button"
+                onClick={addQuestion}
+                style={{
+                  backgroundColor: '#6f42c1',
+                  color: 'white',
+                  border: '2px dashed rgba(111, 66, 193, 0.3)',
+                  padding: '16px 24px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  alignSelf: 'center'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.backgroundColor = '#5a32a3';
+                  e.target.style.borderColor = '#5a32a3';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.backgroundColor = '#6f42c1';
+                  e.target.style.borderColor = 'rgba(111, 66, 193, 0.3)';
+                }}
+              >
+                ➕ Add Question
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '32px', flexWrap: 'wrap' }}>
             <button
               type="button"
-              onClick={addQuestion}
-              className="add-question-button"
+              onClick={handleDiscard}
+              disabled={isSaving || isLoading}
+              style={{
+                backgroundColor: 'transparent',
+                color: '#6c757d',
+                border: '2px solid #6c757d',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: (isSaving || isLoading) ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (!(isSaving || isLoading)) {
+                  e.target.style.backgroundColor = '#6c757d';
+                  e.target.style.color = 'white';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!(isSaving || isLoading)) {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = '#6c757d';
+                }
+              }}
             >
-              Add Question
+              {isEditing ? 'Cancel' : 'Discard'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={generatePDF}
+              disabled={isSaving || isLoading || !formData.name.trim()}
+              style={{
+                backgroundColor: (isSaving || isLoading || !formData.name.trim()) ? '#ccc' : '#17a2b8',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: (isSaving || isLoading || !formData.name.trim()) ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !(isSaving || isLoading || !formData.name.trim()) && (e.target.style.backgroundColor = '#138496')}
+              onMouseLeave={(e) => !(isSaving || isLoading || !formData.name.trim()) && (e.target.style.backgroundColor = '#17a2b8')}
+            >
+              📄 Generate PDF
+            </button>
+
+            <button
+              type="submit"
+              disabled={isSaving || isLoading}
+              style={{
+                backgroundColor: (isSaving || isLoading) ? '#ccc' : '#6f42c1',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '500',
+                cursor: (isSaving || isLoading) ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !(isSaving || isLoading) && (e.target.style.backgroundColor = '#5a32a3')}
+              onMouseLeave={(e) => !(isSaving || isLoading) && (e.target.style.backgroundColor = '#6f42c1')}
+            >
+              {isSaving ? '⏳ Saving...' : (isEditing ? '✏️ Update Template' : '💾 Save Template')}
             </button>
           </div>
-        </div>
+        </form>
+      </div>
 
-        <div className="form-actions">
-          <button
-            type="button"
-            onClick={handleDiscard}
-            className="cancel-button"
-            disabled={isSaving || isLoading}
-          >
-            {isEditing ? 'Cancel' : 'Discard'}
-          </button>
-          
-          <button
-            type="button"
-            onClick={generatePDF}
-            className="pdf-button"
-            disabled={isSaving || isLoading || !formData.name.trim()}
-          >
-            Generate PDF
-          </button>
-
-          <button
-            type="submit"
-            className="save-button"
-            disabled={isSaving || isLoading}
-          >
-            {isSaving ? 'Saving...' : (isEditing ? 'Update Template' : 'Save Template')}
-          </button>
-        </div>
-      </form>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
-    </>
   );
 };
 

@@ -210,26 +210,412 @@ const SiteList = ({ onViewDocuments, refreshTrigger }) => {
     );
   }
 
-  // Render QR code modal
-  const renderQRModal = () => {
-    if (!showQRModal || !selectedSite) return null;
 
-    const url = selectedSite.folderLink || '';
-    const title = selectedSite.name || 'Unnamed Site';
 
+  if (isLoading && sites.length === 0) {
     return (
-      <div className="qr-modal-overlay" onClick={closeQRModal}>
-        <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
-          <div className="qr-modal-header">
-            <h3>{title} QR Code</h3>
-            <button className="close-button" onClick={closeQRModal}>×</button>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '4px solid #f3f3f3', 
+            borderTop: '4px solid #667eea', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 10px'
+          }}></div>
+          <p style={{ color: '#666', margin: 0 }}>Loading sites...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>🏗️ Construction Sites</h1>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>Manage construction sites and generate QR codes</p>
           </div>
-          
-          <div className="qr-modal-content">
-            <div className="qr-code-container">
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button 
+              onClick={loadSites}
+              disabled={isLoading}
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                padding: '12px 20px',
+                border: '2px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                fontWeight: '500',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              {isLoading ? '🔄 Loading...' : '🔄 Refresh'}
+            </button>
+            <button 
+              onClick={() => window.location.href = '/site/new'}
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.2)',
+                color: 'white',
+                padding: '12px 24px',
+                border: '2px solid rgba(255,255,255,0.3)',
+                borderRadius: '8px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                backdropFilter: 'blur(10px)'
+              }}
+            >
+              ➕ Create Site
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #f5c6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Error:</strong> {error}</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#721c24',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Search Card */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '20px',
+        marginBottom: '20px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef'
+      }}>
+        <div style={{ position: 'relative', maxWidth: '400px' }}>
+          <span style={{
+            position: 'absolute',
+            left: '12px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            color: '#6c757d',
+            fontSize: '16px'
+          }}>🔍</span>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search sites by name, location, or ID..."
+            style={{
+              width: '100%',
+              padding: '12px 12px 12px 40px',
+              border: '2px solid #e9ecef',
+              borderRadius: '8px',
+              fontSize: '16px',
+              transition: 'border-color 0.3s ease',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#667eea'}
+            onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+          />
+        </div>
+      </div>
+
+      {/* Sites Grid */}
+      {sortedSites.length === 0 ? (
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          padding: '60px 40px',
+          textAlign: 'center',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          border: '1px solid #e9ecef'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔍</div>
+          <h3 style={{ margin: '0 0 8px 0', color: '#495057' }}>
+            {searchQuery ? 'No sites found' : 'No construction sites found'}
+          </h3>
+          <p style={{ margin: 0, color: '#6c757d' }}>
+            {searchQuery 
+              ? 'Try adjusting your search terms.' 
+              : 'Create your first site to get started!'}
+          </p>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' }}>
+          {sortedSites.map(site => (
+            <div key={site.id} style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              padding: '24px',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+              border: '1px solid #e9ecef',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-4px)';
+              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
+            }}>
+              
+              {/* Site Header */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#2c3e50' }}>
+                  {site.name || 'Unnamed Site'}
+                </h3>
+                <span style={{
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  fontSize: '12px',
+                  fontWeight: '500',
+                  backgroundColor: '#e3f2fd',
+                  color: '#1976d2',
+                  border: '1px solid #bbdefb'
+                }}>
+                  {site.folderType}
+                </span>
+              </div>
+              
+              {/* Location */}
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>📍 Location</p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>
+                  {site.location || 'No location specified'}
+                </p>
+              </div>
+
+              {/* QR Code Preview */}
+              {site.folderLink && (
+                <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+                  <div 
+                    onClick={() => openQRModal(site)}
+                    style={{
+                      display: 'inline-block',
+                      padding: '12px',
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#e9ecef'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                  >
+                    <QRCode
+                      value={site.folderLink}
+                      size={80}
+                      level="M"
+                      bgColor="#FFFFFF"
+                      fgColor="#000000"
+                    />
+                  </div>
+                  <p style={{ margin: '8px 0 0 0', color: '#6c757d', fontSize: '12px' }}>
+                    Click to view full QR code
+                  </p>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {site.folderLink && (
+                  <a 
+                    href={site.folderLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      padding: '8px 12px',
+                      textDecoration: 'none',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
+                  >
+                    📁 View Folder
+                  </a>
+                )}
+                
+                {onViewDocuments && (
+                  <button 
+                    onClick={() => onViewDocuments(site)}
+                    style={{
+                      backgroundColor: '#17a2b8',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#138496'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#17a2b8'}
+                  >
+                    📄 Documents
+                  </button>
+                )}
+                
+                {site.folderLink && (
+                  <button 
+                    onClick={() => openQRModal(site)}
+                    style={{
+                      backgroundColor: '#6f42c1',
+                      color: 'white',
+                      border: 'none',
+                      padding: '8px 12px',
+                      borderRadius: '6px',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#5a32a3'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#6f42c1'}
+                  >
+                    📱 QR Code
+                  </button>
+                )}
+                
+                <button 
+                  onClick={() => handleEdit(site)}
+                  style={{
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
+                >
+                  ✏️ Edit
+                </button>
+                
+                <button 
+                  onClick={() => handleDelete(site.id, site.name)}
+                  style={{
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
+                >
+                  🗑️ Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* QR Code Modal */}
+      {showQRModal && selectedSite && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          backdropFilter: 'blur(4px)'
+        }} onClick={closeQRModal}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            textAlign: 'center',
+            maxWidth: '500px',
+            width: '90%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            border: '1px solid #e9ecef'
+          }} onClick={(e) => e.stopPropagation()}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <h2 style={{ margin: 0, color: '#2c3e50', fontSize: '24px' }}>📱 QR Code</h2>
+              <button 
+                onClick={closeQRModal}
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6c757d'
+                }}
+              >
+                ×
+              </button>
+            </div>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <h3 style={{ margin: '0 0 8px 0', color: '#495057' }}>{selectedSite.name}</h3>
+              <p style={{ margin: 0, color: '#6c757d' }}>{selectedSite.location || 'No location specified'}</p>
+            </div>
+            
+            <div style={{
+              backgroundColor: '#f8f9fa',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '24px',
+              display: 'inline-block'
+            }}>
               <QRCode
                 id="qr-code-svg"
-                value={url}
+                value={selectedSite.folderLink || ''}
                 size={256}
                 level="H"
                 bgColor="#FFFFFF"
@@ -237,194 +623,64 @@ const SiteList = ({ onViewDocuments, refreshTrigger }) => {
               />
             </div>
             
-            <div className="qr-code-info">
-              <p><strong>Site:</strong> {title}</p>
-              <p><strong>Location:</strong> {selectedSite.location || 'No location specified'}</p>
-              <p className="qr-url">
-                <strong>URL:</strong> 
-                <span className="url-text">{url}</span>
+            <div style={{ marginBottom: '24px', textAlign: 'left', backgroundColor: '#f8f9fa', padding: '16px', borderRadius: '8px' }}>
+              <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6c757d' }}>
+                <strong>URL:</strong>
+              </p>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span style={{ 
+                  fontSize: '12px', 
+                  color: '#495057', 
+                  wordBreak: 'break-all',
+                  flex: 1
+                }}>
+                  {selectedSite.folderLink}
+                </span>
                 <button 
-                  className="copy-button"
-                  onClick={() => handleCopy(url)}
-                  title="Copy URL"
+                  onClick={() => handleCopy(selectedSite.folderLink)}
+                  style={{
+                    backgroundColor: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    padding: '4px 8px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    cursor: 'pointer'
+                  }}
                 >
                   Copy
                 </button>
-              </p>
-              
-              <button 
-                className="download-button" 
-                onClick={downloadQRCode}
-              >
-                Download QR Code
-              </button>
+              </div>
             </div>
+            
+            <button 
+              onClick={downloadQRCode}
+              style={{
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
+            >
+              📥 Download QR Code
+            </button>
           </div>
         </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className="site-list">
-
-      <div className="site-list-header">
-        <h2>Construction Sites</h2>
-        <div className="header-actions">
-          <button 
-            className="refresh-button" 
-            onClick={loadSites}
-            disabled={isLoading}
-          >
-            {isLoading ? 'Loading...' : 'Refresh'}
-          </button>
-          <button 
-            className="create-button"
-            onClick={() => window.location.href = '/site/new'}
-          >
-            + Create Site
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div className="error-message">
-          <p>{error}</p>
-          <button onClick={() => setError(null)} className="dismiss-button">
-            Dismiss
-          </button>
-        </div>
       )}
 
-      <div className="site-search">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search sites by name, location, or ID..."
-          className="search-input"
-        />
-      </div>
-
-      {isLoading && sites.length === 0 ? (
-        <div className="loading-indicator">
-          <p>Loading sites...</p>
-        </div>
-      ) : sortedSites.length === 0 ? (
-        <div className="empty-message">
-          <p>
-            {searchQuery
-              ? 'No sites match your search query.'
-              : 'No construction sites found. Create your first site!'}
-          </p>
-        </div>
-      ) : (
-        <div className="sites-table-container">
-          <table className="sites-table">
-            <thead>
-              <tr>
-                <th 
-                  onClick={() => handleSort('name')}
-                  className={sortField === 'name' ? `sorted-${sortDirection}` : ''}
-                >
-                  Site Name
-                </th>
-                <th 
-                  onClick={() => handleSort('location')}
-                  className={sortField === 'location' ? `sorted-${sortDirection}` : ''}
-                >
-                  Location
-                </th>
-                <th>QR Code</th>
-                <th 
-                  onClick={() => handleSort('folderType')}
-                  className={sortField === 'folderType' ? `sorted-${sortDirection}` : ''}
-                >
-                  Storage Type
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedSites.map((site) => (
-                <tr key={site.id}>
-                  <td>{site.name || '—'}</td>
-                  <td>{site.location || '—'}</td>
-                  <td className="site-qr">
-                    {site.folderLink ? (
-                      <div 
-                        className="site-qr-thumbnail"
-                        onClick={() => openQRModal(site)}
-                        title="Click to view and download QR code"
-                      >
-                        <QRCode
-                          value={site.folderLink}
-                          size={64}
-                          level="M"
-                          bgColor="#FFFFFF"
-                          fgColor="#000000"
-                        />
-                      </div>
-                    ) : (
-                      <span>No link</span>
-                    )}
-                  </td>
-                  <td>{site.folderType}</td>
-                  <td className="site-actions">
-                    <div className="action-buttons">
-                      {site.folderLink && (
-                        <a 
-                          href={site.folderLink} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="view-folder-button"
-                        >
-                          View Folder
-                        </a>
-                      )}
-                      
-                      {onViewDocuments && (
-                        <button 
-                          onClick={() => onViewDocuments(site)}
-                          className="view-documents-button"
-                        >
-                          Documents
-                        </button>
-                      )}
-                      
-                      {site.folderLink && (
-                        <button 
-                          onClick={() => openQRModal(site)}
-                          className="qr-button"
-                        >
-                          QR Code
-                        </button>
-                      )}
-                      
-                      <button 
-                        onClick={() => handleEdit(site)}
-                        className="edit-button"
-                      >
-                        Edit
-                      </button>
-                      
-                      <button 
-                        onClick={() => handleDelete(site.id, site.name)}
-                        className="delete-button"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* QR Code Modal */}
-      {renderQRModal()}
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

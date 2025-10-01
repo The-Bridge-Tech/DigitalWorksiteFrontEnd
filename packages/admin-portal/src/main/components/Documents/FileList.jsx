@@ -167,136 +167,360 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
     setFileContent(null);
   };
 
-  return (
-    <div className="file-list">
-      <div className="file-list-header">
-        <h3>Documents in Folder</h3>
-        <button 
-          onClick={fetchFiles} 
-          disabled={isLoading || !folderId}
-          className="refresh-button"
-        >
-          Refresh
-        </button>
+  if (isLoading && !isViewerOpen && files.length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '4px solid #f3f3f3', 
+            borderTop: '4px solid #17a2b8', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 10px'
+          }}></div>
+          <p style={{ color: '#666', margin: 0 }}>Loading files...</p>
+        </div>
       </div>
-      
+    );
+  }
+
+  return (
+    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>📁 Document Management</h1>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>View and manage files in the selected folder</p>
+          </div>
+          <button 
+            onClick={fetchFiles} 
+            disabled={isLoading || !folderId}
+            style={{
+              backgroundColor: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              padding: '12px 20px',
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderRadius: '8px',
+              fontWeight: '500',
+              cursor: (isLoading || !folderId) ? 'not-allowed' : 'pointer',
+              transition: 'all 0.3s ease',
+              backdropFilter: 'blur(10px)',
+              opacity: (isLoading || !folderId) ? 0.6 : 1
+            }}
+          >
+            🔄 Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Error Message */}
       {error && (
-        <div className="file-list-error">
-          <p>{error}</p>
-          <button onClick={() => setError(null)} className="dismiss-button">
-            Dismiss
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #f5c6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Error:</strong> {error}</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#721c24',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
           </button>
         </div>
       )}
-      
-      {isLoading && !isViewerOpen && (
-        <div className="loading-indicator">
-          <p>Loading files...</p>
+
+      {/* Files Grid */}
+      {!isLoading && !error && files.length === 0 ? (
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          padding: '60px 40px',
+          textAlign: 'center',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          border: '1px solid #e9ecef'
+        }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📁</div>
+          <h3 style={{ margin: '0 0 8px 0', color: '#495057' }}>No files found</h3>
+          <p style={{ margin: 0, color: '#6c757d' }}>This folder appears to be empty.</p>
         </div>
-      )}
-      
-      {!isLoading && !error && files.length === 0 && (
-        <div className="empty-message">
-          <p>No files found in this folder.</p>
-        </div>
-      )}
-      
-      {files.length > 0 && (
-        <div className="files-table-container">
-          <table className="files-table">
-            <thead>
-              <tr>
-                <th 
-                  onClick={() => handleSort('name')}
-                  className={sortField === 'name' ? `sorted-${sortDirection}` : ''}
-                >
-                  Name
-                </th>
-                <th>Type</th>
-                <th 
-                  onClick={() => handleSort('modifiedTime')}
-                  className={sortField === 'modifiedTime' ? `sorted-${sortDirection}` : ''}
-                >
-                  Modified
-                </th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {files.map(file => (
-                <tr key={file.id}>
-                  <td className="file-name">
-                    <a 
-                      href={file.webViewLink} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
+      ) : files.length > 0 ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+          {files.map(file => {
+            const fileIcon = getFileIcon(file.mimeType);
+            return (
+              <div key={file.id} style={{
+                backgroundColor: 'white',
+                borderRadius: '12px',
+                padding: '20px',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                border: '1px solid #e9ecef',
+                transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
+              }}>
+                
+                {/* File Header */}
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+                  <div style={{
+                    fontSize: '32px',
+                    marginRight: '12px',
+                    minWidth: '40px'
+                  }}>
+                    {fileIcon}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <h3 style={{ 
+                      margin: 0, 
+                      fontSize: '16px', 
+                      fontWeight: '600', 
+                      color: '#2c3e50',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
                       {file.name}
-                    </a>
-                  </td>
-                  <td className="file-type">
-                    {formatMimeType(file.mimeType)}
-                  </td>
-                  <td className="file-modified">
+                    </h3>
+                    <p style={{ margin: '4px 0 0 0', color: '#6c757d', fontSize: '14px' }}>
+                      {formatMimeType(file.mimeType)}
+                    </p>
+                  </div>
+                </div>
+                
+                {/* File Details */}
+                <div style={{ marginBottom: '16px' }}>
+                  <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>🕰️ Last Modified</p>
+                  <p style={{ margin: 0, color: '#495057', fontSize: '14px' }}>
                     {formatDate(file.modifiedTime)}
-                  </td>
-                  <td className="file-actions">
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                  <button
+                    onClick={() => handleViewFile(file)}
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
+                  >
+                    👁️ View
+                  </button>
+                  
+                  <a 
+                    href={file.webViewLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      backgroundColor: '#28a745',
+                      color: 'white',
+                      padding: '6px 12px',
+                      textDecoration: 'none',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
+                  >
+                    🔗 Open
+                  </a>
+                  
+                  {onFileSelect && (
                     <button
-                      onClick={() => handleViewFile(file)}
-                      className="view-button"
+                      onClick={() => onFileSelect(file)}
+                      style={{
+                        backgroundColor: '#6f42c1',
+                        color: 'white',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: '6px',
+                        fontSize: '12px',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s ease'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#5a32a3'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = '#6f42c1'}
                     >
-                      View
+                      ✅ Select
                     </button>
-                    {onFileSelect && (
-                      <button
-                        onClick={() => onFileSelect(file)}
-                        className="select-button"
-                      >
-                        Select
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleDeleteFile(file.id, file.name)}
-                      className="delete-button"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  )}
+                  
+                  <button
+                    onClick={() => handleDeleteFile(file.id, file.name)}
+                    style={{
+                      backgroundColor: '#dc3545',
+                      color: 'white',
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '6px',
+                      fontSize: '12px',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
+                  >
+                    🗑️ Delete
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      )}
+      ) : null}
       
       {/* File Viewer Modal */}
       {isViewerOpen && selectedFile && (
-        <div className="file-viewer-overlay">
-          <div className="file-viewer">
-            <div className="file-viewer-header">
-              <h3>{selectedFile.name}</h3>
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '16px',
+            width: '90%',
+            maxWidth: '800px',
+            maxHeight: '90%',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            border: '1px solid #e9ecef',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            
+            {/* Modal Header */}
+            <div style={{
+              padding: '20px 24px',
+              borderBottom: '1px solid #e9ecef',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <h3 style={{ margin: 0, color: '#2c3e50', fontSize: '20px' }}>
+                📄 {selectedFile.name}
+              </h3>
               <button 
                 onClick={handleCloseViewer}
-                className="close-button"
+                style={{
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6c757d'
+                }}
               >
-                Close
+                ×
               </button>
             </div>
-            <div className="file-viewer-content">
+            
+            {/* Modal Content */}
+            <div style={{
+              padding: '24px',
+              flex: 1,
+              overflow: 'auto'
+            }}>
               {isLoading ? (
-                <p>Loading file content...</p>
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <div style={{ 
+                    width: '40px', 
+                    height: '40px', 
+                    border: '4px solid #f3f3f3', 
+                    borderTop: '4px solid #17a2b8', 
+                    borderRadius: '50%', 
+                    animation: 'spin 1s linear infinite',
+                    margin: '0 auto 10px'
+                  }}></div>
+                  <p style={{ color: '#666', margin: 0 }}>Loading file content...</p>
+                </div>
               ) : isTextFile(selectedFile.mimeType) ? (
-                <pre className="file-content">{fileContent}</pre>
+                <pre style={{
+                  backgroundColor: '#f8f9fa',
+                  padding: '20px',
+                  borderRadius: '8px',
+                  border: '1px solid #e9ecef',
+                  fontSize: '14px',
+                  lineHeight: '1.5',
+                  overflow: 'auto',
+                  whiteSpace: 'pre-wrap',
+                  wordWrap: 'break-word'
+                }}>
+                  {fileContent}
+                </pre>
               ) : (
-                <div className="non-text-file">
-                  <p>Preview not available for this file type.</p>
+                <div style={{ textAlign: 'center', padding: '40px' }}>
+                  <div style={{ fontSize: '64px', marginBottom: '16px' }}>📄</div>
+                  <h4 style={{ margin: '0 0 16px 0', color: '#495057' }}>Preview not available</h4>
+                  <p style={{ margin: '0 0 24px 0', color: '#6c757d' }}>
+                    This file type cannot be previewed in the browser.
+                  </p>
                   <a 
                     href={selectedFile.webViewLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="open-button"
+                    style={{
+                      backgroundColor: '#007bff',
+                      color: 'white',
+                      padding: '12px 24px',
+                      textDecoration: 'none',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      fontWeight: '500',
+                      transition: 'background-color 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
                   >
-                    Open in Google Drive
+                    🔗 Open in Google Drive
                   </a>
                 </div>
               )}
@@ -304,9 +528,34 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
           </div>
         </div>
       )}
+
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };
+
+// Helper to get file icon based on mime type
+function getFileIcon(mimeType) {
+  if (!mimeType) return '📄';
+  
+  if (mimeType.startsWith('image/')) return '🖼️';
+  if (mimeType.startsWith('video/')) return '🎥';
+  if (mimeType.startsWith('audio/')) return '🎵';
+  if (mimeType === 'application/pdf') return '📕';
+  if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+  if (mimeType.includes('sheet') || mimeType.includes('excel')) return '📊';
+  if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return '📈';
+  if (mimeType.startsWith('text/')) return '📄';
+  if (mimeType.includes('zip') || mimeType.includes('archive')) return '📦';
+  if (mimeType === 'application/vnd.google-apps.folder') return '📁';
+  
+  return '📄';
+}
 
 // Helper to format MIME type to readable format
 function formatMimeType(mimeType) {

@@ -1,17 +1,16 @@
 // GoogleAuth.jsx
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL, API_ENDPOINTS } from '../../config/api.config.js';
 
-const GoogleAuth = () => {
+const GoogleAuth = ({ onAuthChange }) => {
   // State variables
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [debugInfo, setDebugInfo] = useState(null);
-  const [showDebug, setShowDebug] = useState(false);
 
-  // Backend URL - make sure this matches your Flask server
-  const API_URL = 'http://localhost:5004';
+
+
 
   // Check authentication status on component mount
   useEffect(() => {
@@ -24,9 +23,11 @@ const GoogleAuth = () => {
       localStorage.setItem('auth_token', authToken);
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
+      // Immediately check auth status after storing token
+      setTimeout(() => checkAuthStatus(), 100);
+    } else {
+      checkAuthStatus();
     }
-    
-    checkAuthStatus();
   }, []);
 
   // Function to check authentication status
@@ -44,14 +45,11 @@ const GoogleAuth = () => {
         console.log('No auth token found');
         setIsAuthenticated(false);
         setUser(null);
-        setDebugInfo({
-          message: 'No auth token in localStorage',
-          timestamp: new Date().toISOString()
-        });
+
         return;
       }
       
-      const response = await fetch(`${API_URL}/adm/auth/status`, {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH_STATUS}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -65,28 +63,23 @@ const GoogleAuth = () => {
       setIsAuthenticated(data.authenticated);
       if (data.authenticated && data.user) {
         setUser(data.user);
+        // Notify parent component about authentication success
+        if (onAuthChange) {
+          onAuthChange(true);
+        }
       } else {
         // Token might be expired or invalid, remove it
         localStorage.removeItem('auth_token');
+        if (onAuthChange) {
+          onAuthChange(false);
+        }
       }
       
-      // Store debug info
-      setDebugInfo({
-        status: response.status,
-        statusText: response.statusText,
-        data: data,
-        hasToken: !!token,
-        tokenLength: token ? token.length : 0,
-        timestamp: new Date().toISOString()
-      });
+
     } catch (error) {
       console.error('Error checking auth status:', error);
       setError(`Failed to check authentication status: ${error.message}`);
-      setDebugInfo({
-        error: error.message,
-        stack: error.stack,
-        timestamp: new Date().toISOString()
-      });
+
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +89,7 @@ const GoogleAuth = () => {
   const handleLogin = () => {
     console.log('Initiating Google sign-in...');
     // Redirect to the OAuth endpoint
-    window.location.href = `${API_URL}/adm/auth/google`;
+    window.location.href = `${API_BASE_URL}${API_ENDPOINTS.AUTH_GOOGLE}`;
   };
 
   // Handle logout button click
@@ -114,6 +107,10 @@ const GoogleAuth = () => {
       
       setIsAuthenticated(false);
       setUser(null);
+      // Notify parent component about logout
+      if (onAuthChange) {
+        onAuthChange(false);
+      }
       console.log('Successfully logged out');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -123,10 +120,7 @@ const GoogleAuth = () => {
     }
   };
 
-  // Toggle debug information display
-  const toggleDebug = () => {
-    setShowDebug(!showDebug);
-  };
+
 
   // Generate a random avatar color based on username
   const getAvatarColor = (name) => {
@@ -228,26 +222,7 @@ const GoogleAuth = () => {
       backgroundColor: '#dc3545',
       color: 'white'
     },
-    debugButton: {
-      backgroundColor: 'transparent',
-      border: 'none',
-      color: '#6c757d',
-      cursor: 'pointer',
-      fontSize: '12px',
-      marginTop: '15px',
-      textDecoration: 'underline'
-    },
-    debugInfo: {
-      marginTop: '15px',
-      padding: '10px',
-      backgroundColor: '#f8f9fa',
-      borderRadius: '4px',
-      fontSize: '12px',
-      whiteSpace: 'pre-wrap',
-      wordBreak: 'break-word',
-      maxHeight: '200px',
-      overflowY: 'auto'
-    },
+
     buttonContainer: {
       marginTop: '15px'
     },
@@ -330,19 +305,7 @@ const GoogleAuth = () => {
             Sign Out
           </button>
         </div>
-        
-        <button 
-          onClick={toggleDebug} 
-          style={styles.debugButton}
-        >
-          {showDebug ? 'Hide Debug Info' : 'Show Debug Info'}
-        </button>
-        
-        {showDebug && debugInfo && (
-          <div style={styles.debugInfo}>
-            <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-          </div>
-        )}
+
       </div>
     );
   }
@@ -374,19 +337,7 @@ const GoogleAuth = () => {
           </div>
         </button>
       </div>
-      
-      <button 
-        onClick={toggleDebug} 
-        style={styles.debugButton}
-      >
-        {showDebug ? 'Hide Debug Info' : 'Show Debug Info'}
-      </button>
-      
-      {showDebug && debugInfo && (
-        <div style={styles.debugInfo}>
-          <pre>{JSON.stringify(debugInfo, null, 2)}</pre>
-        </div>
-      )}
+
     </div>
   );
 };

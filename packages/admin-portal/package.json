@@ -1,5 +1,5 @@
 {
-  "name": "@splunk/admin-portal",
+  "name": "@splunk/digital-workspace",
   "version": "0.0.1",
   "license": "UNLICENSED",
   "scripts": {
@@ -20,9 +20,11 @@
     "@fullcalendar/react": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
     "@splunk/inspection-report": "^0.0.1",
+    "@splunk/reporting-center": "^0.0.1",
     "jspdf": "^3.0.2",
     "jsqr": "^1.4.0",
     "leaflet": "^1.9.4",
+    "qr-scanner": "^1.4.2",
     "react-leaflet": "^5.0.0",
     "react-qr-code": "^2.0.18"
   },

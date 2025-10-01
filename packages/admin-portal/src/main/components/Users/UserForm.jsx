@@ -4,120 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import { createUser, updateUser, getUser } from '../../services/users.service';
 import { saveToStorage, loadFromStorage } from '../../utils/storage';
-import styled from 'styled-components';
-
-// Styled components
-const FormContainer = styled.div`
-  padding: 2rem;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  color: #343a40;
-
-  h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    color: #007bff;
-    margin-bottom: 2rem;
-    border-bottom: 2px solid #e0e0e0;
-    padding-bottom: 0.5rem;
-    text-align: center;
-  }
-`;
-
-const FormGroup = styled.div`
-  margin-bottom: 1.5rem;
-
-  label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #495057;
-  }
-
-  input,
-  select {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-
-    &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-    }
-  }
-`;
-
-const FormActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2rem;
-`;
-
-const CancelButton = styled.button`
-  background: none;
-  border: none;
-  color: #6c757d;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  transition: color 0.2s ease;
-
-  &:hover:not(:disabled) {
-    color: #343a40;
-  }
-`;
-
-const SaveButton = styled.button`
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  &:hover:not(:disabled) {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-  }
-
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
-const FormError = styled.div`
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-`;
-
-const DismissButton = styled.button`
-  background: none;
-  border: none;
-  color: inherit;
-  font-weight: bold;
-  cursor: pointer;
-  margin-left: 1rem;
-`;
 
 const UserForm = ({ userId, onSave, onCancel }) => {
   // Form data state
@@ -234,102 +120,241 @@ const UserForm = ({ userId, onSave, onCancel }) => {
 
   if (isLoading) {
     return (
-      <div className="user-form loading">
-        <p>Loading user...</p>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            width: '40px', 
+            height: '40px', 
+            border: '4px solid #f3f3f3', 
+            borderTop: '4px solid #28a745', 
+            borderRadius: '50%', 
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 10px'
+          }}></div>
+          <p style={{ color: '#666', margin: 0 }}>Loading user...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <FormContainer>
-      <h2>{isEditing ? 'Edit User' : 'Create New User'}</h2>
+    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+        textAlign: 'center'
+      }}>
+        <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
+          👥 {isEditing ? 'Edit User' : 'Create New User'}
+        </h1>
+        <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
+          {isEditing ? 'Update user information and permissions' : 'Add a new user to the system'}
+        </p>
+      </div>
 
+      {/* Error Message */}
       {error && (
-        <FormError>
-          <p>{error}</p>
-          <DismissButton onClick={() => setError(null)}>
-            Dismiss
-          </DismissButton>
-        </FormError>
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #f5c6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Error:</strong> {error}</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#721c24',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
+          </button>
+        </div>
       )}
 
-      <form onSubmit={handleSubmit}>
-        <FormGroup>
-          <label htmlFor="user-name">Name:</label>
-          <input
-            id="user-name"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter full name"
-            required
-          />
-        </FormGroup>
+      {/* Form Card */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '30px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef'
+      }}>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter full name"
+              required
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#28a745'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
 
-        <FormGroup>
-          <label htmlFor="user-email">Email Address:</label>
-          <input
-            id="user-email"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter email address"
-            required
-          />
-        </FormGroup>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Email Address:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter email address"
+              required
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#28a745'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
 
-        <FormGroup>
-          <label htmlFor="user-company">Company Name:</label>
-          <input
-            id="user-company"
-            type="text"
-            name="company"
-            value={formData.company}
-            onChange={handleChange}
-            placeholder="Enter company name"
-          />
-        </FormGroup>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Company Name:</label>
+            <input
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              placeholder="Enter company name"
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#28a745'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
 
-        <FormGroup>
-          <label htmlFor="user-role">Role:</label>
-          <select
-            id="user-role"
-            name="role"
-            value={formData.role}
-            onChange={handleChange}
-            required
-          >
-            <option value="">-- Select Role --</option>
-            <option value="supervisor">Supervisor</option>
-            <option value="contractor">Contractor</option>
-            <option value="inspector">Inspector</option>
-            <option value="admin">Admin</option>
-          </select>
-        </FormGroup>
+          <div style={{ marginBottom: '32px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Role:</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              required
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="">-- Select Role --</option>
+              <option value="supervisor">Supervisor</option>
+              <option value="contractor">Contractor</option>
+              <option value="inspector">Inspector</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
 
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleDiscard}
+              disabled={isSaving}
+              style={{
+                backgroundColor: 'transparent',
+                color: '#6c757d',
+                border: '2px solid #6c757d',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: isSaving ? 'not-allowed' : 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                if (!isSaving) {
+                  e.target.style.backgroundColor = '#6c757d';
+                  e.target.style.color = 'white';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSaving) {
+                  e.target.style.backgroundColor = 'transparent';
+                  e.target.style.color = '#6c757d';
+                }
+              }}
+            >
+              {isEditing ? 'Cancel' : 'Discard'}
+            </button>
 
-        <FormActions>
-          <CancelButton
-            type="button"
-            onClick={handleDiscard}
-            className="cancel-button"
-            disabled={isSaving}
-          >
-            {isEditing ? 'Cancel' : 'Discard'}
-          </CancelButton>
+            <button
+              type="submit"
+              disabled={isSaving}
+              style={{
+                backgroundColor: isSaving ? '#ccc' : '#28a745',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: isSaving ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !isSaving && (e.target.style.backgroundColor = '#1e7e34')}
+              onMouseLeave={(e) => !isSaving && (e.target.style.backgroundColor = '#28a745')}
+            >
+              {isSaving ? '⏳ Saving...' : (isEditing ? '✏️ Update User' : '👥 Save User')}
+            </button>
+          </div>
+        </form>
+      </div>
 
-          <SaveButton
-            type="submit"
-            className="save-button"
-            disabled={isSaving}
-          >
-            {isSaving ? 'Saving...' : (isEditing ? 'Update User' : 'Save User')}
-          </SaveButton>
-        </FormActions>
-      </form>
-    </FormContainer>
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
   );
 };
 

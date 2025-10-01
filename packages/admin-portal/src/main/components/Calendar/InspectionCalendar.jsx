@@ -332,7 +332,6 @@ const InspectionCalendar = () => {
 
   return (
     <div className="inspection-calendar">
-      <h2>Inspection Calendar</h2>
       
       {loading && (
         <div style={{ textAlign: 'center', padding: '20px' }}>

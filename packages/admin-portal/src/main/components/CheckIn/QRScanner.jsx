@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import QrScanner from 'qr-scanner';
 import { getSites } from '../../services/site.service';
 import { getUsers } from '../../services/users.service';
+import { API_BASE_URL, API_ENDPOINTS } from '../../config/api.config.js';
 
 const QRScanner = () => {
   const [scanning, setScanning] = useState(false);
@@ -8,7 +10,7 @@ const QRScanner = () => {
   const [location, setLocation] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
   const videoRef = useRef(null);
-  const streamRef = useRef(null);
+  const qrScannerRef = useRef(null);
 
   useEffect(() => {
     const loadUserAndLocation = async () => {
@@ -38,38 +40,43 @@ const QRScanner = () => {
 
   const startScanning = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      });
-      streamRef.current = stream;
-      videoRef.current.srcObject = stream;
+      if (!videoRef.current) return;
+      
+      qrScannerRef.current = new QrScanner(
+        videoRef.current,
+        (result) => handleQRDetected(result.data),
+        {
+          preferredCamera: 'environment',
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+        }
+      );
+      
+      await qrScannerRef.current.start();
       setScanning(true);
       setMessage('📱 Point camera at site QR code');
-      
-      setTimeout(() => scanForQR(), 1000);
     } catch (error) {
-      setMessage('❌ Camera access denied');
+      setMessage('❌ Camera access denied or QR scanner failed to start');
+      console.error('QR Scanner error:', error);
     }
   };
 
   const stopScanning = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+    if (qrScannerRef.current) {
+      qrScannerRef.current.stop();
+      qrScannerRef.current.destroy();
+      qrScannerRef.current = null;
     }
     setScanning(false);
   };
 
-  const scanForQR = () => {
-    if (!scanning || !videoRef.current) return;
-
-    // Simulate QR detection with your existing format
-    if (Math.random() < 0.1) {
-      const mockQRData = 'http://localhost:3000/inspection?site=Construction%20Site%20A&location=Downtown%20Plaza&id=12345-abcd-6789';
-      handleQRDetected(mockQRData);
-    } else {
-      setTimeout(() => scanForQR(), 100);
-    }
-  };
+  useEffect(() => {
+    return () => {
+      if (qrScannerRef.current) {
+        qrScannerRef.current.destroy();
+      }
+    };
+  }, []);
 
   const handleQRDetected = async (qrData) => {
     stopScanning();
@@ -131,7 +138,7 @@ const QRScanner = () => {
 
   const submitCheckIn = async (checkInData, site) => {
     try {
-      const response = await fetch('http://localhost:5004/checkins/scan', {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CHECKIN_SCAN}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -177,6 +184,8 @@ const QRScanner = () => {
         <div>🕐 Time: {new Date().toLocaleString()}</div>
       </div>
 
+
+
       {!scanning ? (
         <button
           onClick={startScanning}
@@ -191,7 +200,7 @@ const QRScanner = () => {
             cursor: 'pointer'
           }}
         >
-          📱 Start QR Scanner
+📱 Start QR Scanner
         </button>
       ) : (
         <div>

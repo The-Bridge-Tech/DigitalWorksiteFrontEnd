@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL, API_ENDPOINTS } from '../config/api.config.js';
 
 const NotificationBell = () => {
     const [notifications, setNotifications] = useState([]);
@@ -13,7 +14,7 @@ const NotificationBell = () => {
 
     const fetchNotifications = async () => {
         try {
-            const response = await fetch('http://localhost:5004/notifications/', {
+            const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.NOTIFICATIONS}/`, {
                 credentials: 'include'
             });
             if (response.ok) {
@@ -33,7 +34,7 @@ const NotificationBell = () => {
 
     const markAsRead = async (notificationId) => {
         try {
-            await fetch(`http://localhost:5004/notifications/${notificationId}/mark_read`, {
+            await fetch(`${API_BASE_URL}${API_ENDPOINTS.NOTIFICATION_MARK_READ(notificationId)}`, {
                 method: 'POST',
                 credentials: 'include'
             });

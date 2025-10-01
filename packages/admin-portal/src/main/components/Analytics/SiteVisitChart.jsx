@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL, API_ENDPOINTS } from '../../config/api.config.js';
 
 const SiteVisitChart = () => {
   const [data, setData] = useState([]);
@@ -7,7 +8,7 @@ const SiteVisitChart = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5004/checkins', {
+        const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.CHECKINS}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
           }

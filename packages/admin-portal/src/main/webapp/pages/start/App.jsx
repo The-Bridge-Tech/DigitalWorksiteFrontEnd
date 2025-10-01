@@ -1,6 +1,7 @@
-import React from "react";
-import IntegrationTest from "../../../components/IntegrationTest";
-console.log("IntegrationTest loaded:", IntegrationTest);
+import React, { useState, useEffect } from "react";
+import { checkAuthStatus } from "../../../services/auth.service";
+import GoogleAuth from "../../../components/Auth/GoogleAuth";
+import Dashboard from "../../../components/Dashboard/Dashboard";
 
 // =======================
 // Inline styles
@@ -22,30 +23,69 @@ const headerStyles = {
   marginBottom: "20px",
 };
 
-const footerStyles = {
-  marginTop: "30px",
-  fontSize: "0.9rem",
-  color: "#6c757d",
-};
+
 
 // =======================
 // App Component
 // =======================
 const App = () => {
-  return (
-    <div style={appStyles}>
-      {/* Header */}
-      <h1 style={headerStyles}>Admin Portal</h1>
+  const [authenticated, setAuthenticated] = useState(false);
+  const [initializing, setInitializing] = useState(true);
 
-      {/* IntegrationTest Component */}
-      <IntegrationTest />
+  useEffect(() => {
+    const init = async () => {
+      try {
+        // Check for auth token in URL first
+        const urlParams = new URLSearchParams(window.location.search);
+        const authToken = urlParams.get('auth_token');
+        
+        if (authToken) {
+          localStorage.setItem('auth_token', authToken);
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+        const isAuthenticated = await checkAuthStatus();
+        setAuthenticated(isAuthenticated);
+      } catch (error) {
+        console.error('Failed to check authentication:', error);
+        setAuthenticated(false);
+      } finally {
+        setInitializing(false);
+      }
+    };
+    init();
+  }, []);
 
-      {/* Footer */}
-      <footer style={footerStyles}>
-        Powered by Splunk React Integration
-      </footer>
-    </div>
-  );
+  const handleAuthChange = (isSignedIn) => {
+    setAuthenticated(isSignedIn);
+  };
+
+  if (initializing) {
+    return (
+      <div style={appStyles}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔄</div>
+          <p>Loading Digital Workspace...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!authenticated) {
+    return (
+      <div style={appStyles}>
+        <h1 style={headerStyles}>Digital Workspace</h1>
+        <div style={{ textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
+          <p style={{ marginBottom: '2rem', color: '#6c757d' }}>
+            Please sign in to access the workspace
+          </p>
+          <GoogleAuth onAuthChange={handleAuthChange} />
+        </div>
+      </div>
+    );
+  }
+
+  return <Dashboard />;
 };
 
 export default App;

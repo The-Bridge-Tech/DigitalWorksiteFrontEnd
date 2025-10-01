@@ -187,153 +187,331 @@ const SiteForm = ({ onSaveComplete }) => {
   }
 
   return (
-    <div className="site-form">
-      
-      <h2>Create Construction Site</h2>
-      
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+        textAlign: 'center'
+      }}>
+        <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>🏗️ Create Construction Site</h1>
+        <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>Add a new construction site with QR code generation</p>
+      </div>
+
+      {/* Error Message */}
       {error && (
-        <div className="error-message">
-          <p>{error}</p>
-          <button onClick={() => setError(null)} className="dismiss-button">
-            Dismiss
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #f5c6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Error:</strong> {error}</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#721c24',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
           </button>
         </div>
       )}
       
+      {/* Success Message */}
       {isSaved && (
-        <div className="success-message">
-          <p>Site created successfully!</p>
-          <button onClick={() => setIsSaved(false)} className="dismiss-button">
-            Dismiss
+        <div style={{
+          backgroundColor: '#d4edda',
+          color: '#155724',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #c3e6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Success:</strong> Site created successfully!</span>
+          <button 
+            onClick={() => setIsSaved(false)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#155724',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
           </button>
         </div>
       )}
       
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">Site Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter site name"
-            required
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="site_id">Site ID (auto-generated if empty):</label>
-          <input
-            type="text"
-            id="site_id"
-            name="site_id"
-            value={formData.site_id}
-            onChange={handleChange}
-            placeholder="Enter site ID or leave empty for auto-generation"
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="location">Location:</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Enter site location"
-            required
-            disabled={isLoading}
-          />
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="folder_type">Folder Type:</label>
-          <select
-            id="folder_type"
-            name="folder_type"
-            value={formData.folder_type}
-            onChange={handleChange}
-            disabled={isLoading}
-          >
-            <option value="GoogleDrive">Google Drive</option>
-            <option value="NAS">NAS</option>
-          </select>
-        </div>
-        
-        <div className="form-group">
-          <label htmlFor="folder_link">Folder Link:</label>
-          <input
-            type="text"
-            id="folder_link"
-            name="folder_link"
-            value={formData.folder_link}
-            onChange={handleChange}
-            placeholder={`Enter ${formData.folder_type} folder link`}
-            required
-            disabled={isLoading}
-          />
-          <small className="help-text">
-            {formData.folder_type === 'GoogleDrive'
-              ? 'Paste the Google Drive folder share link here'
-              : 'Enter the network path to the NAS folder'}
-          </small>
-        </div>
-        
-        <div className="form-actions">
-          <button
-            type="button"
-            onClick={handleReset}
-            className="reset-button"
-            disabled={isLoading}
-          >
-            Reset Form
-          </button>
+      {/* Form Card */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '30px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef',
+        marginBottom: '20px'
+      }}>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Site Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter site name"
+              required
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
           
-          <button
-            type="submit"
-            className="submit-button"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Creating Site...' : 'Create Site & Generate QR'}
-          </button>
-        </div>
-      </form>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Site ID (auto-generated if empty):</label>
+            <input
+              type="text"
+              name="site_id"
+              value={formData.site_id}
+              onChange={handleChange}
+              placeholder="Enter site ID or leave empty for auto-generation"
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
+          
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Location:</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Enter site location"
+              required
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
+          
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Folder Type:</label>
+            <select
+              name="folder_type"
+              value={formData.folder_type}
+              onChange={handleChange}
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="GoogleDrive">Google Drive</option>
+              <option value="NAS">NAS</option>
+            </select>
+          </div>
+          
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Folder Link:</label>
+            <input
+              type="text"
+              name="folder_link"
+              value={formData.folder_link}
+              onChange={handleChange}
+              placeholder={`Enter ${formData.folder_type} folder link`}
+              required
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+            <small style={{ color: '#6c757d', fontSize: '14px', marginTop: '4px', display: 'block' }}>
+              {formData.folder_type === 'GoogleDrive'
+                ? 'Paste the Google Drive folder share link here'
+                : 'Enter the network path to the NAS folder'}
+            </small>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleReset}
+              disabled={isLoading}
+              style={{
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#545b62')}
+              onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#6c757d')}
+            >
+              🔄 Reset Form
+            </button>
+            
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                backgroundColor: isLoading ? '#ccc' : '#667eea',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#5a67d8')}
+              onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#667eea')}
+            >
+              {isLoading ? '⏳ Creating Site...' : '🏗️ Create Site & Generate QR'}
+            </button>
+          </div>
+        </form>
+      </div>
       
       {/* QR Code Result */}
       {qrCode && (
-        <div className="qr-code-result">
-          <h3>QR Code Generated</h3>
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          padding: '30px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          border: '1px solid #e9ecef'
+        }}>
+          <h3 style={{ margin: '0 0 20px 0', color: '#2c3e50', fontSize: '24px', textAlign: 'center' }}>📱 QR Code Generated</h3>
           
-          <div className="qr-code-container">
-            <img
-              src={qrCode.qr_url}
-              alt={`QR Code for ${formData.name}`}
-              className="qr-code-image"
-            />
+          <div style={{ display: 'flex', gap: '30px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ textAlign: 'center' }}>
+              <img
+                src={qrCode.qr_url}
+                alt={`QR Code for ${formData.name}`}
+                style={{ maxWidth: '200px', borderRadius: '8px', border: '1px solid #e9ecef' }}
+              />
+            </div>
             
-            <div className="qr-code-info">
-              <p><strong>Site:</strong> {formData.name}</p>
-              <p><strong>ID:</strong> {formData.site_id}</p>
-              <p><strong>Location:</strong> {formData.location}</p>
-              <p><strong>QR ID:</strong> {qrCode.qr_id}</p>
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>Site:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.name}</p>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>ID:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.site_id}</p>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>Location:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.location}</p>
+              </div>
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>QR ID:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{qrCode.qr_id}</p>
+              </div>
               
               <button
                 onClick={handleDownloadQR}
-                className="download-button"
+                style={{
+                  backgroundColor: '#28a745',
+                  color: 'white',
+                  border: 'none',
+                  padding: '12px 24px',
+                  borderRadius: '8px',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
+                onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
               >
-                Download QR Code
+                📥 Download QR Code
               </button>
             </div>
           </div>
           
-          <div className="qr-code-usage">
-            <h4>How to Use This QR Code:</h4>
-            <ol>
+          <div style={{
+            marginTop: '30px',
+            padding: '20px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '8px',
+            border: '1px solid #e9ecef'
+          }}>
+            <h4 style={{ margin: '0 0 16px 0', color: '#495057' }}>📝 How to Use This QR Code:</h4>
+            <ol style={{ margin: 0, paddingLeft: '20px', color: '#6c757d' }}>
               <li>Download and print the QR code</li>
               <li>Post it at the construction site entrance</li>
               <li>Field staff can scan with Splunk Mobile App to access site documents</li>
