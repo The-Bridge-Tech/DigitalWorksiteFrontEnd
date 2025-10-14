@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <view template="admin-portal:/templates/start.html" type="html">
-	<label>Digital Workspace</label>
+	<label>Digital Worksite</label>
 </view>

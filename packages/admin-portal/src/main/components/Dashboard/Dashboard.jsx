@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import MainContent from './MainContent';
+import SiteSelector from '../Sites/SiteSelector';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -25,11 +26,14 @@ const Dashboard = () => {
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
       />
-      <MainContent 
-        activeModule={activeModule}
-        sidebarCollapsed={sidebarCollapsed}
-        onNavigate={setActiveModule}
-      />
+      <div className="main-area" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <SiteSelector />
+        <MainContent 
+          activeModule={activeModule}
+          sidebarCollapsed={sidebarCollapsed}
+          onNavigate={setActiveModule}
+        />
+      </div>
     </div>
   );
 };

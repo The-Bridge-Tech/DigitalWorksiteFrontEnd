@@ -48,6 +48,27 @@ export const API_ENDPOINTS = {
   DOCUMENT_BY_ID: (id) => `/adm/documents/${id}`,
   DOCUMENT_STATUS: (id) => `/adm/documents/${id}/status`,
   
+  // Site Management endpoints (new)
+  MY_SITES: '/api/sites/my-sites',
+  SITE_SUBCONTRACTORS: (siteId) => `/api/sites/${siteId}/subcontractors`,
+  SITE_USERS: (siteId) => `/api/sites/${siteId}/users`,
+  SITE_DOCUMENTS: (siteId) => `/api/sites/${siteId}/documents`,
+  SITE_CHECKINS: (siteId) => `/api/sites/${siteId}/checkins`,
+  SITE_INSPECTIONS: (siteId) => `/api/sites/${siteId}/inspections`,
+  SUBCONTRACTORS: '/api/sites/subcontractors',
+  
+  // User permissions endpoints
+  USER_PERMISSIONS: '/api/user/permissions',
+  USER_MENU: '/api/user/menu',
+  
+  // User endpoints
+  USER_CREATE: '/adm/users/create',
+  USER_UPDATE: (id) => `/adm/users/${id}`,
+  USER_DELETE: (id) => `/adm/users/${id}`,
+  
+  // System endpoints
+  SYSTEM_ROOT_FOLDER: '/adm/system/root-folder',
+  
   // Status endpoint
   STATUS: '/adm/status'
 };

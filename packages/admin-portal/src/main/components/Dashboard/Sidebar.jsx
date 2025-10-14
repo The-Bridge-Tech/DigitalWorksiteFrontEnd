@@ -21,7 +21,7 @@ const Sidebar = ({ activeModule, onModuleChange, collapsed, onToggleCollapse }) 
     <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <div className="sidebar-header">
         <div className="logo">
-          {!collapsed && <span>Digital Workspace</span>}
+          {!collapsed && <span>Digital Worksite</span>}
           {collapsed && <span>DW</span>}
         </div>
         <button className="toggle-btn" onClick={onToggleCollapse}>

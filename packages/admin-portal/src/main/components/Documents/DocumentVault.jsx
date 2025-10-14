@@ -217,107 +217,203 @@ const DocumentVault = ({ siteId = null }) => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h2>📁 Document Vault</h2>
+    <div style={{ padding: '2rem' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
+          📁 Document Vault
+        </h1>
+        <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
+          Manage permits, inspection requests, reports and documentation
+        </p>
+      </div>
       
       {error && (
         <div style={{ 
           backgroundColor: '#f8d7da', 
           color: '#721c24', 
-          padding: '10px', 
-          borderRadius: '4px', 
-          marginBottom: '20px' 
+          padding: '15px 20px', 
+          borderRadius: '8px', 
+          marginBottom: '20px',
+          border: '1px solid #f5c6cb',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
-          {error}
-          <button onClick={() => setError(null)} style={{ float: 'right', background: 'none', border: 'none' }}>×</button>
+          <span>{error}</span>
+          <button 
+            onClick={() => setError(null)} 
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: '#721c24',
+              fontSize: '18px',
+              cursor: 'pointer',
+              padding: '0 5px'
+            }}
+          >
+            ×
+          </button>
         </div>
       )}
 
-      {/* Filters */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '15px', 
-        marginBottom: '20px', 
-        flexWrap: 'wrap',
-        alignItems: 'center'
+      {/* Filters Card */}
+      <div style={{
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '12px',
+        marginBottom: '20px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+        border: '1px solid #e9ecef'
       }}>
-        {/* Status Filter */}
-        <div>
-          <label style={{ marginRight: '5px' }}>Status:</label>
-          <select 
-            value={statusFilter} 
-            onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ padding: '5px' }}
-          >
-            <option value="all">All Status</option>
-            <option value="approved">✅ Approved</option>
-            <option value="pending">🟡 Pending</option>
-            <option value="expired">🔴 Expired</option>
-          </select>
-        </div>
-
-        {/* Type Filter */}
-        <div>
-          <label style={{ marginRight: '5px' }}>Type:</label>
-          <select 
-            value={typeFilter} 
-            onChange={(e) => setTypeFilter(e.target.value)}
-            style={{ padding: '5px' }}
-          >
-            <option value="all">All Types</option>
-            <option value="permit">📋 Permits</option>
-            <option value="inspection_request">🔍 Inspection Requests</option>
-            <option value="report">📊 Reports</option>
-            <option value="general">📄 General</option>
-          </select>
-        </div>
-
-        {/* Site Filter */}
-        {!siteId && (
+        <h3 style={{ margin: '0 0 15px 0', color: '#495057', fontSize: '18px' }}>Filters & Actions</h3>
+        <div style={{ 
+          display: 'flex', 
+          gap: '15px', 
+          flexWrap: 'wrap',
+          alignItems: 'center'
+        }}>
+          {/* Status Filter */}
           <div>
-            <label style={{ marginRight: '5px' }}>Site:</label>
+            <label style={{ 
+              display: 'block',
+              marginBottom: '5px',
+              fontWeight: '500',
+              color: '#495057',
+              fontSize: '14px'
+            }}>Status:</label>
             <select 
-              value={selectedSiteId || ''} 
-              onChange={(e) => setSelectedSiteId(e.target.value || null)}
-              style={{ padding: '5px' }}
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ 
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: '1px solid #ced4da',
+                fontSize: '14px',
+                minWidth: '140px'
+              }}
             >
-              <option value="">All Sites</option>
-              {sites.map(site => (
-                <option key={site.id} value={site.id}>{site.name}</option>
-              ))}
+              <option value="all">All Status</option>
+              <option value="approved">✅ Approved</option>
+              <option value="pending">🟡 Pending</option>
+              <option value="expired">🔴 Expired</option>
             </select>
           </div>
-        )}
 
-        {/* Upload Button */}
-        <button
-          onClick={() => {
-            const targetSiteId = selectedSiteId || sites[0]?.id;
-            setShowUploadModal({ 
-              show: true, 
-              documentType: 'general', 
-              siteId: targetSiteId
-            });
-            // Auto-select the site if none is selected
-            if (!selectedSiteId && sites[0]?.id) {
-              setSelectedSiteId(sites[0].id);
-            }
-          }}
-          style={{
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            padding: '8px 16px',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          📤 Upload Document
-        </button>
+          {/* Type Filter */}
+          <div>
+            <label style={{ 
+              display: 'block',
+              marginBottom: '5px',
+              fontWeight: '500',
+              color: '#495057',
+              fontSize: '14px'
+            }}>Type:</label>
+            <select 
+              value={typeFilter} 
+              onChange={(e) => setTypeFilter(e.target.value)}
+              style={{ 
+                padding: '8px 12px',
+                borderRadius: '6px',
+                border: '1px solid #ced4da',
+                fontSize: '14px',
+                minWidth: '160px'
+              }}
+            >
+              <option value="all">All Types</option>
+              <option value="permit">📋 Permits</option>
+              <option value="inspection_request">🔍 Inspection Requests</option>
+              <option value="report">📊 Reports</option>
+              <option value="general">📄 General</option>
+            </select>
+          </div>
+
+          {/* Site Filter */}
+          {!siteId && (
+            <div>
+              <label style={{ 
+                display: 'block',
+                marginBottom: '5px',
+                fontWeight: '500',
+                color: '#495057',
+                fontSize: '14px'
+              }}>Site:</label>
+              <select 
+                value={selectedSiteId || ''} 
+                onChange={(e) => setSelectedSiteId(e.target.value || null)}
+                style={{ 
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #ced4da',
+                  fontSize: '14px',
+                  minWidth: '140px'
+                }}
+              >
+                <option value="">All Sites</option>
+                {sites.map(site => (
+                  <option key={site.id} value={site.id}>{site.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {/* Upload Button */}
+          <div style={{ marginLeft: 'auto' }}>
+            <button
+              onClick={() => {
+                const targetSiteId = selectedSiteId || sites[0]?.id;
+                setShowUploadModal({ 
+                  show: true, 
+                  documentType: 'general', 
+                  siteId: targetSiteId
+                });
+                // Auto-select the site if none is selected
+                if (!selectedSiteId && sites[0]?.id) {
+                  setSelectedSiteId(sites[0].id);
+                }
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500',
+                boxShadow: '0 4px 12px rgba(0,123,255,0.3)',
+                transition: 'all 0.2s ease'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 6px 16px rgba(0,123,255,0.4)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 4px 12px rgba(0,123,255,0.3)';
+              }}
+            >
+              📤 Upload Document
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Documents Table */}
-      <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+      <div style={{ 
+        backgroundColor: 'white', 
+        borderRadius: '12px', 
+        overflow: 'hidden', 
+        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+        border: '1px solid #e9ecef'
+      }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead style={{ backgroundColor: '#f8f9fa' }}>
             <tr>
@@ -338,7 +434,6 @@ const DocumentVault = ({ siteId = null }) => {
               </tr>
             ) : (
               documents.map(doc => {
-                const site = sites.find(s => s.id === doc.site_id);
                 return (
                   <tr key={doc.id} style={{ borderBottom: '1px solid #dee2e6' }}>
                     <td style={{ padding: '12px' }}>{doc.name}</td>
@@ -348,7 +443,7 @@ const DocumentVault = ({ siteId = null }) => {
                       {doc.document_type === 'report' && '📊 Report'}
                       {doc.document_type === 'general' && '📄 General'}
                     </td>
-                    <td style={{ padding: '12px' }}>{site?.name || 'Unknown'}</td>
+                    <td style={{ padding: '12px' }}>{doc.site_name || 'Unknown'}</td>
                     <td style={{ padding: '12px' }}>
                       <span style={{
                         backgroundColor: getStatusColor(doc.status),
@@ -502,107 +597,199 @@ const DocumentVault = ({ siteId = null }) => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: 'rgba(0,0,0,0.6)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1000
+          zIndex: 1000,
+          backdropFilter: 'blur(4px)'
         }}>
           <div style={{
             backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '8px',
-            minWidth: '500px',
-            maxHeight: '80vh',
-            overflow: 'auto'
+            padding: '0',
+            borderRadius: '16px',
+            minWidth: '600px',
+            maxWidth: '90vw',
+            maxHeight: '90vh',
+            overflow: 'hidden',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
           }}>
-            <h3>Upload Document</h3>
+            {/* Modal Header */}
+            <div style={{
+              background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+              padding: '25px 30px',
+              color: 'white'
+            }}>
+              <h2 style={{ margin: '0', fontSize: '24px', fontWeight: '600' }}>
+                📤 Upload Document
+              </h2>
+              <p style={{ margin: '5px 0 0 0', opacity: 0.9, fontSize: '14px' }}>
+                Add a new document to the vault
+              </p>
+            </div>
             
-            <div style={{ marginBottom: '15px' }}>
-              <label>Document Type:</label>
-              <select
-                value={showUploadModal.documentType}
-                onChange={(e) => setShowUploadModal({
-                  ...showUploadModal,
-                  documentType: e.target.value
-                })}
-                style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-              >
-                <option value="general">📄 General</option>
-                <option value="permit">📋 Permit</option>
-                <option value="inspection_request">🔍 Inspection Request</option>
-                <option value="report">📊 Report</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '15px' }}>
-              <label>Site:</label>
-              <select
-                value={showUploadModal.siteId || ''}
-                onChange={(e) => {
-                  const newSiteId = e.target.value;
-                  setShowUploadModal({
+            {/* Modal Content */}
+            <div style={{ padding: '30px' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontWeight: '600',
+                  color: '#495057',
+                  fontSize: '14px'
+                }}>Document Type:</label>
+                <select
+                  value={showUploadModal.documentType}
+                  onChange={(e) => setShowUploadModal({
                     ...showUploadModal,
-                    siteId: newSiteId
-                  });
-                  // Update the main site selection too
-                  setSelectedSiteId(newSiteId);
-                }}
-                style={{ width: '100%', padding: '8px', marginTop: '5px' }}
-              >
-                {sites.map(site => (
-                  <option key={site.id} value={site.id}>{site.name}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Voice Notes (Optional) */}
-            <div style={{ marginBottom: '15px' }}>
-              <label>Audio Notes (Voice-to-Text) - Optional:</label>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                <button
-                  onClick={startRecording}
-                  disabled={isRecording}
-                  style={{
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    cursor: isRecording ? 'not-allowed' : 'pointer',
-                    opacity: isRecording ? 0.6 : 1
+                    documentType: e.target.value
+                  })}
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px 16px', 
+                    borderRadius: '8px',
+                    border: '2px solid #e9ecef',
+                    fontSize: '14px',
+                    backgroundColor: '#f8f9fa',
+                    transition: 'border-color 0.2s ease'
                   }}
+                  onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                  onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
                 >
-                  🎤 Start Recording
-                </button>
-                <button
-                  onClick={stopRecording}
-                  disabled={!isRecording}
-                  style={{
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    cursor: !isRecording ? 'not-allowed' : 'pointer',
-                    opacity: !isRecording ? 0.6 : 1
-                  }}
-                >
-                  ⏹️ Stop Recording
-                </button>
-                {isRecording && (
-                  <span style={{ color: '#dc3545', alignSelf: 'center' }}>
-                    🔴 Recording...
-                  </span>
-                )}
+                  <option value="general">📄 General</option>
+                  <option value="permit">📋 Permit</option>
+                  <option value="inspection_request">🔍 Inspection Request</option>
+                  <option value="report">📊 Report</option>
+                </select>
               </div>
-              <textarea
-                value={audioNotes}
-                onChange={(e) => setAudioNotes(e.target.value)}
-                placeholder="Audio notes will appear here... (Optional)"
-                style={{ width: '100%', height: '80px', marginTop: '10px', padding: '8px' }}
-              />
-            </div>
+
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontWeight: '600',
+                  color: '#495057',
+                  fontSize: '14px'
+                }}>Site:</label>
+                <select
+                  value={showUploadModal.siteId || ''}
+                  onChange={(e) => {
+                    const newSiteId = e.target.value;
+                    setShowUploadModal({
+                      ...showUploadModal,
+                      siteId: newSiteId
+                    });
+                    // Update the main site selection too
+                    setSelectedSiteId(newSiteId);
+                  }}
+                  style={{ 
+                    width: '100%', 
+                    padding: '12px 16px', 
+                    borderRadius: '8px',
+                    border: '2px solid #e9ecef',
+                    fontSize: '14px',
+                    backgroundColor: '#f8f9fa',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                  onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+                >
+                  {sites.map(site => (
+                    <option key={site.id} value={site.id}>{site.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Voice Notes (Optional) */}
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ 
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontWeight: '600',
+                  color: '#495057',
+                  fontSize: '14px'
+                }}>Audio Notes (Voice-to-Text) - Optional:</label>
+                <div style={{ 
+                  display: 'flex', 
+                  gap: '12px', 
+                  marginBottom: '12px',
+                  flexWrap: 'wrap',
+                  alignItems: 'center'
+                }}>
+                  <button
+                    onClick={startRecording}
+                    disabled={isRecording}
+                    style={{
+                      background: isRecording ? '#6c757d' : 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      cursor: isRecording ? 'not-allowed' : 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    🎤 Start Recording
+                  </button>
+                  <button
+                    onClick={stopRecording}
+                    disabled={!isRecording}
+                    style={{
+                      background: !isRecording ? '#6c757d' : 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
+                      color: 'white',
+                      border: 'none',
+                      padding: '10px 16px',
+                      borderRadius: '8px',
+                      cursor: !isRecording ? 'not-allowed' : 'pointer',
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      transition: 'all 0.2s ease'
+                    }}
+                  >
+                    ⏹️ Stop Recording
+                  </button>
+                  {isRecording && (
+                    <div style={{ 
+                      color: '#dc3545', 
+                      fontSize: '14px',
+                      fontWeight: '500',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <div style={{
+                        width: '8px',
+                        height: '8px',
+                        backgroundColor: '#dc3545',
+                        borderRadius: '50%',
+                        animation: 'pulse 1s infinite'
+                      }}></div>
+                      Recording...
+                    </div>
+                  )}
+                </div>
+                <textarea
+                  value={audioNotes}
+                  onChange={(e) => setAudioNotes(e.target.value)}
+                  placeholder="Audio notes will appear here... (Optional)"
+                  style={{ 
+                    width: '100%', 
+                    height: '100px', 
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: '2px solid #e9ecef',
+                    fontSize: '14px',
+                    backgroundColor: '#f8f9fa',
+                    resize: 'vertical',
+                    fontFamily: 'inherit',
+                    transition: 'border-color 0.2s ease'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                  onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+                />
+              </div>
 
 
             
@@ -611,32 +798,53 @@ const DocumentVault = ({ siteId = null }) => {
               onUploadComplete={handleFileUpload}
             />
 
-            <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
-              <button
-                onClick={() => {
-                  setShowUploadModal(false);
-                  setAudioNotes('');
-                  setIsRecording(false);
-                  if (recognition) {
-                    recognition.stop();
-                    setRecognition(null);
-                  }
-                }}
-                style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
-                  border: 'none',
-                  padding: '10px 20px',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
+              <div style={{ 
+                display: 'flex', 
+                gap: '12px', 
+                justifyContent: 'flex-end', 
+                marginTop: '30px',
+                paddingTop: '20px',
+                borderTop: '1px solid #e9ecef'
+              }}>
+                <button
+                  onClick={() => {
+                    setShowUploadModal(false);
+                    setAudioNotes('');
+                    setIsRecording(false);
+                    if (recognition) {
+                      recognition.stop();
+                      setRecognition(null);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: '#6c757d',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = '#5a6268'}
+                  onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+      
+      <style>{`
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.5; }
+          100% { opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 };

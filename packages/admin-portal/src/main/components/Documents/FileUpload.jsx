@@ -175,8 +175,6 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
 
   return (
     <div className="file-upload">
-      <h3>Upload Document</h3>
-      
       <div className="upload-form">
         <div className="file-input-container">
           <input
@@ -216,105 +214,170 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
 
       {error && (
         <div className="upload-error">
-          <p>{error}</p>
+          <span>{error}</span>
           <button onClick={() => setError(null)} className="dismiss-button">
-            Dismiss
+            ×
           </button>
         </div>
       )}
 
       {success && (
         <div className="upload-success">
-          <p>File uploaded successfully!</p>
+          <span>✅ File uploaded successfully!</span>
           <button onClick={() => setSuccess(false)} className="dismiss-button">
-            Dismiss
+            ×
           </button>
         </div>
       )}
       <style>{`
         .file-upload {
           background-color: #fff;
-          padding: 24px;
-          border-radius: 10px;
-          max-width: 600px;
-          margin: 20px auto;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+          padding: 0;
+          border-radius: 12px;
+          max-width: 100%;
+          margin: 0;
+          box-shadow: none;
+          border: none;
         }
         .upload-form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
-          margin-top: 16px;
+          gap: 20px;
+          margin-top: 0;
         }
         .file-input-container {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 12px;
         }
         .file-input {
-          padding: 8px;
+          padding: 12px 16px;
+          border: 2px dashed #007bff;
+          border-radius: 8px;
+          background-color: #f8f9ff;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 14px;
+        }
+        .file-input:hover {
+          border-color: #0056b3;
+          background-color: #e7f3ff;
         }
         .selected-file {
-          font-size: 0.9rem;
-          color: #4a5568;
+          font-size: 14px;
+          color: #495057;
+          background-color: #e7f3ff;
+          padding: 12px 16px;
+          border-radius: 8px;
+          border: 1px solid #007bff;
+        }
+        .selected-file p {
+          margin: 0;
+          font-weight: 500;
         }
         .upload-button {
-          padding: 10px 16px;
-          background-color: #3182ce;
+          padding: 12px 24px;
+          background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
           color: white;
           border: none;
-          border-radius: 6px;
+          border-radius: 8px;
           cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(0,123,255,0.3);
         }
         .upload-button.uploading {
           opacity: 0.7;
           cursor: not-allowed;
+          transform: none;
         }
         .upload-button:hover:not(.uploading) {
-          background-color: #2b6cb0;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0,123,255,0.4);
         }
         .upload-progress {
-          margin-top: 16px;
+          margin-top: 20px;
         }
         .progress-bar {
           width: 100%;
-          background-color: #e2e8f0;
-          border-radius: 6px;
+          background-color: #e9ecef;
+          border-radius: 8px;
           overflow: hidden;
+          height: 8px;
         }
         .progress-bar-fill {
-          height: 12px;
-          background-color: #38a169;
+          height: 100%;
+          background: linear-gradient(90deg, #007bff 0%, #28a745 100%);
           width: 0%;
           transition: width 0.3s ease;
+          border-radius: 8px;
         }
         .progress-text {
-          font-size: 0.85rem;
-          color: #4a5568;
-          margin-top: 4px;
+          font-size: 14px;
+          color: #495057;
+          margin-top: 8px;
+          text-align: center;
+          font-weight: 500;
         }
         .upload-error, .upload-success {
-          margin-top: 16px;
-          padding: 12px;
-          border-radius: 6px;
-          font-size: 0.9rem;
+          margin-top: 20px;
+          padding: 16px 20px;
+          border-radius: 8px;
+          font-size: 14px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
         }
         .upload-error {
-          background-color: #fff5f5;
-          color: #e53e3e;
+          background-color: #f8d7da;
+          color: #721c24;
+          border: 1px solid #f5c6cb;
         }
         .upload-success {
-          background-color: #f0fff4;
-          color: #38a169;
+          background-color: #d4edda;
+          color: #155724;
+          border: 1px solid #c3e6cb;
         }
         .dismiss-button {
-          margin-top: 8px;
           background: none;
           border: none;
-          color: #4a5568;
-          text-decoration: underline;
+          color: inherit;
           cursor: pointer;
-          font-size: 0.85rem;
+          font-size: 18px;
+          padding: 0 5px;
+          opacity: 0.7;
+        }
+        .dismiss-button:hover {
+          opacity: 1;
+        }
+        .auth-required {
+          text-align: center;
+          padding: 40px 20px;
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          border: 1px solid #e9ecef;
+        }
+        .auth-required p {
+          margin-bottom: 20px;
+          color: #495057;
+          font-size: 16px;
+        }
+        .sign-in-button {
+          padding: 12px 24px;
+          background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(220,53,69,0.3);
+        }
+        .sign-in-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(220,53,69,0.4);
         }
       `}</style>
     </div>

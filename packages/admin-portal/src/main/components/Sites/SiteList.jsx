@@ -24,7 +24,7 @@ function normalizeSite(raw) {
   };
 }
 
-const SiteList = ({ onViewDocuments, refreshTrigger }) => {
+const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
   const [sites, setSites] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -266,7 +266,7 @@ const SiteList = ({ onViewDocuments, refreshTrigger }) => {
               {isLoading ? '🔄 Loading...' : '🔄 Refresh'}
             </button>
             <button 
-              onClick={() => window.location.href = '/site/new'}
+              onClick={onCreateNew}
               style={{
                 backgroundColor: 'rgba(255,255,255,0.2)',
                 color: 'white',

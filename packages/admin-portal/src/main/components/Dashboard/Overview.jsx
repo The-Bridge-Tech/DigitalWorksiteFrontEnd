@@ -16,16 +16,21 @@ const Overview = ({ onNavigate }) => {
 
   const loadOverviewData = async () => {
     try {
+      setLoading(true);
+      
+      // Load both APIs concurrently but wait for both to complete
       const [sites, users] = await Promise.all([
         getSites().catch(() => []),
         getUsers().catch(() => [])
       ]);
       
+      // Update stats only after both calls complete
       setStats({
         totalSites: sites?.length || 0,
         totalUsers: users?.length || 0,
         recentActivity: []
       });
+      
     } catch (error) {
       console.error('Error loading overview data:', error);
     } finally {
@@ -33,18 +38,38 @@ const Overview = ({ onNavigate }) => {
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔄</div>
-        <p>Loading overview...</p>
-      </div>
-    );
-  }
+  // Show partial data while loading
+  const showPartialData = stats.totalSites > 0 || stats.totalUsers > 0;
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1 style={{ marginBottom: '2rem', color: '#343a40' }}>Digital Workspace Overview</h1>
+      {/* Loading indicator */}
+      {loading && !showPartialData && (
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚡</div>
+          <p>Loading overview...</p>
+        </div>
+      )}
+      
+      {/* Show content even while loading if we have partial data */}
+      {(showPartialData || !loading) && (
+        <>
+        {/* Header Card */}
+        <div style={{
+          background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+      }}>
+        <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
+          🏠 Digital Worksite Overview
+        </h1>
+        <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
+          Monitor your construction sites, track progress, and manage operations
+        </p>
+      </div>
       
       <div style={{ 
         display: 'grid', 
@@ -145,6 +170,28 @@ const Overview = ({ onNavigate }) => {
           </button>
         </div>
       </div>
+      
+        </>
+      )}
+      
+      {/* Loading overlay for partial updates */}
+      {loading && showPartialData && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          right: '20px',
+          backgroundColor: 'rgba(0,123,255,0.9)',
+          color: 'white',
+          padding: '8px 16px',
+          borderRadius: '20px',
+          fontSize: '14px',
+          fontWeight: '500',
+          zIndex: 1000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+        }}>
+          ⚡ Updating...
+        </div>
+      )}
     </div>
   );
 };

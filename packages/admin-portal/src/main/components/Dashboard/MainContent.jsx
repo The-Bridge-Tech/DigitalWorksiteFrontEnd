@@ -6,8 +6,7 @@ import CheckIn from '../CheckIn/CheckIn';
 import CheckInList from '../CheckIn/CheckInList';
 import DocumentVault from '../Documents/DocumentVault';
 import NotificationsTab from '../Notifications/NotificationsTab';
-import UserList from '../Users/UserList';
-import UserForm from '../Users/UserForm';
+import UserManagement from '../Users/UserManagement';
 import TemplateList from '../Templates/TemplateList';
 import TemplateForm from '../Templates/TemplateForm';
 import InspectionCalendar from '../Calendar/InspectionCalendar';
@@ -17,6 +16,7 @@ import FileList from '../Documents/FileList';
 import FileUpload from '../Documents/FileUpload';
 import GoogleAuth from '../Auth/GoogleAuth';
 import Overview from './Overview';
+import RootFolderSetup from '../Setup/RootFolderSetup';
 
 const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
   const [subView, setSubView] = useState(null);
@@ -104,7 +104,7 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
                 </div>
               </div>
               <div style={{ padding: '2rem' }}>
-                <SiteList onEdit={handleEdit} />
+                <SiteList onEdit={handleEdit} onCreateNew={handleCreateNew} />
               </div>
             </div>
           </div>
@@ -217,69 +217,7 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
         return <NotificationsTab />;
       
       case 'users':
-        if (subView === 'create' || subView === 'edit') {
-          return (
-            <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-              <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-                <div style={{ padding: '1.5rem', borderBottom: '1px solid #e9ecef', backgroundColor: '#f8f9fa' }}>
-                  <button onClick={handleBack} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'linear-gradient(135deg, #6c757d, #495057)', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                  }}>
-                    ← Back to Users
-                  </button>
-                </div>
-                <div style={{ padding: '2rem' }}>
-                  <UserForm userId={selectedId} onSave={handleBack} onCancel={handleBack} />
-                </div>
-              </div>
-            </div>
-          );
-        }
-        return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-              <div style={{ 
-                padding: '2rem', 
-                borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
-                color: 'white'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Users Management</h1>
-                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Manage system users and permissions</p>
-                  </div>
-                  <button onClick={handleCreateNew} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'rgba(255,255,255,0.2)', 
-                    color: 'white', 
-                    border: '1px solid rgba(255,255,255,0.3)', 
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    backdropFilter: 'blur(10px)'
-                  }}>
-                    + Add New User
-                  </button>
-                </div>
-              </div>
-              <div style={{ padding: '2rem' }}>
-                <UserList onEdit={handleEdit} />
-              </div>
-            </div>
-          </div>
-        );
+        return <UserManagement />;
       
       case 'templates':
         if (subView === 'create' || subView === 'edit') {
@@ -517,6 +455,8 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
           </div>
         );
       
+
+
       case 'auth':
         return (
           <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>

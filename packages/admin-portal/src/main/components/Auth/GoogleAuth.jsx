@@ -101,20 +101,42 @@ const GoogleAuth = ({ onAuthChange }) => {
       
       // Remove token from localStorage
       localStorage.removeItem('auth_token');
+      localStorage.removeItem('selected_site_id');
       
       // Call logout endpoint (optional since JWT is stateless)
-      await fetch(`${API_URL}/adm/auth/logout`);
+      try {
+        await fetch(`${API_BASE_URL}${API_ENDPOINTS.AUTH_LOGOUT || '/adm/auth/logout'}`);
+      } catch (logoutError) {
+        // Ignore logout endpoint errors since token removal is sufficient
+        console.warn('Logout endpoint error (ignored):', logoutError);
+      }
       
+      // Clear component state
       setIsAuthenticated(false);
       setUser(null);
+      setError(null);
+      
       // Notify parent component about logout
       if (onAuthChange) {
         onAuthChange(false);
       }
+      
       console.log('Successfully logged out');
+      
+      // Force page refresh to ensure clean state
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
     } catch (error) {
-      console.error('Error logging out:', error);
-      setError(`Failed to log out: ${error.message}`);
+      console.error('Error during logout:', error);
+      // Even if there's an error, still log out locally
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('selected_site_id');
+      setIsAuthenticated(false);
+      setUser(null);
+      if (onAuthChange) {
+        onAuthChange(false);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -318,7 +340,7 @@ const GoogleAuth = ({ onAuthChange }) => {
       {error && <div style={styles.error}>{error}</div>}
       
       <p style={styles.signInText}>
-        Sign in with your Google account to access Drive features and file storage
+        Sign in with your Google account to access Digital Worksite features and file storage
       </p>
       
       <div style={styles.buttonContainer}>

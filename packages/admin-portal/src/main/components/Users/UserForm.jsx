@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { createUser, updateUser, getUser } from '../../services/users.service';
 import { saveToStorage, loadFromStorage } from '../../utils/storage';
+import { API_BASE_URL, API_ENDPOINTS } from '../../config/api.config';
 
 const UserForm = ({ userId, onSave, onCancel }) => {
   // Form data state
@@ -11,7 +12,10 @@ const UserForm = ({ userId, onSave, onCancel }) => {
     name: '',
     email: '',
     company: '',
-    role:''
+    role: '',
+    contact_phone: '',
+    license_number: '',
+    subcontractor_type: '',
   });
 
   // Form state
@@ -51,7 +55,10 @@ const UserForm = ({ userId, onSave, onCancel }) => {
         name: user.name || '',
         email: user.email || '',
         company: user.company || '',
-        role: user.role || ''
+        role: user.role || '',
+        contact_phone: user.contact_phone || '',
+        license_number: user.license_number || '',
+        subcontractor_type: user.subcontractor_type || ''
       });
     } catch (error) {
       console.error('Error loading user:', error);
@@ -85,24 +92,52 @@ const UserForm = ({ userId, onSave, onCancel }) => {
       return;
     }
 
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     try {
       setIsSaving(true);
       setError(null);
+      
+      console.log('UserForm: Starting user save process...');
 
       let result;
       if (isEditing) {
+        console.log('UserForm: Updating existing user...');
         result = await updateUser(userId, formData);
       } else {
-        result = await createUser(formData);
+        console.log('UserForm: Creating new user via database API...');
+        result = await createUser({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          role: formData.role
+        });
+        
         saveToStorage('user_draft', null);
+        console.log('UserForm: User created successfully via database API!');
       }
-
+      
+      console.log('UserForm: User created successfully!');
       if (onSave) {
         onSave(result);
       }
     } catch (error) {
-      console.error('Error saving user:', error);
-      setError(`Failed to save user: ${error.message || 'Unknown error'}`);
+      console.error('UserForm: Error saving user:', error);
+      
+      // Provide user-friendly error messages
+      let errorMessage = 'Unknown error occurred';
+      if (error.message) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      
+      setError(errorMessage);
     } finally {
       setIsSaving(false);
     }
@@ -168,9 +203,15 @@ const UserForm = ({ userId, onSave, onCancel }) => {
           marginBottom: '20px',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'flex-start'
         }}>
-          <span><strong>Error:</strong> {error}</span>
+          <div>
+            <strong>Error:</strong> {error}
+            <br />
+            <small style={{ opacity: 0.8, marginTop: '5px', display: 'block' }}>
+              If this problem persists, please check your internet connection and try refreshing the page.
+            </small>
+          </div>
           <button 
             onClick={() => setError(null)}
             style={{
@@ -179,7 +220,8 @@ const UserForm = ({ userId, onSave, onCancel }) => {
               color: '#721c24',
               cursor: 'pointer',
               fontSize: '18px',
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              marginLeft: '10px'
             }}
           >
             ×
@@ -286,12 +328,99 @@ const UserForm = ({ userId, onSave, onCancel }) => {
               }}
             >
               <option value="">-- Select Role --</option>
-              <option value="supervisor">Supervisor</option>
-              <option value="contractor">Contractor</option>
-              <option value="inspector">Inspector</option>
               <option value="admin">Admin</option>
+              <option value="site_manager">Site Manager</option>
+              <option value="contractor">Contractor</option>
+              <option value="subcontractor">Subcontractor</option>
+              <option value="inspector">Inspector</option>
+              <option value="viewer">Viewer</option>
             </select>
           </div>
+
+
+
+          {/* Subcontractor Fields */}
+          {(formData.role === 'subcontractor' || formData.role === 'contractor') && (
+            <>
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Phone Number:</label>
+                <input
+                  type="tel"
+                  name="contact_phone"
+                  value={formData.contact_phone}
+                  onChange={handleChange}
+                  placeholder="Enter phone number"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '2px solid #e9ecef',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    transition: 'border-color 0.3s ease',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#28a745'}
+                  onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+                />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>License Number:</label>
+                <input
+                  type="text"
+                  name="license_number"
+                  value={formData.license_number}
+                  onChange={handleChange}
+                  placeholder="Enter license number"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    border: '2px solid #e9ecef',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    transition: 'border-color 0.3s ease',
+                    outline: 'none',
+                    boxSizing: 'border-box'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = '#28a745'}
+                  onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+                />
+              </div>
+
+              {formData.role === 'subcontractor' && (
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Subcontractor Type:</label>
+                  <select
+                    name="subcontractor_type"
+                    value={formData.subcontractor_type}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '12px 16px',
+                      border: '2px solid #e9ecef',
+                      borderRadius: '8px',
+                      fontSize: '16px',
+                      backgroundColor: 'white',
+                      cursor: 'pointer',
+                      boxSizing: 'border-box'
+                    }}
+                  >
+                    <option value="">-- Select Type --</option>
+                    <option value="electrical">Electrical</option>
+                    <option value="plumbing">Plumbing</option>
+                    <option value="hvac">HVAC</option>
+                    <option value="roofing">Roofing</option>
+                    <option value="flooring">Flooring</option>
+                    <option value="painting">Painting</option>
+                    <option value="concrete">Concrete</option>
+                    <option value="steel">Steel Work</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              )}
+            </>
+          )}
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
             <button
@@ -337,12 +466,13 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                 fontSize: '16px',
                 fontWeight: '500',
                 cursor: isSaving ? 'not-allowed' : 'pointer',
-                transition: 'background-color 0.3s ease'
+                transition: 'background-color 0.3s ease',
+                minWidth: '140px'
               }}
               onMouseEnter={(e) => !isSaving && (e.target.style.backgroundColor = '#1e7e34')}
               onMouseLeave={(e) => !isSaving && (e.target.style.backgroundColor = '#28a745')}
             >
-              {isSaving ? '⏳ Saving...' : (isEditing ? '✏️ Update User' : '👥 Save User')}
+              {isSaving ? '⏳ Saving...' : (isEditing ? '✏️ Update User' : '👥 Create User')}
             </button>
           </div>
         </form>

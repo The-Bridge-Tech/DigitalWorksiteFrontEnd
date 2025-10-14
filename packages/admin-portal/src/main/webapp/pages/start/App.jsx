@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { checkAuthStatus } from "../../../services/auth.service";
 import GoogleAuth from "../../../components/Auth/GoogleAuth";
 import Dashboard from "../../../components/Dashboard/Dashboard";
+import { SiteProvider } from "../../../components/SiteContext";
+import AccessGuard from "../../../components/Auth/AccessGuard";
 
 // =======================
 // Inline styles
@@ -29,6 +31,14 @@ const headerStyles = {
 // App Component
 // =======================
 const App = () => {
+  return (
+    <AccessGuard>
+      <AuthenticatedApp />
+    </AccessGuard>
+  );
+};
+
+const AuthenticatedApp = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [initializing, setInitializing] = useState(true);
 
@@ -65,7 +75,7 @@ const App = () => {
       <div style={appStyles}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🔄</div>
-          <p>Loading Digital Workspace...</p>
+          <p>Loading Digital Worksite...</p>
         </div>
       </div>
     );
@@ -74,10 +84,10 @@ const App = () => {
   if (!authenticated) {
     return (
       <div style={appStyles}>
-        <h1 style={headerStyles}>Digital Workspace</h1>
+        <h1 style={headerStyles}>Digital Worksite</h1>
         <div style={{ textAlign: 'center', maxWidth: '400px', margin: '0 auto' }}>
           <p style={{ marginBottom: '2rem', color: '#6c757d' }}>
-            Please sign in to access the workspace
+            Please sign in to access the worksite
           </p>
           <GoogleAuth onAuthChange={handleAuthChange} />
         </div>
@@ -85,7 +95,11 @@ const App = () => {
     );
   }
 
-  return <Dashboard />;
+  return (
+    <SiteProvider>
+      <Dashboard />
+    </SiteProvider>
+  );
 };
 
 export default App;

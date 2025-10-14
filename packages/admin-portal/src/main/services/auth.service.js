@@ -159,15 +159,31 @@ export const getCurrentUser = async () => {
  */
 export const logout = async () => {
   try {
-    // Remove token from localStorage
+    // Remove all auth-related data from localStorage
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('selected_site_id');
+    localStorage.removeItem('auth_status');
+    localStorage.removeItem('auth_redirect');
+    
+    // Update auth status to notify other components
+    updateAuthStatus(false, null);
     
     // Call logout endpoint (optional since JWT is stateless)
-    await fetch(`${API_BASE_URL}/adm/auth/logout`);
+    try {
+      await fetch(`${API_BASE_URL}/adm/auth/logout`);
+    } catch (logoutError) {
+      // Ignore logout endpoint errors since local cleanup is sufficient
+      console.warn('Logout endpoint error (ignored):', logoutError);
+    }
     
     return true;
   } catch (error) {
     console.error('Error logging out:', error);
+    // Even if there's an error, still clear local data
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('selected_site_id');
+    localStorage.removeItem('auth_status');
+    updateAuthStatus(false, null);
     return false;
   }
 };

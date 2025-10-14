@@ -71,16 +71,33 @@ const NotificationsTab = () => {
     }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
-            <h2>Notifications</h2>
+        <div style={{ padding: '20px' }}>
+            {/* Header Card */}
+            <div style={{
+                background: 'linear-gradient(135deg, #fd7e14 0%, #e55a4e 100%)',
+                borderRadius: '12px',
+                padding: '30px',
+                marginBottom: '30px',
+                color: 'white',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+            }}>
+                <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
+                    🔔 Notifications
+                </h1>
+                <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
+                    Stay updated with important alerts, reminders, and system notifications
+                </p>
+            </div>
             
             {notifications.length === 0 ? (
                 <div style={{
                     textAlign: 'center',
                     padding: '40px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '8px',
-                    color: '#6c757d'
+                    backgroundColor: 'white',
+                    borderRadius: '12px',
+                    color: '#6c757d',
+                    boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+                    border: '1px solid #e9ecef'
                 }}>
                     <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
                     <h3>No notifications</h3>

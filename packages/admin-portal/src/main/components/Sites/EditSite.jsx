@@ -115,189 +115,377 @@ const EditSite = ({ site, onSave, onCancel }) => {
   };
   
   return (
-    <div className="edit-site">
-  
-
-      <div className="edit-site-header">
-        <h2>Edit Construction Site</h2>
-        <button className="back-button" onClick={handleCancel}>
-          <span>←</span> Back to Sites
+    <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      {/* Header Card */}
+      <div style={{
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        borderRadius: '12px',
+        padding: '30px',
+        marginBottom: '30px',
+        color: 'white',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <div>
+          <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>✏️ Edit Construction Site</h1>
+          <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>Update site information and QR code settings</p>
+        </div>
+        <button 
+          onClick={handleCancel}
+          style={{
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            color: 'white',
+            padding: '12px 20px',
+            border: '2px solid rgba(255,255,255,0.3)',
+            borderRadius: '8px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            transition: 'all 0.3s ease',
+            backdropFilter: 'blur(10px)'
+          }}
+        >
+          ← Back to Sites
         </button>
       </div>
-      
+
+      {/* Error Message */}
       {error && (
-        <div className="error-message">
-          <p>{error}</p>
-        </div>
-      )}
-      
-      {success && (
-        <div className="success-message">
-          <p>Site updated successfully!</p>
-        </div>
-      )}
-      
-      <div className="site-form">
-        {/* Site ID (read-only) */}
-        <div className="form-group read-only">
-          <label htmlFor="site_id">Site ID:</label>
-          <input
-            type="text"
-            id="site_id"
-            name="site_id"
-            value={formData.site_id}
-            readOnly
-          />
-          <span className="help-text">Site ID cannot be changed</span>
-        </div>
-        
-        {/* Site Name */}
-        <div className="form-group">
-          <label htmlFor="name">Site Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter site name"
-            required
-          />
-        </div>
-        
-        {/* Location */}
-        <div className="form-group">
-          <label htmlFor="location">Location:</label>
-          <input
-            type="text"
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="Enter site location"
-            required
-          />
-        </div>
-        
-        {/* Folder Type */}
-        <div className="form-group">
-          <label htmlFor="folder_type">Storage Type:</label>
-          <select
-            id="folder_type"
-            name="folder_type"
-            value={formData.folder_type}
-            onChange={handleChange}
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #f5c6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Error:</strong> {error}</span>
+          <button 
+            onClick={() => setError(null)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#721c24',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
           >
-            <option value="GoogleDrive">Google Drive</option>
-            <option value="OneDrive">OneDrive</option>
-            <option value="Dropbox">Dropbox</option>
-            <option value="SharePoint">SharePoint</option>
-            <option value="NAS">NAS</option>
-            <option value="Other">Other</option>
-          </select>
+            ×
+          </button>
         </div>
-        
-        {/* Folder Link */}
-        <div className="form-group full-width">
-          <label htmlFor="folder_link">Folder Link:</label>
-          <input
-            type="text"
-            id="folder_link"
-            name="folder_link"
-            value={formData.folder_link}
-            onChange={handleChange}
-            placeholder={`Enter ${formData.folder_type} folder link`}
-            required
-          />
-          <span className="help-text">
-            This link will be encoded in the QR code for this site
-          </span>
+      )}
+      
+      {/* Success Message */}
+      {success && (
+        <div style={{
+          backgroundColor: '#d4edda',
+          color: '#155724',
+          padding: '15px 20px',
+          borderRadius: '8px',
+          border: '1px solid #c3e6cb',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span><strong>Success:</strong> Site updated successfully!</span>
+          <button 
+            onClick={() => setSuccess(false)}
+            style={{
+              backgroundColor: 'transparent',
+              border: 'none',
+              color: '#155724',
+              cursor: 'pointer',
+              fontSize: '18px',
+              fontWeight: 'bold'
+            }}
+          >
+            ×
+          </button>
         </div>
-        
-        {/* Description */}
-        <div className="form-group full-width">
-          <label htmlFor="description">Description (Optional):</label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            placeholder="Enter additional site details or notes"
-          />
-        </div>
-        
-        {/* QR Code Preview */}
-        <div className="form-preview">
-          <div className="preview-header">
-            <h3>QR Code Preview</h3>
+      )}
+      
+      {/* Form Card */}
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        padding: '30px',
+        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef',
+        marginBottom: '20px'
+      }}>
+        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+          {/* Site ID (read-only) */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Site ID:</label>
+            <input
+              type="text"
+              value={formData.site_id}
+              readOnly
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                backgroundColor: '#f8f9fa',
+                color: '#6c757d',
+                cursor: 'not-allowed',
+                boxSizing: 'border-box'
+              }}
+            />
+            <small style={{ color: '#6c757d', fontSize: '14px', marginTop: '4px', display: 'block' }}>
+              Site ID cannot be changed after creation
+            </small>
           </div>
           
-          <div className="preview-content">
-            {hasValidLink() ? (
-              <div className="qr-code-container">
-                <QRCode
-                  value={formData.folder_link}
-                  size={150}
-                  level="M"
-                  bgColor="#FFFFFF"
-                  fgColor="#000000"
-                />
-              </div>
-            ) : (
-              <div className="qr-code-container" style={{ padding: '24px' }}>
-                <p>Add a folder link to generate QR code</p>
-              </div>
-            )}
+          {/* Site Name */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Site Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter site name"
+              required
+              disabled={isSubmitting}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
+          
+          {/* Location */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Location:</label>
+            <input
+              type="text"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="Enter site location"
+              required
+              disabled={isSubmitting}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
+          
+          {/* Folder Type */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Storage Type:</label>
+            <select
+              name="folder_type"
+              value={formData.folder_type}
+              onChange={handleChange}
+              disabled={isSubmitting}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                backgroundColor: 'white',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <option value="GoogleDrive">Google Drive</option>
+              <option value="OneDrive">OneDrive</option>
+              <option value="Dropbox">Dropbox</option>
+              <option value="SharePoint">SharePoint</option>
+              <option value="NAS">NAS</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          
+          {/* Folder Link */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Folder Link:</label>
+            <input
+              type="text"
+              name="folder_link"
+              value={formData.folder_link}
+              onChange={handleChange}
+              placeholder={`Enter ${formData.folder_type} folder link`}
+              required
+              disabled={isSubmitting}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+            <small style={{ color: '#6c757d', fontSize: '14px', marginTop: '4px', display: 'block' }}>
+              This link will be encoded in the QR code for this site
+            </small>
+          </div>
+          
+          {/* Description */}
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ display: 'block', marginBottom: '8px', color: '#495057', fontWeight: '600' }}>Description (Optional):</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Enter additional site details or notes"
+              disabled={isSubmitting}
+              rows={4}
+              style={{
+                width: '100%',
+                padding: '12px 16px',
+                border: '2px solid #e9ecef',
+                borderRadius: '8px',
+                fontSize: '16px',
+                transition: 'border-color 0.3s ease',
+                outline: 'none',
+                resize: 'vertical',
+                fontFamily: 'inherit',
+                boxSizing: 'border-box'
+              }}
+              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
+            />
+          </div>
+          
+          {/* Form Actions */}
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+            <button
+              type="button"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              style={{
+                backgroundColor: '#6c757d',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !isSubmitting && (e.target.style.backgroundColor = '#545b62')}
+              onMouseLeave={(e) => !isSubmitting && (e.target.style.backgroundColor = '#6c757d')}
+            >
+              Cancel
+            </button>
             
-            <div className="preview-details">
-              <p>
-                <span className="label">Site Name:</span><br />
-                {formData.name || '(Not set)'}
-              </p>
-              
-              <p>
-                <span className="label">Location:</span><br />
-                {formData.location || '(Not set)'}
-              </p>
-              
-              <p>
-                <span className="label">Storage Type:</span><br />
-                {formData.folder_type}
-              </p>
-              
-              <p>
-                <span className="label">Link:</span><br />
-                {formData.folder_link ? (
-                  <span className="link-display">{formData.folder_link}</span>
-                ) : (
-                  '(Not set)'
-                )}
-              </p>
+            <button
+              type="submit"
+              disabled={isSubmitting || !isDirty}
+              style={{
+                backgroundColor: (isSubmitting || !isDirty) ? '#ccc' : '#667eea',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '500',
+                cursor: (isSubmitting || !isDirty) ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.3s ease'
+              }}
+              onMouseEnter={(e) => !(isSubmitting || !isDirty) && (e.target.style.backgroundColor = '#5a67d8')}
+              onMouseLeave={(e) => !(isSubmitting || !isDirty) && (e.target.style.backgroundColor = '#667eea')}
+            >
+              {isSubmitting ? '⏳ Saving...' : '💾 Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+      
+      {/* QR Code Preview Card */}
+      {hasValidLink() && (
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          padding: '30px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+          border: '1px solid #e9ecef'
+        }}>
+          <h3 style={{ margin: '0 0 20px 0', color: '#2c3e50', fontSize: '24px', textAlign: 'center' }}>📱 QR Code Preview</h3>
+          
+          <div style={{ display: 'flex', gap: '30px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div style={{ textAlign: 'center' }}>
+              <QRCode
+                value={formData.folder_link}
+                size={200}
+                level="M"
+                bgColor="#FFFFFF"
+                fgColor="#000000"
+                style={{ borderRadius: '8px', border: '1px solid #e9ecef' }}
+              />
+            </div>
+            
+            <div style={{ flex: 1, minWidth: '300px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>Site:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.name || '(Not set)'}</p>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>ID:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.site_id}</p>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>Location:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.location || '(Not set)'}</p>
+              </div>
+              <div style={{ marginBottom: '16px' }}>
+                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}><strong>Storage Type:</strong></p>
+                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>{formData.folder_type}</p>
+              </div>
             </div>
           </div>
-        </div>
-        
-        {/* Form Actions */}
-        <div className="form-actions">
-          <button
-            type="button"
-            className="cancel-button"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
           
-          <button
-            type="button"
-            className="save-button"
-            onClick={handleSubmit}
-            disabled={isSubmitting || !isDirty}
-          >
-            {isSubmitting ? 'Saving...' : 'Save Changes'}
-          </button>
+          <div style={{
+            marginTop: '30px',
+            padding: '20px',
+            backgroundColor: '#f8f9fa',
+            borderRadius: '8px',
+            border: '1px solid #e9ecef'
+          }}>
+            <h4 style={{ margin: '0 0 16px 0', color: '#495057' }}>📝 QR Code Usage:</h4>
+            <ol style={{ margin: 0, paddingLeft: '20px', color: '#6c757d' }}>
+              <li>Print the QR code and post it at the construction site</li>
+              <li>Field staff can scan with mobile devices to access site documents</li>
+              <li>The QR code links directly to the {formData.folder_type} folder</li>
+              <li>Updates to the folder link will automatically update the QR code</li>
+            </ol>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

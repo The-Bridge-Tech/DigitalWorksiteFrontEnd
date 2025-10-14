@@ -1,29 +1,34 @@
 // UserList.jsx
-// Displays list of users and integrates UserForm
+// Clean user management - database only
 
 import React, { useState, useEffect } from 'react';
 import { getUsers, deleteUser } from '../../services/users.service';
 import UserForm from './UserForm';
+import SiteAssignments from './SiteAssignments';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showSiteAssignments, setShowSiteAssignments] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load all users
   const loadUsers = async () => {
     try {
       setIsLoading(true);
       setError(null);
       const data = await getUsers();
 
-      // Normalize company field (sometimes API may return `companyName`)
       const normalized = (data || []).map(u => ({
         ...u,
-        company: u.company || u.companyName || "N/A",
-        role: u.role || "N/A",
+        uniqueId: u.id,
+        displayName: u.name || u.username || 'Unnamed User',
+        company: u.company || 'No company',
+        role: (u.role || 'USER').replace(/^dwa_/i, '').toUpperCase(),
+        siteCount: u.sites ? u.sites.length : 0,
+        isFromDatabase: true // All users from /adm/users are database users
       }));
 
       setUsers(normalized);
@@ -44,15 +49,20 @@ const UserList = () => {
     setShowForm(true);
   };
 
-  const handleEdit = (id) => {
-    setSelectedUserId(id);
+  const handleEdit = (userId) => {
+    setSelectedUserId(userId);
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleManageSites = (user) => {
+    setSelectedUser(user);
+    setShowSiteAssignments(true);
+  };
+
+  const handleDelete = async (userId) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      await deleteUser(id);
+      await deleteUser(userId);
       loadUsers();
     } catch (err) {
       console.error('Error deleting user:', err);
@@ -62,13 +72,17 @@ const UserList = () => {
 
   const handleSave = () => {
     setShowForm(false);
+    setShowSiteAssignments(false);
     setSelectedUserId(null);
+    setSelectedUser(null);
     loadUsers();
   };
 
   const handleCancel = () => {
     setShowForm(false);
+    setShowSiteAssignments(false);
     setSelectedUserId(null);
+    setSelectedUser(null);
   };
 
   if (showForm) {
@@ -76,6 +90,16 @@ const UserList = () => {
       <UserForm
         userId={selectedUserId}
         onSave={handleSave}
+        onCancel={handleCancel}
+      />
+    );
+  }
+
+  if (showSiteAssignments) {
+    return (
+      <SiteAssignments
+        user={selectedUser}
+        onUpdate={handleSave}
         onCancel={handleCancel}
       />
     );
@@ -182,7 +206,7 @@ const UserList = () => {
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
           {users.map(user => (
-            <div key={user.fileId} style={{
+            <div key={user.uniqueId} style={{
               backgroundColor: 'white',
               borderRadius: '12px',
               padding: '24px',
@@ -214,11 +238,11 @@ const UserList = () => {
                   fontWeight: 'bold',
                   marginRight: '16px'
                 }}>
-                  {(user.name || 'U').charAt(0).toUpperCase()}
+                  {user.role.includes('ADMIN') ? '👤' : user.role.includes('CONTRACTOR') ? '👷' : '👤'}
                 </div>
                 <div>
                   <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#2c3e50' }}>
-                    {user.name || 'Unnamed User'}
+                    {user.displayName}
                   </h3>
                   <p style={{ margin: 0, color: '#6c757d', fontSize: '14px' }}>{user.email}</p>
                 </div>
@@ -227,14 +251,9 @@ const UserList = () => {
               {/* User Details */}
               <div style={{ marginBottom: '20px' }}>
                 <div style={{ marginBottom: '12px' }}>
-                  <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>🏢 Company</p>
-                  <p style={{ margin: 0, color: '#495057', fontSize: '16px', fontWeight: '500' }}>
-                    {user.company}
+                  <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>
+                    {user.role.includes('ADMIN') ? '👤' : user.role.includes('CONTRACTOR') ? '👷' : '👤'} Role
                   </p>
-                </div>
-                
-                <div>
-                  <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>💼 Role</p>
                   <span style={{
                     padding: '4px 12px',
                     borderRadius: '16px',
@@ -247,48 +266,79 @@ const UserList = () => {
                     {user.role}
                   </span>
                 </div>
+                
+                <div style={{ marginBottom: '12px' }}>
+                  <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>🏢 Company</p>
+                  <p style={{ margin: 0, color: '#495057', fontSize: '16px', fontWeight: '500' }}>
+                    {user.company}
+                  </p>
+                </div>
+                
+                <div>
+                  <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>🏗️ Site Assignments</p>
+                  <p style={{ margin: 0, color: user.siteCount > 0 ? '#28a745' : '#dc3545', fontSize: '14px' }}>
+                    {user.siteCount > 0 ? `${user.siteCount} site${user.siteCount > 1 ? 's' : ''}` : '🚫 No site assignments'}
+                  </p>
+                </div>
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => handleEdit(user.fileId)}
+                  onClick={() => handleManageSites(user)}
+                  style={{
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
+                  onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
+                >
+                  Manage Sites
+                </button>
+                
+                <button
+                  onClick={() => handleEdit(user.uniqueId)}
                   style={{
                     backgroundColor: '#007bff',
                     color: 'white',
                     border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
                     fontWeight: '500',
                     cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                    flex: 1
+                    transition: 'background-color 0.3s ease'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
                 >
-                  ✏️ Edit
+                  Edit
                 </button>
                 
                 <button
-                  onClick={() => handleDelete(user.fileId)}
+                  onClick={() => handleDelete(user.uniqueId)}
                   style={{
                     backgroundColor: '#dc3545',
                     color: 'white',
                     border: 'none',
-                    padding: '8px 16px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
+                    padding: '6px 12px',
+                    borderRadius: '4px',
+                    fontSize: '12px',
                     fontWeight: '500',
                     cursor: 'pointer',
-                    transition: 'background-color 0.3s ease',
-                    flex: 1
+                    transition: 'background-color 0.3s ease'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
                 >
-                  🗑️ Delete
+                  Delete
                 </button>
               </div>
             </div>
