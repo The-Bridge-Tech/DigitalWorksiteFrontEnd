@@ -10,7 +10,10 @@ import { API_BASE_URL } from '../config/api.config.js';
 export const getSites = async () => {
   try {
     const token = localStorage.getItem('auth_token');
-    const headers = {};
+    const splunkUser = window.$C?.USERNAME;
+    const headers = {
+      'X-Splunk-User': splunkUser
+    };
     
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

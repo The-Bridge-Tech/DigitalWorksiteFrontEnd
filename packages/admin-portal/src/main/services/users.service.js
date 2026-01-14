@@ -9,10 +9,12 @@ import { API_BASE_URL, API_ENDPOINTS } from '../config/api.config';
 export const getUsers = async () => {
   try {
     const token = localStorage.getItem('auth_token');
+    const splunkUser = window.$C?.USERNAME;
     const response = await fetch(`${API_BASE_URL}/adm/users`, {
       headers: {
         'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-Splunk-User': splunkUser
       }
     });
     

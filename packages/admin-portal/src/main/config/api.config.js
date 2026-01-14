@@ -1,8 +1,8 @@
-// Central API configuration
-// Single source of truth for all API URLs
+// API URL from environment variable
+export const API_BASE_URL = process.env.REACT_APP_API_URL;
 
-// Direct URL configuration - change this for different environments
-export const API_BASE_URL = 'http://localhost:5004';
+// Splunk API URL - use relative path when running inside Splunk
+export const SPLUNK_API_URL = ''; // Empty = use relative path /splunkd/...
 
 export const API_ENDPOINTS = {
   // Auth endpoints

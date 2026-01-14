@@ -55,13 +55,14 @@ const AccessGuard = ({ children }) => {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
           console.log('📊 Splunk API response:', response);
+          console.log('📊 Entry content:', response.entry?.[0]?.content);
           
           if (response && response.entry && response.entry[0] && response.entry[0].content) {
             const content = response.entry[0].content;
-            const userRoles = Array.isArray(content.roles) ? content.roles : [content.roles];
-            const username = window.$C.USERNAME || 'splunk_user';
+            const userRoles = Array.isArray(content.roles) ? content.roles : (content.roles ? [content.roles] : []);
+            const username = window.$C.USERNAME || content.username || 'splunk_user';
             
-            console.log('✅ Got user context:', { username, roles: userRoles });
+            console.log('✅ Got user context:', { username, roles: userRoles, fullContent: content });
             
             return {
               username: username,
