@@ -11,6 +11,14 @@ Before you begin, ensure you have the following installed:
 - **Git** (Version control)
 - **Modern Web Browser** (Chrome, Firefox, Safari, Edge)
 - **Camera Access** (For QR code scanning functionality)
+- **HTTPS in Production** (Required for camera access in browsers)
+- **GPS/Location Services** (For location-based check-ins)
+
+### Browser Requirements for QR Scanner
+- **Camera Permission**: Must allow camera access
+- **HTTPS**: Required in production for camera API
+- **Modern Browser**: Chrome 59+, Firefox 53+, Safari 11+, Edge 79+
+- **Mobile Support**: iOS Safari 11+, Chrome Mobile 59+
 
 ### Check Your Versions
 ```bash
@@ -26,22 +34,23 @@ git clone <your-repository-url>
 cd DigitalWorksiteFrontEnd
 ```
 
-### 2. Install Dependencies (Automated)
-We've created an automated installer that handles all dependencies and fixes common issues:
+### 2. Install Dependencies
+Install all required dependencies:
 
 ```bash
-node install-requirements.js
+yarn install
 ```
 
-This script will:
-- ✅ Check Node.js version compatibility
-- 📦 Install all required dependencies
-- 🔧 Fix TypeScript and React compatibility issues
-- 📊 Configure reporting-center package
-- 🔨 Build all packages
+This will install all dependencies including:
+- ✅ React and TypeScript components
+- ✅ QR scanning libraries (qr-scanner, jsqr)
+- ✅ Map components (Leaflet, react-leaflet)
+- ✅ Calendar components (FullCalendar)
+- ✅ PDF generation (jspdf)
+- ✅ UI components and styling
 
-### 3. Manual Installation (Alternative)
-If the automated installer fails, you can install manually:
+### 3. Manual Installation (If Needed)
+If automatic installation fails, you can install manually:
 
 ```bash
 # Install root dependencies
@@ -49,10 +58,6 @@ yarn install
 
 # Install workspace dependencies
 yarn workspaces run install
-
-# Fix React Leaflet compatibility
-yarn add -W react@18.3.1 react-dom@18.3.1
-yarn add -W react-leaflet@4.2.1 @react-leaflet/core@2.1.0
 
 # Build packages
 yarn build
@@ -100,8 +105,6 @@ DigitalWorksiteFrontEnd/
 │   │   └── stage/                       # Built Splunk app
 │   ├── inspection-report/               # Inspection forms package
 │   └── reporting-center/                # Analytics dashboard package
-├── install-requirements.js             # Automated installer
-├── package-requirements.json           # Dependency specifications
 ├── lerna.json                          # Monorepo configuration
 └── package.json                        # Root package configuration
 ```
@@ -109,22 +112,37 @@ DigitalWorksiteFrontEnd/
 ## 🔧 Configuration
 
 ### Backend API Configuration
-The frontend uses a centralized API configuration system. Update the API base URL in:
+The frontend uses environment variables for API configuration. The API base URL is set via environment variable:
 
 ```javascript
 // packages/admin-portal/src/main/config/api.config.js
-export const API_BASE_URL = 'http://localhost:5004'; // Change for production
+export const API_BASE_URL = process.env.REACT_APP_API_URL;
 ```
 
+**Environment Setup:**
+Create a `.env` file in the admin-portal package:
+```bash
+# packages/admin-portal/.env
+REACT_APP_API_URL=http://localhost:5004
+```
+
+**⚠️ Important**: The `REACT_APP_API_URL` shown above (`http://localhost:5004`) is a development URL. **You must change this to match your actual backend server URL** when running the application in different environments:
+
+- **Development**: `http://localhost:5004`
+- **Production**: `https://your-domain.com` or your actual server URL
+- **Staging**: `https://staging.your-domain.com` or your staging server URL
+
 **Centralized API Endpoints:**
-All API endpoints are now managed in `api.config.js` including:
-- Authentication endpoints
-- Site management
-- Document vault
-- Notifications
-- Check-ins and QR scanning
-- Task scheduling
-- File management
+All API endpoints are managed in `api.config.js` with the `API_ENDPOINTS` object including:
+- Authentication endpoints (`/adm/auth/*`)
+- Site management (`/adm/sites/*`, `/api/sites/*`)
+- Document vault (`/adm/documents/*`)
+- Notifications (`/notifications/*`)
+- Check-ins and QR scanning (`/checkins/*`)
+- Task scheduling (`/tasks/*`)
+- File management (`/adm/files/*`)
+- User management (`/adm/users/*`)
+- System settings (`/adm/system/*`)
 
 ### Google Drive Integration
 1. Obtain Google OAuth credentials from Google Cloud Console
@@ -133,12 +151,28 @@ All API endpoints are now managed in `api.config.js` including:
 4. Update folder IDs in site configurations
 
 ### Environment Variables
-Create a `.env` file in the admin-portal package:
+Create a `.env` file in the **root directory** of the project:
 ```bash
-REACT_APP_API_BASE_URL=http://localhost:5004
-REACT_APP_GOOGLE_DRIVE_API_KEY=your_api_key
-REACT_APP_WEATHER_API_KEY=your_weather_api_key
+# DigitalWorksiteFrontEnd/.env
+REACT_APP_API_URL=http://localhost:5004
+
+# Weather API Key (get from https://weatherapi.com)
+REACT_APP_WEATHER_API_KEY=your_weather_api_key_here
+
+# Google Drive Users Folder ID (for user management)
+REACT_APP_USERS_FOLDER_ID=your_google_drive_folder_id
+
+# Development environment
+NODE_ENV=development
 ```
+
+**⚠️ Important**: 
+- The `REACT_APP_API_URL` shown above is a development URL. **Change this to your actual backend server URL** when deploying or running in different environments.
+- Get your weather API key from [WeatherAPI.com](https://weatherapi.com) - it's used for safety alerts during QR check-ins.
+- Set `REACT_APP_USERS_FOLDER_ID` to your Google Drive folder ID where user JSON files will be automatically created when new users are added through the admin interface. Each user gets a JSON file with their profile data stored in this folder.
+- All packages will use this single `.env` file from the root directory.
+
+**Note**: The API_URL environment variable is required as it's used by the centralized API configuration system.
 
 ## 🏗️ Building for Production
 
@@ -198,12 +232,13 @@ yarn build          # Build reporting center
 - **Subcontractor Management**: Assign and manage subcontractors per site
 
 ### 📱 QR Code Check-In System
-- **Real-time QR Scanning**: Camera-based QR code detection using jsQR
-- **GPS Location Capture**: Automatic location verification
+- **Real-time QR Scanning**: Camera-based QR code detection using `qr-scanner` library
+- **GPS Location Capture**: Automatic location verification with browser geolocation
 - **Weather Integration**: Real-time weather data from WeatherAPI
 - **Safety Alerts**: Automatic alerts for severe weather conditions
-- **User Authentication**: Secure check-in with user verification
-- **Test Mode**: Built-in testing functionality for development
+- **User Authentication**: Secure check-in with JWT token verification
+- **Camera Requirements**: HTTPS required, modern browser with camera support
+- **Mobile Optimized**: Works on mobile devices with rear camera preference
 
 ### 📅 Inspection Calendar
 - **Drag & Drop Scheduling**: Interactive FullCalendar integration
@@ -274,10 +309,13 @@ yarn add -W react-leaflet@4.2.1 @react-leaflet/core@2.1.0
 ```
 
 #### 2. QR Code Scanner Issues
-- **Camera Permission Denied**: Ensure browser has camera access
-- **No Camera Found**: Check device camera availability
+- **Camera Permission Denied**: Ensure browser has camera access permissions
+- **No Camera Found**: Check device camera availability and browser compatibility
 - **Scanner Not Working**: Try refreshing the page or restarting browser
-- **QR Code Not Detected**: Ensure good lighting and steady camera
+- **QR Code Not Detected**: Ensure good lighting and steady camera positioning
+- **HTTPS Required**: Camera access requires HTTPS in production environments
+- **Browser Compatibility**: Use Chrome 59+, Firefox 53+, Safari 11+, Edge 79+
+- **Mobile Issues**: Ensure mobile browser supports camera API
 
 #### 3. Google Drive Integration Issues
 - **Upload Failures**: Check folder permissions and API credentials
@@ -353,15 +391,14 @@ yarn build
    - Google People API (for user info)
 3. Create OAuth 2.0 credentials
 4. Configure authorized redirect URIs:
-   - `http://localhost:5004/adm/auth/google/callback`
-   - Your production domain callback URL
+   - Development: `http://localhost:5004/adm/auth/google/callback`
+   - Production: `https://your-domain.com/api/adm/auth/google/callback`
 5. Download client credentials JSON
 6. Update backend configuration with credentials
 
 ### Backend Requirements
-The frontend requires a compatible backend API running on:
-- **Default**: `http://localhost:5004`
-- **Production**: Update `API_BASE_URL` in `api.config.js`
+The frontend requires a compatible backend API.
+- **Configuration**: Update `REACT_APP_API_URL` in `.env` file
 
 ### Required Backend Endpoints
 Ensure your backend supports these endpoint categories:
@@ -402,20 +439,6 @@ For QR code scanning functionality:
 - **QR Code Scan Success Rate**: Successful check-in percentage
 - **User Engagement**: Active users and feature usage
 - **System Uptime**: API availability and response times
-
-## 🤝 Contributing
-
-### Development Workflow
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes following the coding standards
-4. Test thoroughly including:
-   - Unit tests for components
-   - Integration tests for API calls
-   - Manual testing of QR scanner
-   - Cross-browser compatibility
-5. Update documentation if needed
-6. Submit a pull request with detailed description
 
 ### Coding Standards
 - **React**: Use functional components with hooks

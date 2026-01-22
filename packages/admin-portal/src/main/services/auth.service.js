@@ -319,6 +319,13 @@ export const authFetch = async (url, options = {}) => {
   try {
     const token = localStorage.getItem('auth_token');
     
+    // Debug logging
+    console.log('AuthFetch URL:', url);
+    console.log('Token exists:', !!token);
+    if (token) {
+      console.log('Token preview:', token.substring(0, 50) + '...');
+    }
+    
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers
@@ -332,6 +339,8 @@ export const authFetch = async (url, options = {}) => {
       ...options,
       headers
     });
+    
+    console.log('Response status:', response.status);
     
     if (response.status === 401) {
       // Token might be expired, remove it and redirect to auth

@@ -39,8 +39,15 @@ const CheckIn = () => {
           
           // Fetch weather data
           try {
+            const weatherApiKey = process.env.REACT_APP_WEATHER_API_KEY;
+            if (!weatherApiKey) {
+              console.warn('Weather API key not configured');
+              setWeather('Weather API key not configured');
+              return;
+            }
+            
             const weatherResponse = await fetch(
-              `https://api.weatherapi.com/v1/current.json?key=5adfd2a4772e480fa65123538252209&q=${latitude},${longitude}&aqi=no`
+              `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${latitude},${longitude}&aqi=no`
             );
             const weatherData = await weatherResponse.json();
             setWeather(`${weatherData.current.condition.text}, ${weatherData.current.temp_c}°C`);

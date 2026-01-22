@@ -44,7 +44,7 @@ export const API_ENDPOINTS = {
   TASK_BY_ID: (id) => `/tasks/${id}`,
   
   // Document endpoints
-  DOCUMENTS: '/adm/documents',
+  DOCUMENTS: '/adm/documents/',
   DOCUMENT_BY_ID: (id) => `/adm/documents/${id}`,
   DOCUMENT_STATUS: (id) => `/adm/documents/${id}/status`,
   
