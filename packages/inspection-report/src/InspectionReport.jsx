@@ -136,9 +136,23 @@ export default function InspectionReportForm() {
       payload.append("checklist", JSON.stringify(checklist));
 
       // Submit to Flask backend
-      const API_BASE_URL = 'http://localhost:5004';
-      const res = await fetch(`${API_BASE_URL}/inspections/submit`, {
+      const API_BASE_URL = process.env.REACT_APP_API_URL;
+      const token = localStorage.getItem('auth_token');
+      const splunkUser = window.$C?.USERNAME;
+      
+      const headers = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      if (splunkUser) {
+        headers['X-Splunk-User'] = splunkUser;
+        // Use admin role if available, otherwise inspector
+        headers['X-Splunk-Roles'] = window.$C?.ROLES?.includes('dwa_admin') ? 'dwa_admin' : 'dwa_inspector';
+      }
+      
+      const res = await fetch(`${API_BASE_URL}inspections/submit`, {
         method: "POST",
+        headers,
         body: payload,
       });
 
@@ -183,29 +197,68 @@ export default function InspectionReportForm() {
           text-align: center;
           margin-bottom: 25px;
           padding-bottom: 10px;
-          border-bottom: 2px solid #0072c6;
+          border-bottom: 2px solid #2DBE60;
         }
         .form-section { margin-bottom: 30px; }
         .form-section h2 {
           font-size: 16px;
-          color: #0072c6;
-          border-left: 4px solid #0072c6;
+          color: #2DBE60;
+          border-left: 4px solid #2DBE60;
           padding-left: 8px;
           margin-bottom: 15px;
         }
         .form-row { margin-bottom: 15px; }
         .form-row label { font-weight: 500; display: block; margin-bottom: 6px; }
         .options { display: flex; gap: 20px; margin-top: 5px; }
+        .options label {
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+          font-weight: 400;
+          color: #495057;
+        }
+        .options label:hover {
+          color: #2DBE60;
+        }
+        input[type="radio"] {
+          accent-color: #2DBE60;
+          margin-right: 6px;
+          transform: scale(1.2);
+        }
         input[type="text"], input[type="date"], textarea, select {
           padding: 8px 10px;
-          border: 1px solid #ccc;
+          border: 2px solid #e9ecef;
           border-radius: 6px;
           font-size: 14px;
           width: 100%;
+          transition: border-color 0.2s ease;
+        }
+        input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+          outline: none;
+          border-color: #2DBE60;
+          box-shadow: 0 0 0 3px rgba(45, 190, 96, 0.1);
         }
         select {
           background-color: white;
           cursor: pointer;
+          border: 2px solid #e9ecef;
+          transition: border-color 0.2s ease;
+        }
+        select:focus {
+          outline: none;
+          border-color: #2DBE60;
+          box-shadow: 0 0 0 3px rgba(45, 190, 96, 0.1);
+        }
+        select option {
+          background-color: white;
+          color: #495057;
+        }
+        select option:hover {
+          background-color: rgba(45, 190, 96, 0.1);
+        }
+        select option:checked {
+          background-color: #2DBE60;
+          color: white;
         }
         .loading {
           text-align: center;
@@ -218,9 +271,38 @@ export default function InspectionReportForm() {
           padding: 8px 18px; border: none; border-radius: 6px;
           font-size: 14px; cursor: pointer;
         }
-        .btn-save { background: #0072c6; color: white; }
-        .btn-reset { background: #f3f3f3; border: 1px solid #ccc; }
+        .btn-save { background: linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%); color: white; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(45, 190, 96, 0.3); min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(45, 190, 96, 0.4); }
+        .btn-save:active { transform: scale(0.98); }
+        .btn-reset { background: #f8f9fa; border: 2px solid #e9ecef; color: #495057; transition: all 0.2s ease; min-height: 44px; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .btn-reset:hover { background: #e9ecef; border-color: #dee2e6; }
+        .btn-reset:active { transform: scale(0.98); }
+        /* Global mobile button support */
+        button {
+          min-height: 44px;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+        }
+        button:active {
+          transform: scale(0.98);
+        }
+        /* Ensure proper touch targets on mobile */
+        @media (max-width: 768px) {
+          button {
+            min-height: 48px;
+            padding: 12px 16px;
+          }
+        }
         .message { margin-top: 15px; font-weight: bold; text-align: center; }
+        ::selection {
+          background-color: #b3d4fc;
+          color: inherit;
+        }
+        ::-moz-selection {
+          background-color: #b3d4fc;
+          color: inherit;
+        }
       `}</style>
 
       <h1 className="form-title">INSPECTION REPORT</h1>
@@ -259,7 +341,7 @@ export default function InspectionReportForm() {
           <select name="inspector" value={formData.inspector || ''} onChange={handleChange} disabled={loading}>
             <option value="">Select an inspector...</option>
             {users.map(user => (
-              <option key={user.fileId} value={user.name}>{user.name} ({user.email})</option>
+              <option key={user.id} value={user.username}>{user.username} ({user.email})</option>
             ))}
           </select>
         </div>

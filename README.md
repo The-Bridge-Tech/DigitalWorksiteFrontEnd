@@ -159,9 +159,6 @@ REACT_APP_API_URL=http://localhost:5004
 # Weather API Key (get from https://weatherapi.com)
 REACT_APP_WEATHER_API_KEY=your_weather_api_key_here
 
-# Google Drive Users Folder ID (for user management)
-REACT_APP_USERS_FOLDER_ID=your_google_drive_folder_id
-
 # Development environment
 NODE_ENV=development
 ```
@@ -455,14 +452,6 @@ For QR code scanning functionality:
 - Validate calendar drag-and-drop functionality
 - Check responsive design on mobile devices
 
-
-## 🆘 Support
-
-For support and questions:
-1. Check this README first
-2. Look at the troubleshooting section
-3. Check existing issues in the repository
-4. Create a new issue with detailed information
 
 ### Version 2.0 Features
 - **Enhanced QR Scanner**: Real-time camera scanning with jsQR library

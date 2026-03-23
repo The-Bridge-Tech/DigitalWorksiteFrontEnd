@@ -190,7 +190,7 @@ const SiteForm = ({ onSaveComplete }) => {
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       {/* Header Card */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
         borderRadius: '12px',
         padding: '30px',
         marginBottom: '30px',
@@ -292,7 +292,7 @@ const SiteForm = ({ onSaveComplete }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -316,7 +316,7 @@ const SiteForm = ({ onSaveComplete }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -341,7 +341,7 @@ const SiteForm = ({ onSaveComplete }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -389,7 +389,7 @@ const SiteForm = ({ onSaveComplete }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
             <small style={{ color: '#6c757d', fontSize: '14px', marginTop: '4px', display: 'block' }}>
@@ -425,7 +425,7 @@ const SiteForm = ({ onSaveComplete }) => {
               type="submit"
               disabled={isLoading}
               style={{
-                backgroundColor: isLoading ? '#ccc' : '#667eea',
+                backgroundColor: isLoading ? '#ccc' : '#2DBE60',
                 color: 'white',
                 border: 'none',
                 padding: '12px 24px',
@@ -435,8 +435,8 @@ const SiteForm = ({ onSaveComplete }) => {
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.3s ease'
               }}
-              onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#5a67d8')}
-              onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#667eea')}
+              onMouseEnter={(e) => !isLoading && (e.target.style.backgroundColor = '#1E8E4A')}
+              onMouseLeave={(e) => !isLoading && (e.target.style.backgroundColor = '#2DBE60')}
             >
               {isLoading ? '⏳ Creating Site...' : '🏗️ Create Site & Generate QR'}
             </button>
@@ -485,8 +485,8 @@ const SiteForm = ({ onSaveComplete }) => {
               <button
                 onClick={handleDownloadQR}
                 style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
+                  backgroundColor: '#F2C300',
+                  color: '#000000',
                   border: 'none',
                   padding: '12px 24px',
                   borderRadius: '8px',
@@ -495,7 +495,7 @@ const SiteForm = ({ onSaveComplete }) => {
                   cursor: 'pointer',
                   transition: 'background-color 0.3s ease'
                 }}
-                onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
+                onMouseEnter={(e) => e.target.style.backgroundColor = '#D4A900'}
                 onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
               >
                 📥 Download QR Code

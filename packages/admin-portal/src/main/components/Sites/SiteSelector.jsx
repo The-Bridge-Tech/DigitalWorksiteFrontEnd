@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSite } from '../SiteContext';
+import { theme, getRoleColor } from '../../theme/colors';
 
 const SiteSelector = () => {
     const { selectedSite, userSites, userRole, loading, selectSite, isAdmin } = useSite();
@@ -13,7 +14,7 @@ const SiteSelector = () => {
         return (
             <div style={{ 
                 padding: '12px 20px', 
-                background: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)', 
+                background: theme.gradients.secondary2, 
                 color: 'white',
                 display: 'flex',
                 justifyContent: 'flex-end',
@@ -29,7 +30,7 @@ const SiteSelector = () => {
                     fontSize: '14px',
                     fontWeight: '600'
                 }}>
-                    👑 ADMIN ACCESS
+                    👑 ADMIN ACCESS - All Sites
                 </div>
             </div>
         );
@@ -44,53 +45,24 @@ const SiteSelector = () => {
     }
 
     return (
-        <div style={{ padding: '12px 20px', background: '#f8f9fa', borderBottom: '1px solid #e9ecef' }}>
+        <div style={{ padding: '12px 20px', background: theme.neutral.light, borderBottom: '1px solid #e9ecef' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    {selectedSite ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <span style={{ fontWeight: '600', color: '#495057' }}>Current Site:</span>
-                            <span style={{ 
+                    <span style={{ fontWeight: '600', color: theme.neutral.dark }}>Your Sites:</span>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        {userSites.map(site => (
+                            <span key={site.id} style={{ 
                                 padding: '8px 12px',
-                                background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                                background: theme.gradients.primary,
                                 color: 'white',
                                 borderRadius: '6px',
                                 fontSize: '14px',
                                 fontWeight: '500'
                             }}>
-                                {selectedSite.name} - {selectedSite.location}
+                                {site.name} - {site.location}
                             </span>
-                        </div>
-                    ) : (
-                        <>
-                            <label htmlFor="site-select" style={{ fontWeight: '600', color: '#495057' }}>
-                                Select Site:
-                            </label>
-                            <select
-                                id="site-select"
-                                value={selectedSite?.id || ''}
-                                onChange={(e) => {
-                                    const site = userSites.find(s => s.id === e.target.value);
-                                    if (site) selectSite(site);
-                                }}
-                                style={{
-                                    padding: '8px 12px',
-                                    border: '2px solid #e9ecef',
-                                    borderRadius: '6px',
-                                    fontSize: '14px',
-                                    minWidth: '250px',
-                                    backgroundColor: 'white'
-                                }}
-                            >
-                                <option value="">Select a site...</option>
-                                {userSites.map(site => (
-                                    <option key={site.id} value={site.id}>
-                                        {site.name} - {site.location}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    )}
+                        ))}
+                    </div>
                 </div>
                 {userRole && (
                     <div style={{ 
@@ -109,15 +81,5 @@ const SiteSelector = () => {
     );
 };
 
-const getRoleColor = (role) => {
-    const colors = {
-        admin: '#dc3545',
-        site_manager: '#007bff',
-        contractor: '#28a745',
-        inspector: '#ffc107',
-        viewer: '#6c757d'
-    };
-    return colors[role] || '#6c757d';
-};
 
 export default SiteSelector;

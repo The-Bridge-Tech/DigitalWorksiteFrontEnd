@@ -17,15 +17,21 @@ import FileUpload from '../Documents/FileUpload';
 import GoogleAuth from '../Auth/GoogleAuth';
 import Overview from './Overview';
 import RootFolderSetup from '../Setup/RootFolderSetup';
+import { theme } from '../../theme/colors';
 
 const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
   const [subView, setSubView] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [folderId, setFolderId] = useState('');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [templateFolderId, setTemplateFolderId] = useState('');
 
   const handleCreateNew = () => {
-    setSubView('create');
+    if (activeModule === 'users' && window.triggerUserCreate) {
+      window.triggerUserCreate();
+    } else {
+      setSubView('create');
+    }
   };
 
   const handleEdit = (id) => {
@@ -38,6 +44,13 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
     setSelectedId(null);
   };
 
+  const handleSelectTemplateFolder = () => {
+    const folderId = prompt('Enter Google Drive folder ID for templates:');
+    if (folderId && folderId.trim()) {
+      setTemplateFolderId(folderId.trim());
+    }
+  };
+
   const renderContent = () => {
     switch (activeModule) {
       case 'overview':
@@ -45,66 +58,95 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'sites':
         if (subView === 'create' || subView === 'edit') {
-          return (
-            <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-              <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-                <div style={{ padding: '1.5rem', borderBottom: '1px solid #e9ecef', backgroundColor: '#f8f9fa' }}>
-                  <button onClick={handleBack} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'linear-gradient(135deg, #6c757d, #495057)', 
-                    color: 'white', 
-                    border: 'none', 
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    transition: 'transform 0.2s'
-                  }}>
-                    ← Back to Sites
-                  </button>
-                </div>
-                <div style={{ padding: '2rem' }}>
-                  <SiteForm siteId={selectedId} onSaveComplete={handleBack} />
-                </div>
+        return (
+          <div style={{ padding: 'clamp(1rem, 3vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+              <div style={{ padding: 'clamp(1rem, 3vw, 1.5rem)', borderBottom: '1px solid #e9ecef', backgroundColor: '#f8f9fa' }}>
+                <button onClick={handleBack} style={{ 
+                  padding: 'clamp(0.6rem, 2vw, 0.75rem) clamp(1rem, 3vw, 1.5rem)', 
+                  background: theme.gradients.primary, 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  transition: 'transform 0.2s'
+                }}>
+                  ← Back to Sites
+                </button>
+              </div>
+              <div style={{ padding: 'clamp(1rem, 3vw, 2rem)' }}>
+                <SiteForm siteId={selectedId} onSaveComplete={handleBack} />
               </div>
             </div>
-          );
+          </div>
+        );
         }
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%', height: 'fit-content' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
                 color: 'white'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', justifyContent: 'space-between', alignItems: window.innerWidth < 768 ? 'stretch' : 'center', gap: '1rem' }}>
                   <div>
-                    <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Sites Management</h1>
-                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Manage construction and industrial sites</p>
+                    <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600', lineHeight: '1.2' }}>Sites Management</h1>
+                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Manage construction and industrial sites</p>
                   </div>
-                  <button onClick={handleCreateNew} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'rgba(255,255,255,0.2)', 
-                    color: 'white', 
-                    border: '1px solid rgba(255,255,255,0.3)', 
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.2s'
-                  }}>
-                    + Add New Site
-                  </button>
+                  <div style={{ display: 'flex', gap: 'clamp(0.5rem, 2vw, 0.75rem)', flexWrap: 'wrap' }}>
+                    <button onClick={() => setRefreshTrigger(prev => prev + 1)} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.1)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px'
+                    }}>
+                      🔄 Refresh
+                    </button>
+                    <button onClick={handleCreateNew} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.2)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      transition: 'all 0.2s',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                    onTouchStart={(e) => {
+                      e.currentTarget.style.transform = 'scale(0.98)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                    }}
+                    onTouchEnd={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    }}>
+                      + Add New Site
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div style={{ padding: '2rem' }}>
-                <SiteList onEdit={handleEdit} onCreateNew={handleCreateNew} />
+              <div style={{ padding: 'min(4vw, 2rem)' }}>
+                <SiteList onEdit={handleEdit} onCreateNew={handleCreateNew} refreshTrigger={refreshTrigger} />
               </div>
             </div>
           </div>
@@ -112,18 +154,18 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'inspections':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                background: theme.gradients.primaryToSecondary,
                 color: 'white'
               }}>
-                <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Inspection Reports</h1>
-                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Create and manage inspection reports</p>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Inspection Reports</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Create and manage inspection reports</p>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)' }}>
                 <InspectionReport />
               </div>
             </div>
@@ -132,18 +174,18 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'calendar':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #007bff 0%, #6610f2 100%)',
-                color: 'white'
+                background: theme.gradients.secondary,
+                color: 'black'
               }}>
-                <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Inspection Calendar</h1>
-                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Schedule and view inspection appointments</p>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Inspection Calendar</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Schedule and view inspection appointments</p>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)' }}>
                 <InspectionCalendar />
               </div>
             </div>
@@ -152,18 +194,18 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'checkins':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%', height: 'fit-content' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
                 background: 'linear-gradient(135deg, #dc3545 0%, #fd7e14 100%)',
                 color: 'white'
               }}>
-                <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Site Check-ins</h1>
-                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>QR code scanning and site visit tracking</p>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600', lineHeight: '1.2' }}>Site Check-ins</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>QR code scanning and site visit tracking</p>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)' }}>
                 <CheckIn />
                 <div style={{ marginTop: '2rem' }}>
                   <CheckInList />
@@ -175,18 +217,18 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'documents':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)',
+                background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
                 color: 'white'
               }}>
-                <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Document Vault</h1>
-                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Manage permits, reports and documents</p>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Document Vault</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Manage permits, reports and documents</p>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)' }}>
                 <DocumentVault />
               </div>
             </div>
@@ -195,18 +237,18 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'analytics':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
+                background: theme.gradients.primary,
                 color: 'white'
               }}>
-                <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Analytics Dashboard</h1>
-                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Performance metrics and insights</p>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Analytics Dashboard</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Performance metrics and insights</p>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)' }}>
                 <AnalyticsDashboard />
               </div>
             </div>
@@ -214,34 +256,116 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
         );
       
       case 'notifications':
-        return <NotificationsTab />;
+        return (
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+              <div style={{ 
+                padding: 'min(4vw, 2rem)', 
+                borderBottom: '1px solid #e9ecef', 
+                background: theme.gradients.secondary,
+                color: 'black'
+              }}>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Notifications</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Manage alerts and notifications</p>
+              </div>
+              <div style={{ padding: 'min(4vw, 2rem)', overflow: 'hidden' }}>
+                <NotificationsTab />
+              </div>
+            </div>
+          </div>
+        );
       
       case 'users':
-        return <UserManagement />;
+        return (
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+              <div style={{ 
+                padding: 'min(4vw, 2rem)', 
+                borderBottom: '1px solid #e9ecef', 
+                background: theme.gradients.primaryToSecondary,
+                color: 'white'
+              }}>
+                <div style={{ display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', justifyContent: 'space-between', alignItems: window.innerWidth < 768 ? 'stretch' : 'center', gap: '1rem' }}>
+                  <div>
+                    <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>User Management</h1>
+                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Manage users and permissions</p>
+                  </div>
+                  <div style={{ display: 'flex', gap: 'clamp(0.5rem, 2vw, 0.75rem)', flexWrap: 'wrap' }}>
+                    <button onClick={() => setRefreshTrigger(prev => prev + 1)} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.1)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px'
+                    }}>
+                      🔄 Refresh
+                    </button>
+                    <button onClick={handleCreateNew} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.2)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                    onTouchStart={(e) => {
+                      e.currentTarget.style.transform = 'scale(0.98)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                    }}
+                    onTouchEnd={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    }}>
+                      + Add New User
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div style={{ padding: 'min(4vw, 2rem)', overflow: 'hidden' }}>
+                <UserManagement refreshTrigger={refreshTrigger} onCreateNew={handleCreateNew} />
+              </div>
+            </div>
+          </div>
+        );
       
       case 'templates':
         if (subView === 'create' || subView === 'edit') {
           return (
-            <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-              <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-                <div style={{ padding: '1.5rem', borderBottom: '1px solid #e9ecef', backgroundColor: '#f8f9fa' }}>
+            <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+              <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+                <div style={{ padding: 'min(4vw, 2rem)', borderBottom: '1px solid #e9ecef', backgroundColor: '#f8f9fa' }}>
                   <button onClick={handleBack} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'linear-gradient(135deg, #6c757d, #495057)', 
+                    padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                    background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)', 
                     color: 'white', 
                     border: 'none', 
                     borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
                     fontWeight: '500',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem'
+                    gap: '0.5rem',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 8px rgba(45, 190, 96, 0.3)'
                   }}>
                     ← Back to Templates
                   </button>
                 </div>
-                <div style={{ padding: '2rem' }}>
+                <div style={{ padding: 'min(4vw, 2rem)', overflow: 'hidden' }}>
                   <TemplateForm templateId={selectedId} onSave={handleBack} onCancel={handleBack} />
                 </div>
               </div>
@@ -249,36 +373,80 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
           );
         }
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%)',
+                background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
                 color: 'white'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', justifyContent: 'space-between', alignItems: window.innerWidth < 768 ? 'stretch' : 'center', gap: '1rem' }}>
                   <div>
-                    <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Templates Management</h1>
-                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Create and manage inspection templates</p>
+                    <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Templates Management</h1>
+                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Create and manage inspection templates</p>
                   </div>
-                  <button onClick={handleCreateNew} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'rgba(255,255,255,0.2)', 
-                    color: 'white', 
-                    border: '1px solid rgba(255,255,255,0.3)', 
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: '500',
-                    backdropFilter: 'blur(10px)'
-                  }}>
-                    + Add New Template
-                  </button>
+                  <div style={{ display: 'flex', gap: 'clamp(0.5rem, 2vw, 0.75rem)', flexWrap: 'wrap' }}>
+                    <button onClick={handleSelectTemplateFolder} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.1)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px'
+                    }}>
+                      📁 Select Folder
+                    </button>
+                    <button onClick={() => setRefreshTrigger(prev => prev + 1)} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.1)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px'
+                    }}>
+                      🔄 Refresh
+                    </button>
+                    <button onClick={handleCreateNew} style={{ 
+                      padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                      background: 'rgba(255,255,255,0.2)', 
+                      color: 'white', 
+                      border: '1px solid rgba(255,255,255,0.3)', 
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
+                      fontWeight: '500',
+                      backdropFilter: 'blur(10px)',
+                      whiteSpace: 'nowrap',
+                      minHeight: '44px',
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
+                    onTouchStart={(e) => {
+                      e.currentTarget.style.transform = 'scale(0.98)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.3)';
+                    }}
+                    onTouchEnd={(e) => {
+                      e.currentTarget.style.transform = 'scale(1)';
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                    }}>
+                      + Add New Template
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div style={{ padding: '2rem' }}>
-                <TemplateList onEdit={handleEdit} />
+              <div style={{ padding: 'min(4vw, 2rem)', overflow: 'hidden' }}>
+                <TemplateList onEdit={handleEdit} refreshTrigger={refreshTrigger} templateFolderId={templateFolderId} />
               </div>
             </div>
           </div>
@@ -292,7 +460,7 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
                 <div style={{ padding: '1.5rem', borderBottom: '1px solid #e9ecef', backgroundColor: '#f8f9fa' }}>
                   <button onClick={handleBack} style={{ 
                     padding: '0.75rem 1.5rem', 
-                    background: 'linear-gradient(135deg, #6c757d, #495057)', 
+                    background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)', 
                     color: 'white', 
                     border: 'none', 
                     borderRadius: '8px',
@@ -301,7 +469,26 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
                     fontWeight: '500',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.5rem'
+                    gap: '0.5rem',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 2px 8px rgba(45, 190, 96, 0.3)',
+                    minHeight: '44px',
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent'
+                  }}
+                  onTouchStart={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.98)';
+                  }}
+                  onTouchEnd={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'linear-gradient(135deg, #1E8E4A 0%, #155A35 100%)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(45, 190, 96, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)';
+                    e.target.style.boxShadow = '0 2px 8px rgba(45, 190, 96, 0.3)';
                   }}>
                     ← Back to Files
                   </button>
@@ -359,43 +546,45 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
           );
         }
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
-                color: 'white'
+                background: 'linear-gradient(135deg, #F2C300 0%, #D4A900 100%)',
+                color: 'black'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', justifyContent: 'space-between', alignItems: window.innerWidth < 768 ? 'stretch' : 'center', gap: '1rem' }}>
                   <div>
-                    <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>File Management</h1>
-                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Upload and manage Google Drive files</p>
+                    <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>File Management</h1>
+                    <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Upload and manage Google Drive files</p>
                   </div>
                   <button onClick={() => setSubView('upload')} style={{ 
-                    padding: '0.75rem 1.5rem', 
-                    background: 'rgba(255,255,255,0.2)', 
-                    color: 'white', 
-                    border: '1px solid rgba(255,255,255,0.3)', 
+                    padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.5rem)', 
+                    background: 'rgba(0,0,0,0.2)', 
+                    color: 'black', 
+                    border: '1px solid rgba(0,0,0,0.3)', 
                     borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
                     fontWeight: '500',
-                    backdropFilter: 'blur(10px)'
+                    backdropFilter: 'blur(10px)',
+                    whiteSpace: 'nowrap',
+                    minHeight: '44px'
                   }}>
                     + Upload File
                   </button>
                 </div>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)', overflow: 'hidden' }}>
                 <div style={{ 
                   backgroundColor: '#f8f9fa', 
-                  padding: '1.5rem', 
+                  padding: 'clamp(1rem, 3vw, 1.5rem)', 
                   borderRadius: '8px', 
-                  marginBottom: '1.5rem',
+                  marginBottom: 'clamp(1rem, 3vw, 1.5rem)',
                   border: '1px solid #e9ecef'
                 }}>
-                  <label style={{ fontWeight: '600', color: '#495057', marginBottom: '0.5rem', display: 'block' }}>Google Drive Folder ID:</label>
+                  <label style={{ fontWeight: '600', color: '#495057', marginBottom: '0.5rem', display: 'block', fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>Google Drive Folder ID:</label>
                   <input 
                     type="text" 
                     value={folderId} 
@@ -403,31 +592,34 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
                     placeholder="Enter folder ID from Google Drive URL"
                     style={{ 
                       width: '100%', 
-                      padding: '0.75rem', 
+                      padding: 'clamp(0.5rem, 2vw, 0.75rem)', 
                       border: '1px solid #ced4da',
                       borderRadius: '6px',
-                      fontSize: '14px',
-                      marginTop: '0.5rem'
+                      fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                      marginTop: '0.5rem',
+                      boxSizing: 'border-box'
                     }}
                   />
-                  <small style={{ color: '#6c757d', marginTop: '0.5rem', display: 'block' }}>Find this in your Google Drive URL: https://drive.google.com/drive/folders/YOUR_FOLDER_ID</small>
+                  <small style={{ color: '#6c757d', marginTop: '0.5rem', display: 'block', fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)' }}>Find this in your Google Drive URL</small>
                 </div>
                 {folderId ? (
-                  <FileList 
-                    folderId={folderId}
-                    onRefreshNeeded={refreshTrigger}
-                  />
+                  <div style={{ overflow: 'hidden' }}>
+                    <FileList 
+                      folderId={folderId}
+                      onRefreshNeeded={refreshTrigger}
+                    />
+                  </div>
                 ) : (
                   <div style={{ 
                     textAlign: 'center', 
-                    padding: '3rem', 
+                    padding: 'clamp(2rem, 6vw, 3rem)', 
                     color: '#6c757d',
                     backgroundColor: '#f8f9fa',
                     borderRadius: '8px',
                     border: '2px dashed #dee2e6'
                   }}>
-                    <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📁</div>
-                    <p>Please enter a folder ID to view files</p>
+                    <div style={{ fontSize: 'clamp(2rem, 8vw, 3rem)', marginBottom: '1rem' }}>📁</div>
+                    <p style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>Please enter a folder ID to view files</p>
                   </div>
                 )}
               </div>
@@ -437,18 +629,18 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
       
       case 'reporting':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
                 background: 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)',
                 color: 'white'
               }}>
-                <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Reporting Center</h1>
-                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Advanced reporting and data visualization</p>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Reporting Center</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Advanced reporting and data visualization</p>
               </div>
-              <div style={{ padding: '2rem' }}>
+              <div style={{ padding: 'min(4vw, 2rem)', overflow: 'hidden' }}>
                 <ReportingCenter />
               </div>
             </div>
@@ -459,34 +651,32 @@ const MainContent = ({ activeModule, sidebarCollapsed, onNavigate }) => {
 
       case 'auth':
         return (
-          <div style={{ padding: '2rem', backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
-            <div style={{ backgroundColor: 'white', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          <div style={{ padding: 'min(5vw, 2rem)', backgroundColor: '#f8f9fa', minHeight: '100%' }}>
+            <div style={{ backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
               <div style={{ 
-                padding: '2rem', 
+                padding: 'min(4vw, 2rem)', 
                 borderBottom: '1px solid #e9ecef', 
-                background: 'linear-gradient(135deg, #fd7e14 0%, #e83e8c 100%)',
-                color: 'white'
+                background: 'linear-gradient(135deg, #F2C300 0%, #D4A900 100%)',
+                color: 'black'
               }}>
-                <div>
-                  <h1 style={{ margin: 0, fontSize: '2rem', fontWeight: '600' }}>Authentication Management</h1>
-                  <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9 }}>Manage Google authentication and user sessions</p>
-                </div>
+                <h1 style={{ margin: 0, fontSize: 'clamp(1.25rem, 6vw, 2rem)', fontWeight: '600' }}>Authentication Management</h1>
+                <p style={{ margin: '0.5rem 0 0 0', opacity: 0.9, fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Manage Google authentication and user sessions</p>
               </div>
-              <div style={{ padding: '3rem', textAlign: 'center' }}>
+              <div style={{ padding: 'min(4vw, 2rem)', textAlign: 'center', overflow: 'hidden' }}>
                 <div style={{ 
                   backgroundColor: '#f8f9fa', 
-                  padding: '2rem', 
-                  borderRadius: '12px', 
+                  padding: 'clamp(1.5rem, 4vw, 2rem)', 
+                  borderRadius: '8px', 
                   border: '1px solid #e9ecef',
-                  maxWidth: '500px',
+                  maxWidth: '100%',
                   margin: '0 auto'
                 }}>
-                  <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔐</div>
-                  <h3 style={{ color: '#343a40', marginBottom: '1rem' }}>Google Authentication</h3>
-                  <p style={{ color: '#6c757d', marginBottom: '2rem' }}>Manage your Google account connection and authentication status</p>
-                  <GoogleAuth onAuthChange={(isSignedIn, userInfo) => {
-                    console.log('Auth change:', { isSignedIn, userInfo });
-                  }} />
+                  <div style={{ fontSize: 'clamp(2.5rem, 8vw, 4rem)', marginBottom: '1rem' }}>🔐</div>
+                  <h3 style={{ color: '#343a40', marginBottom: '1rem', fontSize: 'clamp(1.125rem, 4vw, 1.5rem)' }}>Google Authentication</h3>
+                  <p style={{ color: '#6c757d', marginBottom: '2rem', fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>Manage your Google account connection and authentication status</p>
+                  <div style={{ overflow: 'hidden' }}>
+                    <GoogleAuth />
+                  </div>
                 </div>
               </div>
             </div>

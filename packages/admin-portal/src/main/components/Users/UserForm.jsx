@@ -176,7 +176,7 @@ const UserForm = ({ userId, onSave, onCancel }) => {
     <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
       {/* Header Card */}
       <div style={{
-        background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+        background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
         borderRadius: '12px',
         padding: '30px',
         marginBottom: '30px',
@@ -257,7 +257,7 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#28a745'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -281,7 +281,7 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#28a745'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -304,7 +304,7 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#28a745'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -360,7 +360,7 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#28a745'}
+                  onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
                   onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
                 />
               </div>
@@ -383,7 +383,7 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                     outline: 'none',
                     boxSizing: 'border-box'
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#28a745'}
+                  onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
                   onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
                 />
               </div>
@@ -422,7 +422,13 @@ const UserForm = ({ userId, onSave, onCancel }) => {
             </>
           )}
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+          <div style={{ 
+            display: 'flex', 
+            gap: 'clamp(0.75rem, 3vw, 0.75rem)', 
+            justifyContent: window.innerWidth < 768 ? 'stretch' : 'flex-end',
+            flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+            marginTop: 'clamp(1.5rem, 4vw, 2rem)'
+          }}>
             <button
               type="button"
               onClick={handleDiscard}
@@ -431,12 +437,28 @@ const UserForm = ({ userId, onSave, onCancel }) => {
                 backgroundColor: 'transparent',
                 color: '#6c757d',
                 border: '2px solid #6c757d',
-                padding: '12px 24px',
+                padding: 'clamp(0.75rem, 3vw, 0.75rem) clamp(1.5rem, 4vw, 1.5rem)',
                 borderRadius: '8px',
-                fontSize: '16px',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
                 fontWeight: '500',
                 cursor: isSaving ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                minHeight: '48px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                flex: window.innerWidth < 768 ? '1' : 'none'
+              }}
+              onTouchStart={(e) => {
+                if (!isSaving) {
+                  e.currentTarget.style.transform = 'scale(0.98)';
+                  e.currentTarget.style.backgroundColor = '#6c757d';
+                  e.currentTarget.style.color = 'white';
+                }
+              }}
+              onTouchEnd={(e) => {
+                if (!isSaving) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
               }}
               onMouseEnter={(e) => {
                 if (!isSaving) {
@@ -458,19 +480,44 @@ const UserForm = ({ userId, onSave, onCancel }) => {
               type="submit"
               disabled={isSaving}
               style={{
-                backgroundColor: isSaving ? '#ccc' : '#28a745',
+                background: isSaving ? '#ccc' : 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
                 color: 'white',
                 border: 'none',
-                padding: '12px 24px',
+                padding: 'clamp(0.75rem, 3vw, 0.75rem) clamp(1.5rem, 4vw, 1.5rem)',
                 borderRadius: '8px',
-                fontSize: '16px',
+                fontSize: 'clamp(0.875rem, 3.5vw, 1rem)',
                 fontWeight: '500',
                 cursor: isSaving ? 'not-allowed' : 'pointer',
-                transition: 'background-color 0.3s ease',
-                minWidth: '140px'
+                transition: 'all 0.3s ease',
+                minWidth: window.innerWidth < 768 ? 'auto' : '140px',
+                minHeight: '48px',
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent',
+                boxShadow: isSaving ? 'none' : '0 2px 8px rgba(45, 190, 96, 0.3)',
+                flex: window.innerWidth < 768 ? '1' : 'none'
               }}
-              onMouseEnter={(e) => !isSaving && (e.target.style.backgroundColor = '#1e7e34')}
-              onMouseLeave={(e) => !isSaving && (e.target.style.backgroundColor = '#28a745')}
+              onTouchStart={(e) => {
+                if (!isSaving) {
+                  e.currentTarget.style.transform = 'scale(0.98)';
+                }
+              }}
+              onTouchEnd={(e) => {
+                if (!isSaving) {
+                  e.currentTarget.style.transform = 'scale(1)';
+                }
+              }}
+              onMouseEnter={(e) => {
+                if (!isSaving) {
+                  e.target.style.background = 'linear-gradient(135deg, #1E8E4A 0%, #155A35 100%)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(45, 190, 96, 0.4)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isSaving) {
+                  e.target.style.background = 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)';
+                  e.target.style.boxShadow = '0 2px 8px rgba(45, 190, 96, 0.3)';
+                }
+              }}
             >
               {isSaving ? '⏳ Saving...' : (isEditing ? '✏️ Update User' : '👥 Create User')}
             </button>

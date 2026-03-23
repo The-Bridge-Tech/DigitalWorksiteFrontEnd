@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getTemplates, deleteTemplate } from '../../services/templates.service';
 
-const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
+const TemplateList = ({ onEdit, onSelect, refreshTrigger, templateFolderId }) => {
   const [templates, setTemplates] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,6 +19,13 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refreshTrigger]);
+
+  // Update selected folder when templateFolderId prop changes
+  useEffect(() => {
+    if (templateFolderId && templateFolderId !== selectedFolder) {
+      setSelectedFolder(templateFolderId);
+    }
+  }, [templateFolderId, selectedFolder]);
 
   // Fetch templates from Google Drive
   const fetchTemplates = async () => {
@@ -160,60 +167,7 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)',
-        borderRadius: '12px',
-        padding: '30px',
-        marginBottom: '30px',
-        color: 'white',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>📋 Inspection Templates</h1>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>Manage inspection templates and forms</p>
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button 
-              onClick={handleFolderSelect}
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '12px 20px',
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '8px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              📁 Select Folder
-            </button>
-            <button 
-              onClick={fetchTemplates} 
-              disabled={isLoading || !selectedFolder}
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '12px 20px',
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '8px',
-                fontWeight: '500',
-                cursor: (isLoading || !selectedFolder) ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)',
-                opacity: (isLoading || !selectedFolder) ? 0.6 : 1
-              }}
-            >
-              {isRefreshing ? '↻' : '🔄'} {isLoading ? 'Loading...' : 'Refresh'}
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <div style={{ padding: 'clamp(0.75rem, 3vw, 1.25rem)', maxWidth: '100%', margin: '0 auto', overflow: 'hidden' }}>
       {/* Selected Folder Info */}
       {selectedFolder && (
         <div style={{
@@ -267,7 +221,7 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
         boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
         border: '1px solid #e9ecef'
       }}>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 'clamp(1rem, 3vw, 1.25rem)', alignItems: 'flex-end', flexWrap: 'wrap' }}>
           {/* Search */}
           <div style={{ position: 'relative', flex: '2', minWidth: '300px' }}>
             <span style={{
@@ -357,7 +311,7 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))', gap: 'clamp(1rem, 3vw, 1.25rem)', overflow: 'hidden' }}>
           {sortedTemplates.map(template => {
             const getCategoryColor = (category) => {
               const colors = {
@@ -429,20 +383,18 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
                   {onEdit && (
                     <button 
                       onClick={() => onEdit(template.fileId)}
+                      className="theme-bg-secondary"
                       style={{
-                        backgroundColor: '#007bff',
-                        color: 'white',
+                        color: 'black',
                         border: 'none',
                         padding: '8px 12px',
                         borderRadius: '6px',
                         fontSize: '14px',
                         fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'background-color 0.3s ease',
+                        transition: 'all 0.2s ease',
                         flex: 1
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
                     >
                       ✏️ Edit
                     </button>
@@ -451,8 +403,8 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
                   {onSelect && (
                     <button 
                       onClick={() => onSelect(template)}
+                      className="theme-bg-primary"
                       style={{
-                        backgroundColor: '#28a745',
                         color: 'white',
                         border: 'none',
                         padding: '8px 12px',
@@ -460,11 +412,9 @@ const TemplateList = ({ onEdit, onSelect, refreshTrigger }) => {
                         fontSize: '14px',
                         fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'background-color 0.3s ease',
+                        transition: 'all 0.2s ease',
                         flex: 1
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
                     >
                       ✅ Select
                     </button>

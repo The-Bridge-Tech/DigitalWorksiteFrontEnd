@@ -5,7 +5,7 @@ import SiteAssignments from './SiteAssignments';
 import { useSite } from '../SiteContext';
 import { API_BASE_URL } from '../../config/api.config';
 
-const UserManagement = () => {
+const UserManagement = ({ refreshTrigger, onCreateNew }) => {
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
     const [activeTab, setActiveTab] = useState('list'); // list, form, assignments, activities
@@ -20,7 +20,20 @@ const UserManagement = () => {
 
     useEffect(() => {
         loadUsers();
-    }, []);
+    }, [refreshTrigger]);
+
+    // Handle the onCreateNew trigger from MainContent
+    useEffect(() => {
+        if (onCreateNew) {
+            const handleCreateTrigger = () => {
+                setSelectedUser(null);
+                setActiveTab('form');
+            };
+            
+            // Store the handler so MainContent can call it
+            window.triggerUserCreate = handleCreateTrigger;
+        }
+    }, [onCreateNew]);
 
     const loadUsers = async (forceRefresh = false) => {
         try {
@@ -135,10 +148,7 @@ const UserManagement = () => {
         setActiveTab('assignments');
     };
 
-    const handleNewUser = () => {
-        setSelectedUser(null);
-        setActiveTab('form');
-    };
+
 
     const handleEditUser = (user) => {
         // Only allow editing database users, not Google Drive users
@@ -147,6 +157,32 @@ const UserManagement = () => {
             setActiveTab('form');
         } else {
             alert('Cannot edit Google Drive users. Only database users can be edited.');
+        }
+    };
+
+    const handleDeleteUser = async (user) => {
+        if (!confirm(`Are you sure you want to delete user "${user.name}"?`)) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/adm/users/${user.id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                setUsers(users.filter(u => u.id !== user.id));
+            } else {
+                const error = await response.json();
+                alert(`Failed to delete user: ${error.error || 'Unknown error'}`);
+            }
+        } catch (err) {
+            console.error('Error deleting user:', err);
+            alert(`Failed to delete user: ${err.message}`);
         }
     };
 
@@ -221,7 +257,7 @@ const UserManagement = () => {
                 <div style={{ 
                     display: 'grid', 
                     gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : '1fr auto', 
-                    gap: window.innerWidth <= 768 ? '15px' : '20px', 
+                    gap: window.innerWidth <= 768 ? 'clamp(0.75rem, 3vw, 0.9375rem)' : 'clamp(1rem, 3vw, 1.25rem)', 
                     alignItems: 'end'
                 }}>
                     <div>
@@ -322,8 +358,9 @@ const UserManagement = () => {
             ) : (
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-                    gap: '20px'
+                    gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fill, minmax(350px, 1fr))',
+                    gap: 'clamp(1rem, 3vw, 1.25rem)',
+                    overflow: 'hidden'
                 }}>
                     {filteredUsers.map(user => (
                         <UserCard
@@ -331,6 +368,7 @@ const UserManagement = () => {
                             user={user}
                             onSelect={() => handleUserSelect(user)}
                             onEdit={() => handleEditUser(user)}
+                            onDelete={() => handleDeleteUser(user)}
                             hasPermission={hasPermission}
                         />
                     ))}
@@ -340,94 +378,32 @@ const UserManagement = () => {
     );
 
     return (
-        <div style={{ padding: '20px' }}>
-            {/* Header Card - Only show on main list view */}
-            {activeTab === 'list' && (
-                <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    borderRadius: '12px',
-                    padding: '30px',
-                    marginBottom: '30px',
-                    color: 'white',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
-                                👥 User Management
-                            </h1>
-                            <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
-                                Manage all users, roles, and site assignments across your construction sites
-                            </p>
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-
-
-                            <button
-                                onClick={quickRefresh}
-                                disabled={loading}
-                                style={{
-                                    backgroundColor: 'rgba(255,255,255,0.1)',
-                                    color: 'white',
-                                    padding: '10px 20px',
-                                    border: '2px solid rgba(255,255,255,0.3)',
-                                    borderRadius: '8px',
-                                    fontWeight: '500',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    backdropFilter: 'blur(10px)',
-                                    fontSize: '14px',
-                                    opacity: loading ? 0.6 : 1
-                                }}
-                                title="Quick refresh users (uses cache when possible)"
-                            >
-                                {loading ? '⚡ Refreshing...' : '🔄 Refresh'}
-                            </button>
-                            <button
-                                onClick={handleNewUser}
-                                style={{
-                                    backgroundColor: 'rgba(255,255,255,0.2)',
-                                    color: 'white',
-                                    padding: '12px 24px',
-                                    border: '2px solid rgba(255,255,255,0.3)',
-                                    borderRadius: '8px',
-                                    fontWeight: '500',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.3s ease',
-                                    backdropFilter: 'blur(10px)',
-                                    fontSize: '16px'
-                                }}
-                            >
-                                ➕ Add New User
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
+        <div style={{ padding: 'clamp(0.75rem, 3vw, 1.25rem)', maxWidth: '100%', overflow: 'hidden' }}>
             {/* Tab Navigation */}
             {activeTab !== 'list' && (
-                <div style={{
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                <div className="theme-gradient-primary" style={{
                     borderRadius: '12px',
-                    padding: '20px 30px',
-                    marginBottom: '30px',
+                    padding: 'clamp(1rem, 3vw, 1.875rem)',
+                    marginBottom: 'clamp(1.5rem, 4vw, 1.875rem)',
                     color: 'white',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+                    overflow: 'hidden'
                 }}>
-                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: 'clamp(0.5rem, 2vw, 0.75rem)', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button
                             onClick={handleBackToUsers}
                             style={{
                                 backgroundColor: 'rgba(255,255,255,0.2)',
                                 color: 'white',
-                                padding: '10px 20px',
+                                padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1.25rem)',
                                 border: '2px solid rgba(255,255,255,0.3)',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
-                                fontSize: '14px',
+                                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                                 fontWeight: '500',
-                                backdropFilter: 'blur(10px)'
+                                backdropFilter: 'blur(10px)',
+                                whiteSpace: 'nowrap',
+                                minHeight: '44px'
                             }}
                         >
                             ← Back to Users
@@ -439,13 +415,15 @@ const UserManagement = () => {
                                     style={{
                                         backgroundColor: activeTab === 'assignments' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)',
                                         color: 'white',
-                                        padding: '10px 20px',
+                                        padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1.25rem)',
                                         border: '2px solid rgba(255,255,255,0.3)',
                                         borderRadius: '6px',
                                         cursor: 'pointer',
-                                        fontSize: '14px',
+                                        fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                                         fontWeight: '500',
-                                        backdropFilter: 'blur(10px)'
+                                        backdropFilter: 'blur(10px)',
+                                        whiteSpace: 'nowrap',
+                                        minHeight: '44px'
                                     }}
                                 >
                                     Site Assignments
@@ -455,13 +433,15 @@ const UserManagement = () => {
                                     style={{
                                         backgroundColor: activeTab === 'activities' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)',
                                         color: 'white',
-                                        padding: '10px 20px',
+                                        padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1.25rem)',
                                         border: '2px solid rgba(255,255,255,0.3)',
                                         borderRadius: '6px',
                                         cursor: 'pointer',
-                                        fontSize: '14px',
+                                        fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                                         fontWeight: '500',
-                                        backdropFilter: 'blur(10px)'
+                                        backdropFilter: 'blur(10px)',
+                                        whiteSpace: 'nowrap',
+                                        minHeight: '44px'
                                     }}
                                 >
                                     Activities
@@ -469,8 +449,8 @@ const UserManagement = () => {
                             </>
                         )}
                         {selectedUser && (
-                            <div style={{ marginLeft: 'auto', opacity: 0.9 }}>
-                                <span style={{ fontSize: '16px', fontWeight: '500' }}>
+                            <div style={{ marginLeft: 'auto', opacity: 0.9, minWidth: 0 }}>
+                                <span style={{ fontSize: 'clamp(0.875rem, 3vw, 1rem)', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
                                     {selectedUser.name}
                                 </span>
                             </div>
@@ -486,7 +466,7 @@ const UserManagement = () => {
     );
 };
 
-const UserCard = ({ user, onSelect, onEdit, hasPermission }) => (
+const UserCard = ({ user, onSelect, onEdit, onDelete, hasPermission }) => (
     <div style={{
         backgroundColor: 'white',
         borderRadius: '8px',
@@ -620,10 +600,10 @@ const UserCard = ({ user, onSelect, onEdit, hasPermission }) => (
         <div style={{ display: 'flex', gap: '8px' }}>
             <button
                 onClick={onSelect}
+                className="theme-bg-primary"
                 style={{
                     flex: 1,
                     padding: '8px 12px',
-                    backgroundColor: '#007bff',
                     color: 'white',
                     border: 'none',
                     borderRadius: '4px',
@@ -631,15 +611,15 @@ const UserCard = ({ user, onSelect, onEdit, hasPermission }) => (
                     fontSize: '14px'
                 }}
             >
-                Manage Sites
+                Sites
             </button>
             <button
                 onClick={onEdit}
+                className="theme-bg-secondary"
                 style={{
                     flex: 1,
                     padding: '8px 12px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
+                    color: 'black',
                     border: 'none',
                     borderRadius: '4px',
                     cursor: 'pointer',
@@ -647,6 +627,21 @@ const UserCard = ({ user, onSelect, onEdit, hasPermission }) => (
                 }}
             >
                 Edit
+            </button>
+            <button
+                onClick={onDelete}
+                style={{
+                    flex: 1,
+                    padding: '8px 12px',
+                    backgroundColor: '#dc3545',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '14px'
+                }}
+            >
+                Delete
             </button>
         </div>
     </div>
@@ -662,6 +657,8 @@ const UserActivities = ({ user }) => (
 );
 
 const getRoleColor = (role) => {
+    // Strip dwa_ prefix if present
+    const cleanRole = (role || '').replace(/^dwa_/i, '').toLowerCase();
     const colors = {
         admin: '#dc3545',
         site_manager: '#007bff',
@@ -670,10 +667,12 @@ const getRoleColor = (role) => {
         inspector: '#17a2b8',
         viewer: '#6c757d'
     };
-    return colors[role] || '#6c757d';
+    return colors[cleanRole] || '#6c757d';
 };
 
 const getRoleIcon = (role) => {
+    // Strip dwa_ prefix if present
+    const cleanRole = (role || '').replace(/^dwa_/i, '').toLowerCase();
     const icons = {
         admin: '👑',
         site_manager: '🏗️',
@@ -682,7 +681,7 @@ const getRoleIcon = (role) => {
         inspector: '🔍',
         viewer: '👁️'
     };
-    return icons[role] || '👤';
+    return icons[cleanRole] || '👤';
 };
 
 export default UserManagement;

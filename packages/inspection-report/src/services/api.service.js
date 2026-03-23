@@ -1,7 +1,7 @@
 // api.service.js
 // Shared API services for inspection report
 
-const API_BASE_URL = 'http://localhost:5004';
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 /**
  * Get all sites 
@@ -59,63 +59,37 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 /**
- * Get all users from Google Drive
+ * Get all users from database
  * @returns {Promise<Array>} Promise that resolves with users array
  */
 export const getUsers = async () => {
   try {
     const token = localStorage.getItem('auth_token');
+    const splunkUser = window.$C?.USERNAME;
     
-    if (!token) {
-      console.warn('No auth token found, returning empty users array');
-      return [];
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
-
-    // Users folder ID from the users service
-    const USERS_FOLDER_ID = '1Xq4i2gEBwbrRat3ucxgjROci9kdYi7ol';
     
-    // Get JSON files from users folder
-    const files = await fetchWithAuth(`${API_BASE_URL}/adm/files?folderId=${USERS_FOLDER_ID}&query=mimeType='application/json'`);
-    
-    if (!Array.isArray(files)) {
-      console.warn('Invalid files response:', files);
-      return [];
+    if (splunkUser) {
+      headers['X-Splunk-User'] = splunkUser;
     }
-
-    // Fetch content for each user file
-    const users = await Promise.all(
-      files.map(async (file) => {
-        try {
-          const content = await fetchWithAuth(`${API_BASE_URL}/adm/files/${file.id}/content`);
-          
-          let userObj;
-          if (typeof content === 'string') {
-            userObj = JSON.parse(content);
-          } else if (content && typeof content.content === 'string') {
-            userObj = JSON.parse(content.content);
-          } else {
-            console.warn(`Invalid content format for ${file.name}`);
-            return null;
-          }
-
-          return {
-            ...userObj,
-            fileId: file.id,
-            fileName: file.name,
-            createdTime: file.createdTime,
-            modifiedTime: file.modifiedTime,
-          };
-        } catch (err) {
-          console.warn(`Failed to parse user ${file.name}:`, err);
-          return null;
-        }
-      })
-    );
-
-    return users.filter(Boolean);
+    
+    const response = await fetch(`${API_BASE_URL}/adm/users`, {
+      headers
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch users');
+    }
+    
+    return await response.json();
   } catch (error) {
     console.error('Error getting users:', error);
-    // Return empty array on error to prevent crashes
     return [];
   }
 };

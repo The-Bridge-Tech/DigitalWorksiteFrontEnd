@@ -1,0 +1,47 @@
+/* QR Scanner Styles */
+.qr-scanner-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.qr-scanner-container video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* QR Scanner highlight styles - these classes are used by qr-scanner library */
+.scan-region-highlight {
+  stroke: #00ff00 !important;
+  stroke-width: 3 !important;
+  fill: none !important;
+}
+
+.code-outline-highlight {
+  stroke: #ff0000 !important;
+  stroke-width: 2 !important;
+  fill: rgba(255, 0, 0, 0.2) !important;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .qr-scanner-container {
+    border-radius: 4px;
+  }
+  
+  .qr-scanner-container video {
+    height: 60vh;
+    max-height: 400px;
+    object-fit: cover;
+  }
+}
+
+/* Ensure proper video display on iOS */
+.qr-scanner-container video::-webkit-media-controls {
+  display: none !important;
+}
+
+.qr-scanner-container video::-webkit-media-controls-panel {
+  display: none !important;
+}

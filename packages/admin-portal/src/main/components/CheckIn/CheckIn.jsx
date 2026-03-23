@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import jsQR from 'jsqr';
+import QrScanner from 'qr-scanner';
 import { getSites } from '../../services/site.service';
 import { getUsers } from '../../services/users.service';
 import { sendSafetyAlert } from '../Notifications/NotificationTrigger';
 import { API_BASE_URL } from '../../config/api.config.js';
+import './CheckIn.css';
 
 const CheckIn = () => {
   const [scanning, setScanning] = useState(false);
@@ -12,21 +13,44 @@ const CheckIn = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [weather, setWeather] = useState('Loading weather...');
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
+
   const streamRef = useRef(null);
 
+  // Cleanup on unmount
   useEffect(() => {
-    const loadUserAndLocation = async () => {
-      try {
-        const users = await getUsers();
-        const userEmail = localStorage.getItem('user_email');
-        const user = users?.find(u => u.email === userEmail);
-        setCurrentUser(user);
-      } catch (error) {
-        console.error('Error loading user data:', error);
+    return () => {
+      if (streamRef.current) {
+        streamRef.current.stop();
+        streamRef.current.destroy();
       }
     };
-    loadUserAndLocation();
+  }, []);
+
+  useEffect(() => {
+    const loadCurrentUser = async () => {
+      try {
+        // Get current user from auth status
+        const response = await fetch(`${API_BASE_URL}adm/auth/status`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        });
+        
+        if (response.ok) {
+          const authData = await response.json();
+          if (authData.authenticated && authData.user) {
+            setCurrentUser({
+              name: authData.user.displayName,
+              email: authData.user.emailAddress,
+              username: authData.user.displayName
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error loading current user:', error);
+      }
+    };
+    loadCurrentUser();
   }, []);
 
   useEffect(() => {
@@ -37,7 +61,7 @@ const CheckIn = () => {
           setLocation({ latitude, longitude });
           // GPS coordinates captured
           
-          // Fetch weather data
+          // Fetch weather data via CORS proxy
           try {
             const weatherApiKey = process.env.REACT_APP_WEATHER_API_KEY;
             if (!weatherApiKey) {
@@ -46,8 +70,9 @@ const CheckIn = () => {
               return;
             }
             
+            // Use CORS proxy to avoid CORS issues
             const weatherResponse = await fetch(
-              `https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${latitude},${longitude}&aqi=no`
+              `https://corsproxy.io/?https://api.weatherapi.com/v1/current.json?key=${weatherApiKey}&q=${latitude},${longitude}&aqi=no`
             );
             const weatherData = await weatherResponse.json();
             setWeather(`${weatherData.current.condition.text}, ${weatherData.current.temp_c}°C`);
@@ -59,6 +84,7 @@ const CheckIn = () => {
         (error) => {
           console.error('GPS error:', error);
           setMessage('Could not get GPS location');
+          setTimeout(() => setMessage(''), 3000);
           setWeather('Weather unavailable');
         }
       );
@@ -67,108 +93,139 @@ const CheckIn = () => {
 
   const startScanning = async () => {
     try {
-      console.log('Requesting camera access...');
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          facingMode: 'environment',
-          width: { ideal: 640 },
-          height: { ideal: 480 }
+      setMessage('📱 Starting camera...');
+      setScanning(true); // Set scanning to true first to render video element
+      
+      // Wait for video element to be rendered
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      if (!videoRef.current) {
+        setMessage('Video element not ready after waiting');
+        setTimeout(() => setMessage(''), 3000);
+        setScanning(false);
+        return;
+      }
+
+      // Check if camera is available
+      const hasCamera = await QrScanner.hasCamera();
+      if (!hasCamera) {
+        setMessage('No camera found on this device');
+        setTimeout(() => setMessage(''), 3000);
+        setScanning(false);
+        return;
+      }
+
+      const qrScanner = new QrScanner(
+        videoRef.current,
+        (result) => {
+          handleQRDetected(result.data);
+        },
+        {
+          returnDetailedScanResult: true,
+          preferredCamera: 'environment',
+          highlightScanRegion: true,
+          highlightCodeOutline: true,
+          maxScansPerSecond: 5,
         }
-      });
+      );
+
+      streamRef.current = qrScanner;
+      await qrScanner.start();
+      setMessage('📱 Point camera at QR code to check in');
       
-      console.log('Camera access granted');
-      streamRef.current = stream;
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = () => {
-          console.log('Video loaded, starting scan');
-          setScanning(true);
-          setMessage('📱 Point camera at QR code to check in');
-          setTimeout(() => scanForQR(), 1000);
-        };
-      }
     } catch (error) {
-      console.error('Camera error:', error);
+      setScanning(false);
       if (error.name === 'NotAllowedError') {
-        setMessage('❌ Camera permission denied. Please allow camera access and try again.');
+        setMessage('Camera permission denied. Please allow camera access and try again.');
       } else if (error.name === 'NotFoundError') {
-        setMessage('❌ No camera found on this device.');
+        setMessage('No camera found on this device.');
+      } else if (error.name === 'NotSupportedError') {
+        setMessage('QR scanning not supported on this device.');
       } else {
-        setMessage(`❌ Camera error: ${error.message}`);
+        setMessage(`Camera error: ${error.message}`);
       }
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   const stopScanning = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.stop();
+      streamRef.current.destroy();
+      streamRef.current = null;
     }
     setScanning(false);
+    setMessage('📱 Scanner stopped');
+    setTimeout(() => setMessage(''), 3000);
   };
 
-  const scanForQR = () => {
-    if (!scanning || !videoRef.current || !canvasRef.current) {
-      if (scanning) setTimeout(() => scanForQR(), 100);
-      return;
-    }
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      console.log('Scanning frame:', canvas.width, 'x', canvas.height);
-      
-      // Real QR detection using jsQR
-      const code = jsQR(imageData.data, canvas.width, canvas.height, {
-        inversionAttempts: 'dontInvert'
-      });
-      if (code) {
-        console.log('QR Code detected:', code.data);
-        setMessage('✅ QR Code found: ' + code.data);
-        handleQRDetected(code.data);
-        return;
-      }
-    } else {
-      console.log('Video not ready:', video.readyState);
-    }
-    
-    if (scanning) {
-      setTimeout(() => scanForQR(), 200);
-    }
-  };
 
   const handleQRDetected = async (qrData) => {
     stopScanning();
     setMessage('🔍 QR Code detected, processing...');
 
     try {
-      // Parse existing QR format
-      const url = new URL(qrData);
-      const siteAddress = url.searchParams.get('site');
-      const siteLocation = url.searchParams.get('location');
-      const qrId = url.searchParams.get('id');
+      let siteAddress, siteLocation, qrId;
       
-      if (!siteAddress || !qrId) {
-        setMessage('❌ Invalid QR code format');
+      // Try to parse as URL first
+      try {
+        const url = new URL(qrData);
+        siteAddress = url.searchParams.get('site');
+        siteLocation = url.searchParams.get('location');
+        qrId = url.searchParams.get('id');
+      } catch (urlError) {
+        // If not a URL, try to parse as JSON
+        try {
+          const jsonData = JSON.parse(qrData);
+          siteAddress = jsonData.site;
+          siteLocation = jsonData.location;
+          qrId = jsonData.id;
+        } catch (jsonError) {
+          // If neither URL nor JSON, try simple string format
+          const parts = qrData.split('|');
+          if (parts.length >= 3) {
+            siteAddress = parts[0];
+            siteLocation = parts[1];
+            qrId = parts[2];
+          } else {
+            setMessage('Invalid QR code format');
+            setTimeout(() => setMessage(''), 3000);
+            return;
+          }
+        }
+      }
+      
+      if (!qrId) {
+        setMessage('QR code missing required ID information');
+        setTimeout(() => setMessage(''), 3000);
         return;
+      }
+      
+      // If no site address, use ID as site identifier
+      if (!siteAddress) {
+        siteAddress = qrId;
       }
 
       // Find matching site
       const sites = await getSites();
-      const site = sites?.find(s => 
-        s.location?.toLowerCase().includes(siteLocation?.toLowerCase()) ||
-        s.name?.toLowerCase().includes(siteAddress?.toLowerCase())
-      );
+      
+      const site = sites?.find(s => {
+        return (
+          (siteLocation && s.location?.toLowerCase().includes(siteLocation?.toLowerCase())) ||
+          (siteAddress && s.name?.toLowerCase().includes(siteAddress?.toLowerCase())) ||
+          (siteAddress && s.address?.toLowerCase().includes(siteAddress?.toLowerCase())) ||
+          (s.id?.toString() === siteAddress) ||
+          (s.id?.toString() === qrId) ||
+          (s.location?.toLowerCase() === siteLocation?.toLowerCase()) ||
+          (s.name?.toLowerCase() === siteAddress?.toLowerCase()) ||
+          (s.address?.toLowerCase() === siteAddress?.toLowerCase())
+        );
+      });
       
       if (!site) {
-        setMessage('❌ Site not found in system');
+        setMessage('Site not found in system');
+        setTimeout(() => setMessage(''), 3000);
         return;
       }
 
@@ -181,7 +238,8 @@ const CheckIn = () => {
         gps_longitude: location?.longitude
       }, site);
     } catch (error) {
-      setMessage('❌ Error processing QR code');
+      setMessage('Error processing QR code');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
@@ -211,38 +269,46 @@ const CheckIn = () => {
             weather_conditions: weather
           });
         }
+        
+        // Auto-clear success message after 5 seconds
+        setTimeout(() => setMessage(''), 5000);
       } else {
-        setMessage(`❌ Check-in failed: ${data.error}`);
+        setMessage(`Check-in failed: ${data.error}`);
+        setTimeout(() => setMessage(''), 3000);
       }
     } catch (error) {
-      setMessage('❌ Network error during check-in');
+      setMessage('Network error during check-in');
+      setTimeout(() => setMessage(''), 3000);
     }
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '20px auto', padding: '20px', border: '1px solid #ddd', borderRadius: '8px' }}>
-      <h2>QR Check-In Scanner</h2>
+    <div style={{ maxWidth: '100%', margin: '0 auto', padding: 'clamp(0.75rem, 3vw, 1rem)', border: '1px solid #ddd', borderRadius: '8px', overflow: 'hidden' }}>
+      <h2 style={{ fontSize: 'clamp(1.125rem, 4vw, 1.5rem)', marginTop: 0, marginBottom: 'clamp(0.75rem, 3vw, 1rem)' }}>QR Check-In Scanner</h2>
       
       {message && (
         <div style={{ 
-          padding: '15px', 
-          marginBottom: '20px', 
-          backgroundColor: message.includes('✅') ? '#d4edda' : message.includes('❌') ? '#f8d7da' : '#d1ecf1',
-          border: `1px solid ${message.includes('✅') ? '#c3e6cb' : message.includes('❌') ? '#f5c6cb' : '#bee5eb'}`,
+          padding: '12px', 
+          marginBottom: '15px', 
+          backgroundColor: message.includes('✅') ? '#d4edda' : message.includes('📱') ? '#d1ecf1' : '#f8d7da',
+          border: `1px solid ${message.includes('✅') ? '#c3e6cb' : message.includes('📱') ? '#bee5eb' : '#f5c6cb'}`,
           borderRadius: '4px',
           whiteSpace: 'pre-line',
-          fontSize: '14px'
+          fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+          wordBreak: 'break-word'
         }}>
           {message}
         </div>
       )}
 
-      <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
-        <strong>Auto-Captured Data:</strong>
-        <div>👤 User: {currentUser?.name || 'Loading...'}</div>
-        <div>📍 GPS: {location ? `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}` : 'Getting location...'}</div>
-        <div>🌤️ Weather: {weather}</div>
-        <div>🕐 Ready to scan at: {new Date().toLocaleString()}</div>
+      <div style={{ marginBottom: '15px', padding: '12px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+        <strong style={{ fontSize: 'clamp(0.875rem, 3.5vw, 1rem)' }}>Auto-Captured Data:</strong>
+        <div style={{ fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', marginTop: '8px', lineHeight: '1.6' }}>
+          <div style={{ marginBottom: '4px' }}>👤 User: {currentUser?.username || currentUser?.name || 'Loading...'}</div>
+          <div style={{ marginBottom: '4px' }}>📍 GPS: {location ? `${location.latitude.toFixed(4)}, ${location.longitude.toFixed(4)}` : 'Getting location...'}</div>
+          <div style={{ marginBottom: '4px' }}>🌤️ Weather: {weather}</div>
+          <div>🕐 Ready to scan at: {new Date().toLocaleString()}</div>
+        </div>
       </div>
 
       {!scanning ? (
@@ -250,20 +316,24 @@ const CheckIn = () => {
           onClick={startScanning}
           style={{
             width: '100%',
-            padding: '15px',
-            backgroundColor: '#28a745',
+            padding: 'clamp(12px, 3vw, 15px)',
+            backgroundColor: '#2DBE60',
             color: 'white',
             border: 'none',
             borderRadius: '4px',
-            fontSize: '16px',
-            cursor: 'pointer'
+            fontSize: 'clamp(0.875rem, 4vw, 1rem)',
+            cursor: 'pointer',
+            fontWeight: '500',
+            transition: 'background-color 0.3s ease'
           }}
+          onMouseEnter={(e) => e.target.style.backgroundColor = '#1E8E4A'}
+          onMouseLeave={(e) => e.target.style.backgroundColor = '#2DBE60'}
         >
           📱 Start QR Scanner
         </button>
       ) : (
         <div>
-          <div style={{ position: 'relative' }}>
+          <div className="qr-scanner-container" style={{ position: 'relative' }}>
             <video
               ref={videoRef}
               autoPlay
@@ -271,59 +341,63 @@ const CheckIn = () => {
               muted
               style={{
                 width: '100%',
-                height: '300px',
+                height: 'clamp(300px, 60vh, 400px)',
                 backgroundColor: '#000',
                 borderRadius: '4px',
-                marginBottom: '10px'
+                marginBottom: '10px',
+                objectFit: 'cover'
               }}
             />
-            <canvas
-              ref={canvasRef}
-              style={{ display: 'none' }}
-            />
+            {/* Custom scanning overlay */}
             <div style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              border: '2px solid #00ff00',
               width: '200px',
               height: '200px',
+              border: '3px solid #00ff00',
               borderRadius: '8px',
-              pointerEvents: 'none'
+              pointerEvents: 'none',
+              boxShadow: '0 0 0 9999px rgba(0, 0, 0, 0.5)'
             }} />
+            {/* Instruction text */}
+            <div style={{
+              position: 'absolute',
+              bottom: 'clamp(20px, 5vh, 30px)',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              color: 'white',
+              backgroundColor: 'rgba(0, 0, 0, 0.7)',
+              padding: 'clamp(8px, 2vw, 10px) clamp(15px, 4vw, 20px)',
+              borderRadius: '20px',
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+              fontWeight: 'bold',
+              textAlign: 'center',
+              maxWidth: '90%'
+            }}>
+              Point camera at QR code
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button
-              onClick={() => handleQRDetected('http://example.com?site=TestSite&location=TestLocation&id=12345')}
-              style={{
-                flex: 1,
-                padding: '12px',
-                backgroundColor: '#007bff',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }}
-            >
-              🧪 Test QR
-            </button>
-            <button
-              onClick={stopScanning}
-              style={{
-                flex: 1,
-                padding: '12px',
-                backgroundColor: '#dc3545',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              ❌ Stop Scanner
-            </button>
-          </div>
+          <button
+            onClick={stopScanning}
+            style={{
+              width: '100%',
+              padding: 'clamp(10px, 2.5vw, 12px)',
+              backgroundColor: '#E31E24',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+              fontWeight: '500',
+              transition: 'background-color 0.3s ease'
+            }}
+            onMouseEnter={(e) => e.target.style.backgroundColor = '#B71C1C'}
+            onMouseLeave={(e) => e.target.style.backgroundColor = '#E31E24'}
+          >
+            ❌ Stop Scanner
+          </button>
         </div>
       )}
     </div>

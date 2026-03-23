@@ -19,7 +19,7 @@ export const getSites = async () => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/sites`, {
+    const response = await fetch(`${API_BASE_URL}adm/sites`, {
       headers
     });
     
@@ -54,7 +54,7 @@ export const getSite = async (siteId) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/sites/${siteId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/sites/${siteId}`, {
       headers
     });
     
@@ -95,7 +95,7 @@ export const createSite = async (siteData) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}/adm/sites`, {
+    const response = await fetch(`${API_BASE_URL}adm/sites`, {
       method: 'POST',
       headers,
       body: JSON.stringify(siteData)
@@ -135,7 +135,7 @@ export const updateSite = async (siteId, siteData) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}/adm/sites/${siteId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/sites/${siteId}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(siteData)
@@ -172,7 +172,7 @@ export const deleteSite = async (siteId) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_BASE_URL}/adm/sites/${siteId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/sites/${siteId}`, {
       method: 'DELETE',
       headers
     });

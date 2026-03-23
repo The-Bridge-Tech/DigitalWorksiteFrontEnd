@@ -4,6 +4,8 @@ import GoogleAuth from "../../../components/Auth/GoogleAuth";
 import Dashboard from "../../../components/Dashboard/Dashboard";
 import { SiteProvider } from "../../../components/SiteContext";
 import AccessGuard from "../../../components/Auth/AccessGuard";
+import "../../../theme/theme.css";
+import { initThemeApplication } from "../../../theme/utils";
 
 // =======================
 // Inline styles
@@ -14,14 +16,14 @@ const appStyles = {
   alignItems: "center",
   justifyContent: "center",
   minHeight: "100vh",
-  backgroundColor: "#f8f9fa",
+  backgroundColor: "var(--theme-neutral-light, #f8f9fa)",
   fontFamily: "Arial, sans-serif",
   padding: "20px",
 };
 
 const headerStyles = {
   fontSize: "2rem",
-  color: "#343a40",
+  color: "var(--theme-neutral-dark, #343a40)",
   marginBottom: "20px",
 };
 
@@ -43,6 +45,9 @@ const AuthenticatedApp = () => {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
+    // Initialize theme utilities
+    initThemeApplication();
+    
     const init = async () => {
       try {
         // Check for auth token in URL first

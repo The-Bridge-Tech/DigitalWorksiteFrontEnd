@@ -5,6 +5,7 @@ const RootFolderModal = ({ onComplete }) => {
   const [folderUrl, setFolderUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleSetup = async () => {
     if (!folderUrl.trim()) {
@@ -39,7 +40,7 @@ const RootFolderModal = ({ onComplete }) => {
       const data = await response.json();
       
       if (response.ok) {
-        onComplete();
+        setShowSuccess(true);
       } else {
         setError(data.error || 'Failed to set root folder');
       }
@@ -49,6 +50,37 @@ const RootFolderModal = ({ onComplete }) => {
       setLoading(false);
     }
   };
+
+  if (showSuccess) {
+    return (
+      <div style={overlayStyle}>
+        <div style={modalStyle}>
+          <div style={{...headerStyle, background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)'}}>
+            <h2 style={titleStyle}>✅ Success!</h2>
+            <p style={subtitleStyle}>Root folder has been configured successfully</p>
+          </div>
+          
+          <div style={bodyStyle}>
+            <div style={{textAlign: 'center', padding: '2rem'}}>
+              <div style={{fontSize: '4rem', marginBottom: '1rem'}}>🎉</div>
+              <p style={{fontSize: '1.1rem', color: '#555', marginBottom: '1.5rem'}}>
+                Your Digital Worksite system is now ready to use!
+              </p>
+            </div>
+          </div>
+          
+          <div style={footerStyle}>
+            <button 
+              onClick={onComplete}
+              style={{...buttonStyle, background: 'linear-gradient(135deg, #28a745, #20c997)'}}
+            >
+              Continue to Dashboard
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={overlayStyle}>

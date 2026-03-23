@@ -9,7 +9,7 @@ import { API_BASE_URL } from '../config/api.config.js';
  */
 export const initGoogleApiClient = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/adm/status`);
+    const response = await fetch(`${API_BASE_URL}adm/status`);
     
     const data = await response.json();
     return data.status === 'ok';
@@ -33,11 +33,8 @@ export const isSignedIn = async () => {
  */
 export const debugAuthState = async () => {
   try {
-    console.group('Auth State Debug');
-    
     // Check auth status
     const isAuthenticated = await checkAuthStatus();
-    console.log('Is Authenticated:', isAuthenticated);
     
     // Get session info
     const sessionInfo = {
@@ -48,15 +45,13 @@ export const debugAuthState = async () => {
         auth_token: localStorage.getItem('auth_token') ? 'present' : 'missing'
       }
     };
-    console.log('Session Info:', sessionInfo);
     
     // Check API status
     try {
-      const response = await fetch(`${API_BASE_URL}/adm/status`);
+      const response = await fetch(`${API_BASE_URL}adm/status`);
       const apiStatus = await response.json();
-      console.log('API Status:', apiStatus);
     } catch (error) {
-      console.error('API Status Error:', error);
+      // API status check failed
     }
     
     // Check auth status
@@ -64,17 +59,13 @@ export const debugAuthState = async () => {
       const token = localStorage.getItem('auth_token');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
       
-      const response = await fetch(`${API_BASE_URL}/adm/auth/status`, {
+      const response = await fetch(`${API_BASE_URL}adm/auth/status`, {
         headers
       });
       const authStatus = await response.json();
-      console.log('Auth Status:', authStatus);
-      console.log('Has Token:', !!token);
     } catch (error) {
-      console.error('Auth Status Error:', error);
+      // Auth status check failed
     }
-    
-    console.groupEnd();
     
     return {
       isAuthenticated,
@@ -98,7 +89,7 @@ export const checkAuthStatus = async () => {
       return false;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/auth/status`, {
+    const response = await fetch(`${API_BASE_URL}adm/auth/status`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -130,7 +121,7 @@ export const getUserInfo = async () => {
       return null;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/auth/status`, {
+    const response = await fetch(`${API_BASE_URL}adm/auth/status`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -170,7 +161,7 @@ export const logout = async () => {
     
     // Call logout endpoint (optional since JWT is stateless)
     try {
-      await fetch(`${API_BASE_URL}/adm/auth/logout`);
+      await fetch(`${API_BASE_URL}adm/auth/logout`);
     } catch (logoutError) {
       // Ignore logout endpoint errors since local cleanup is sufficient
       console.warn('Logout endpoint error (ignored):', logoutError);
@@ -216,7 +207,7 @@ export const redirectToAuth = (returnUrl) => {
   }
   
   // Redirect to auth endpoint
-  window.location.href = `${API_BASE_URL}/adm/auth/google`;
+  window.location.href = `${API_BASE_URL}adm/auth/google`;
 };
 
 /**
@@ -319,13 +310,6 @@ export const authFetch = async (url, options = {}) => {
   try {
     const token = localStorage.getItem('auth_token');
     
-    // Debug logging
-    console.log('AuthFetch URL:', url);
-    console.log('Token exists:', !!token);
-    if (token) {
-      console.log('Token preview:', token.substring(0, 50) + '...');
-    }
-    
     const headers = {
       'Content-Type': 'application/json',
       ...options.headers
@@ -340,8 +324,6 @@ export const authFetch = async (url, options = {}) => {
       headers
     });
     
-    console.log('Response status:', response.status);
-    
     if (response.status === 401) {
       // Token might be expired, remove it and redirect to auth
       localStorage.removeItem('auth_token');
@@ -351,7 +333,6 @@ export const authFetch = async (url, options = {}) => {
     
     return response;
   } catch (error) {
-    console.error('Auth fetch error:', error);
     throw error;
   }
 };

@@ -232,59 +232,7 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-      {/* Header Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        borderRadius: '12px',
-        padding: '30px',
-        marginBottom: '30px',
-        color: 'white',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>🏗️ Construction Sites</h1>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>Manage construction sites and generate QR codes</p>
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-            <button 
-              onClick={loadSites}
-              disabled={isLoading}
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '12px 20px',
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '8px',
-                fontWeight: '500',
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              {isLoading ? '🔄 Loading...' : '🔄 Refresh'}
-            </button>
-            <button 
-              onClick={onCreateNew}
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
-                color: 'white',
-                padding: '12px 24px',
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: '8px',
-                fontWeight: '500',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                backdropFilter: 'blur(10px)'
-              }}
-            >
-              ➕ Create Site
-            </button>
-          </div>
-        </div>
-      </div>
-
+    <div style={{ padding: 'clamp(0.75rem, 3vw, 1.25rem)', maxWidth: '100%', margin: '0 auto', overflow: 'hidden' }}>
       {/* Error Message */}
       {error && (
         <div style={{
@@ -318,34 +266,36 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
       {/* Search Card */}
       <div style={{
         backgroundColor: 'white',
-        borderRadius: '12px',
-        padding: '20px',
-        marginBottom: '20px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-        border: '1px solid #e9ecef'
+        borderRadius: '8px',
+        padding: 'clamp(0.75rem, 3vw, 1.25rem)',
+        marginBottom: 'clamp(0.75rem, 3vw, 1.25rem)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        border: '1px solid #e9ecef',
+        overflow: 'hidden'
       }}>
-        <div style={{ position: 'relative', maxWidth: '400px' }}>
+        <div style={{ position: 'relative', maxWidth: '100%' }}>
           <span style={{
             position: 'absolute',
             left: '12px',
             top: '50%',
             transform: 'translateY(-50%)',
             color: '#6c757d',
-            fontSize: '16px'
+            fontSize: 'clamp(0.875rem, 3vw, 1rem)'
           }}>🔍</span>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search sites by name, location, or ID..."
+            placeholder="Search sites..."
             style={{
               width: '100%',
-              padding: '12px 12px 12px 40px',
+              padding: 'clamp(0.75rem, 3vw, 1rem) clamp(0.75rem, 3vw, 1rem) clamp(0.75rem, 3vw, 1rem) clamp(2.5rem, 8vw, 3rem)',
               border: '2px solid #e9ecef',
-              borderRadius: '8px',
-              fontSize: '16px',
+              borderRadius: '6px',
+              fontSize: 'clamp(0.875rem, 3vw, 1rem)',
               transition: 'border-color 0.3s ease',
-              outline: 'none'
+              outline: 'none',
+              boxSizing: 'border-box'
             }}
             onFocus={(e) => e.target.style.borderColor = '#667eea'}
             onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
@@ -374,62 +324,64 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
           </p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))', gap: 'clamp(0.75rem, 3vw, 1.25rem)', maxWidth: '100%' }}>
           {sortedSites.map(site => (
             <div key={site.id} style={{
               backgroundColor: 'white',
-              borderRadius: '12px',
-              padding: '24px',
-              boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+              borderRadius: '8px',
+              padding: 'clamp(1rem, 4vw, 1.5rem)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
               border: '1px solid #e9ecef',
               transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              overflow: 'hidden'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)';
-              e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.15)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.1)';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
             }}>
               
               {/* Site Header */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#2c3e50' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'clamp(0.75rem, 3vw, 1rem)', gap: '0.5rem' }}>
+                <h3 style={{ margin: 0, fontSize: 'clamp(1rem, 4vw, 1.25rem)', fontWeight: '600', color: '#2c3e50', lineHeight: '1.2', wordBreak: 'break-word', flex: 1 }}>
                   {site.name || 'Unnamed Site'}
                 </h3>
                 <span style={{
-                  padding: '6px 12px',
-                  borderRadius: '20px',
-                  fontSize: '12px',
+                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.5rem, 2vw, 0.75rem)',
+                  borderRadius: '12px',
+                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
                   fontWeight: '500',
                   backgroundColor: '#e3f2fd',
                   color: '#1976d2',
-                  border: '1px solid #bbdefb'
+                  border: '1px solid #bbdefb',
+                  whiteSpace: 'nowrap'
                 }}>
                   {site.folderType}
                 </span>
               </div>
               
               {/* Location */}
-              <div style={{ marginBottom: '16px' }}>
-                <p style={{ margin: '0 0 4px 0', color: '#6c757d', fontSize: '14px' }}>📍 Location</p>
-                <p style={{ margin: 0, color: '#495057', fontSize: '16px' }}>
+              <div style={{ marginBottom: 'clamp(0.75rem, 3vw, 1rem)' }}>
+                <p style={{ margin: '0 0 0.25rem 0', color: '#6c757d', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)' }}>📍 Location</p>
+                <p style={{ margin: 0, color: '#495057', fontSize: 'clamp(0.875rem, 3vw, 1rem)', wordBreak: 'break-word' }}>
                   {site.location || 'No location specified'}
                 </p>
               </div>
 
               {/* QR Code Preview */}
               {site.folderLink && (
-                <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+                <div style={{ marginBottom: 'clamp(1rem, 4vw, 1.25rem)', textAlign: 'center' }}>
                   <div 
                     onClick={() => openQRModal(site)}
                     style={{
                       display: 'inline-block',
-                      padding: '12px',
+                      padding: 'clamp(0.5rem, 2vw, 0.75rem)',
                       backgroundColor: '#f8f9fa',
-                      borderRadius: '8px',
+                      borderRadius: '6px',
                       cursor: 'pointer',
                       transition: 'background-color 0.3s ease'
                     }}
@@ -437,100 +389,105 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
                     onMouseLeave={(e) => e.target.style.backgroundColor = '#f8f9fa'}
                   >
                     <QRCode
-                      value={site.folderLink}
-                      size={80}
+                      value={JSON.stringify({
+                        id: site.qr_id || site.id,
+                        site: site.name,
+                        location: site.location
+                      })}
+                      size={Math.min(80, window.innerWidth * 0.15)}
                       level="M"
                       bgColor="#FFFFFF"
                       fgColor="#000000"
                     />
                   </div>
-                  <p style={{ margin: '8px 0 0 0', color: '#6c757d', fontSize: '12px' }}>
+                  <p style={{ margin: '0.5rem 0 0 0', color: '#6c757d', fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)' }}>
                     Click to view full QR code
                   </p>
                 </div>
               )}
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: 'clamp(0.25rem, 1vw, 0.5rem)', flexWrap: 'wrap' }}>
                 {site.folderLink && (
                   <a 
                     href={site.folderLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
+                    className="theme-bg-primary"
                     style={{
-                      backgroundColor: '#007bff',
                       color: 'white',
-                      padding: '8px 12px',
+                      padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
                       textDecoration: 'none',
-                      borderRadius: '6px',
-                      fontSize: '14px',
+                      borderRadius: '4px',
+                      fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                       fontWeight: '500',
-                      transition: 'background-color 0.3s ease'
+                      transition: 'all 0.2s ease',
+                      display: 'inline-block',
+                      textAlign: 'center',
+                      minHeight: '36px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
                   >
-                    📁 View Folder
+                    📁 Folder
                   </a>
                 )}
                 
                 {onViewDocuments && (
                   <button 
                     onClick={() => onViewDocuments(site)}
+                    className="theme-bg-secondary"
                     style={{
-                      backgroundColor: '#17a2b8',
-                      color: 'white',
+                      color: 'black',
                       border: 'none',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      fontSize: '14px',
+                      padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                      borderRadius: '4px',
+                      fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                       fontWeight: '500',
                       cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
+                      transition: 'all 0.2s ease',
+                      minHeight: '36px'
                     }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#138496'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#17a2b8'}
                   >
-                    📄 Documents
+                    📄 Docs
                   </button>
                 )}
                 
                 {site.folderLink && (
                   <button 
                     onClick={() => openQRModal(site)}
+                    className="theme-bg-primary"
                     style={{
-                      backgroundColor: '#6f42c1',
                       color: 'white',
                       border: 'none',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      fontSize: '14px',
+                      padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                      borderRadius: '4px',
+                      fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                       fontWeight: '500',
                       cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
+                      transition: 'all 0.2s ease',
+                      minHeight: '36px'
                     }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#5a32a3'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#6f42c1'}
                   >
-                    📱 QR Code
+                    📱 QR
                   </button>
                 )}
                 
                 <button 
                   onClick={() => handleEdit(site)}
+                  className="theme-bg-secondary"
                   style={{
-                    backgroundColor: '#28a745',
-                    color: 'white',
+                    color: 'black',
                     border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
+                    padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                    borderRadius: '4px',
+                    fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                     fontWeight: '500',
                     cursor: 'pointer',
-                    transition: 'background-color 0.3s ease'
+                    transition: 'all 0.2s ease',
+                    minHeight: '36px'
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
                 >
                   ✏️ Edit
                 </button>
@@ -541,17 +498,18 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
                     backgroundColor: '#dc3545',
                     color: 'white',
                     border: 'none',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
-                    fontSize: '14px',
+                    padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                    borderRadius: '4px',
+                    fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                     fontWeight: '500',
                     cursor: 'pointer',
-                    transition: 'background-color 0.3s ease'
+                    transition: 'background-color 0.3s ease',
+                    minHeight: '36px'
                   }}
                   onMouseEnter={(e) => e.target.style.backgroundColor = '#c82333'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#dc3545'}
                 >
-                  🗑️ Delete
+                  🗑️ Del
                 </button>
               </div>
             </div>
@@ -615,7 +573,11 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
             }}>
               <QRCode
                 id="qr-code-svg"
-                value={selectedSite.folderLink || ''}
+                value={JSON.stringify({
+                  id: selectedSite.qr_id || selectedSite.id,
+                  site: selectedSite.name,
+                  location: selectedSite.location
+                })}
                 size={256}
                 level="H"
                 bgColor="#FFFFFF"
@@ -623,40 +585,10 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
               />
             </div>
             
-            <div style={{ marginBottom: '24px', textAlign: 'left', backgroundColor: '#f8f9fa', padding: '16px', borderRadius: '8px' }}>
-              <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#6c757d' }}>
-                <strong>URL:</strong>
-              </p>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <span style={{ 
-                  fontSize: '12px', 
-                  color: '#495057', 
-                  wordBreak: 'break-all',
-                  flex: 1
-                }}>
-                  {selectedSite.folderLink}
-                </span>
-                <button 
-                  onClick={() => handleCopy(selectedSite.folderLink)}
-                  style={{
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '12px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-            
             <button 
               onClick={downloadQRCode}
+              className="theme-bg-primary"
               style={{
-                backgroundColor: '#007bff',
                 color: 'white',
                 border: 'none',
                 padding: '12px 24px',
@@ -664,10 +596,8 @@ const SiteList = ({ onViewDocuments, refreshTrigger, onCreateNew }) => {
                 fontSize: '16px',
                 fontWeight: '500',
                 cursor: 'pointer',
-                transition: 'background-color 0.3s ease'
+                transition: 'all 0.2s ease'
               }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
             >
               📥 Download QR Code
             </button>

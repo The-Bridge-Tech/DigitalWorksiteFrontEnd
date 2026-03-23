@@ -1001,6 +1001,11 @@
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.4.tgz#a70226016fabe25c5783b2f22d3e1c9bc5ca3326"
   integrity sha512-Q/N6JNWvIvPnLDvjlE1OUBLPQHH6l3CltCEsHIujp45zQUSSh8K+gHnaEX45yAT1nyngnINhvWtzN+Nb9D8RAQ==
 
+"@babel/runtime@^7.23.2", "@babel/runtime@^7.28.4":
+  version "7.28.6"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.28.6.tgz#d267a43cb1836dc4d182cce93ae75ba954ef6d2b"
+  integrity sha512-05WQkdpL9COIMz4LjTxGpPNCdlpyimKppYNoJ5Di5EUObifl8t4tuLuUBBZEpoLYOmfvIWrsp9fCl0HoPRVTdA==
+
 "@babel/template@^7.27.1", "@babel/template@^7.27.2", "@babel/template@^7.3.3":
   version "7.27.2"
   resolved "https://registry.npmjs.org/@babel/template/-/template-7.27.2.tgz"
@@ -1610,6 +1615,11 @@
   resolved "https://registry.yarnpkg.com/@mapbox/whoots-js/-/whoots-js-3.1.0.tgz#497c67a1cef50d1a2459ba60f315e448d2ad87fe"
   integrity sha512-Es6WcD0nO5l+2BOQS4uLfNPYQaNDfbot3X1XUoloz+x0mPDS3eeORZJl06HXjwBG1fOGwCRnzK88LMdxKRrd6Q==
 
+"@maplibre/geojson-vt@^5.0.4":
+  version "5.0.4"
+  resolved "https://registry.yarnpkg.com/@maplibre/geojson-vt/-/geojson-vt-5.0.4.tgz#c5f301a5d227cecf0bf4d1ab9239b8b0b13e78fe"
+  integrity sha512-KGg9sma45S+stfH9vPCJk1J0lSDLWZgCT9Y8u8qWZJyjFlP8MNP1WGTxIMYJZjDvVT3PDn05kN1C95Sut1HpgQ==
+
 "@maplibre/maplibre-gl-style-spec@^23.3.0":
   version "23.3.0"
   resolved "https://registry.yarnpkg.com/@maplibre/maplibre-gl-style-spec/-/maplibre-gl-style-spec-23.3.0.tgz#b69ab48cb3abead4e49213396c8f83492638b97c"
@@ -1623,6 +1633,26 @@
     rw "^1.3.3"
     tinyqueue "^3.0.0"
 
+"@maplibre/maplibre-gl-style-spec@^24.4.1":
+  version "24.7.0"
+  resolved "https://registry.yarnpkg.com/@maplibre/maplibre-gl-style-spec/-/maplibre-gl-style-spec-24.7.0.tgz#46e1109303393d15545eb97eb333991c5663f75d"
+  integrity sha512-Ed7rcKYU5iELfablg9Mj+TVCsXsPBgdMyXPRAxb2v7oWg9YJnpQdZ5msDs1LESu/mtXy3Z48Vdppv2t/x5kAhw==
+  dependencies:
+    "@mapbox/jsonlint-lines-primitives" "~2.0.2"
+    "@mapbox/unitbezier" "^0.0.1"
+    json-stringify-pretty-compact "^4.0.0"
+    minimist "^1.2.8"
+    quickselect "^3.0.0"
+    rw "^1.3.3"
+    tinyqueue "^3.0.0"
+
+"@maplibre/mlt@^1.1.6":
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/@maplibre/mlt/-/mlt-1.1.7.tgz#cb8d6ede486f5e48a33dd1f373fa5d908ce8062f"
+  integrity sha512-HZSsXrgn2V6T3o0qklMwKERfKaAxjO8shmiFnVygCtXTg4SPKWVX+U99RkvxUfCsjYBEcT4ltor8lSlBSCca7Q==
+  dependencies:
+    "@mapbox/point-geometry" "^1.1.0"
+
 "@maplibre/vt-pbf@^4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@maplibre/vt-pbf/-/vt-pbf-4.0.3.tgz#8702b8330cfa0efbe7c81eb2ae138e588a02bfa6"
@@ -1633,6 +1663,19 @@
     "@types/geojson-vt" "3.2.5"
     "@types/supercluster" "^7.1.3"
     geojson-vt "^4.0.2"
+    pbf "^4.0.1"
+    supercluster "^8.0.1"
+
+"@maplibre/vt-pbf@^4.2.1":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@maplibre/vt-pbf/-/vt-pbf-4.3.0.tgz#e26649432f0b2863dbe70298b92e0d98fcd63129"
+  integrity sha512-jIvp8F5hQCcreqOOpEt42TJMUlsrEcpf/kI1T2v85YrQRV6PPXUcEXUg5karKtH6oh47XJZ4kHu56pUkOuqA7w==
+  dependencies:
+    "@mapbox/point-geometry" "^1.1.0"
+    "@mapbox/vector-tile" "^2.0.4"
+    "@maplibre/geojson-vt" "^5.0.4"
+    "@types/geojson" "^7946.0.16"
+    "@types/supercluster" "^7.1.3"
     pbf "^4.0.1"
     supercluster "^8.0.1"
 
@@ -1755,6 +1798,13 @@
   dependencies:
     "@splunk/visualization-encoding" "^28.1.0"
 
+"@splunk/async-dynamic-options-evaluator@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/async-dynamic-options-evaluator/-/async-dynamic-options-evaluator-28.4.0.tgz#0d3e5de2a313d2b96bbf7d23b42d4ef4e2bc55eb"
+  integrity sha512-jbPNh3MIQ0GtEo1UwZxt25Q46K8RFNsBeMW6XwDRwLEPTnDNhK45NSxuXRSDRWdUw3dLeiu1dWjtWitqrfrArA==
+  dependencies:
+    "@splunk/visualization-encoding" "^28.4.0"
+
 "@splunk/babel-preset@^4.0.0":
   version "4.0.0"
   resolved "https://registry.npmjs.org/@splunk/babel-preset/-/babel-preset-4.0.0.tgz"
@@ -1770,6 +1820,11 @@
   version "28.1.0"
   resolved "https://registry.yarnpkg.com/@splunk/charting-bundle/-/charting-bundle-28.1.0.tgz#cf2cce1341882ff940567c386f2ca85ed2cebaee"
   integrity sha512-WsZw/1PzT/hTTGlDzLXP568UkCE2/b0b5TtMxmhVeguRXlx7WYoQX7HshNUALxmuVwB9/wZx9ZmQr0zMNjHPYQ==
+
+"@splunk/charting-bundle@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/charting-bundle/-/charting-bundle-28.4.0.tgz#0baf1454fa25de323e2d19ce45b176edd7d4c1a9"
+  integrity sha512-0hbbv5gY2xeW4PAVBmoJC9FWrTiB/sfozowFJwd2v5UvzYx+K499u2Q0sN/2ea/4q23+YZoN6IEijDxewfhTkw==
 
 "@splunk/dashboard-context@^29.0.0":
   version "29.1.0"
@@ -2088,6 +2143,21 @@
     lodash "^4.17.21"
     prop-types "^15.8.1"
 
+"@splunk/react-events-viewer@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/react-events-viewer/-/react-events-viewer-28.4.0.tgz#ab0c2b2b78a380b8c8daa4644fc41750762492ec"
+  integrity sha512-5wwghjXDhHSVQkDbWWb1kHXX2gminBg8odm6x7wXaxepYQB/c8BMUW24y4ve/oqRm8BJdmt6Ze1nuub6fe1VhA==
+  dependencies:
+    "@babel/runtime" "^7.28.4"
+    "@splunk/moment" "^0.7.0"
+    "@splunk/react-icons" "^5.5.0"
+    "@splunk/react-ui" "^5.7.0"
+    "@splunk/splunk-utils" "^3.3.0"
+    "@splunk/themes" "^1.4.1"
+    "@splunk/ui-utils" "^1.12.0"
+    lodash "^4.17.21"
+    prop-types "^15.8.1"
+
 "@splunk/react-field-summary@^28.1.0":
   version "28.1.0"
   resolved "https://registry.yarnpkg.com/@splunk/react-field-summary/-/react-field-summary-28.1.0.tgz#e46edcda418b5e5305db9058909c05dc2eb94732"
@@ -2098,6 +2168,18 @@
     "@splunk/react-ui" "^5.1.0"
     "@splunk/themes" "^1.2.0"
     "@splunk/ui-utils" "^1.10.0"
+    prop-types "^15.8.1"
+
+"@splunk/react-field-summary@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/react-field-summary/-/react-field-summary-28.4.0.tgz#2edbf922e8c7264adf1fb36cbd927854c5868082"
+  integrity sha512-RuxuW7hv3/2LqUERXt/xArjV79jwL+6iyAfgXapYX8EIwG/H5JnxWJBVfetu8rPsGPzAnEcXo8gczyIAsLnCVw==
+  dependencies:
+    "@babel/runtime" "^7.28.4"
+    "@splunk/react-icons" "^5.5.0"
+    "@splunk/react-ui" "^5.7.0"
+    "@splunk/themes" "^1.4.1"
+    "@splunk/ui-utils" "^1.12.0"
     prop-types "^15.8.1"
 
 "@splunk/react-icons@^5.0.0", "@splunk/react-icons@^5.1.0", "@splunk/react-icons@^5.3.0":
@@ -2115,6 +2197,15 @@
   integrity sha512-7sFLIrn+mINcBU5qNsByHH9UbKF1gkecmPPiVh8tM4K6OLE5ZuwhmfjY+Rxl7B7LYD2croBQapyPC+qJdSnXqQ==
   dependencies:
     "@splunk/ui-utils" "^1.10.0"
+    lodash "^4.17.14"
+    prop-types "^15.6.2"
+
+"@splunk/react-icons@^5.5.0", "@splunk/react-icons@^5.9.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@splunk/react-icons/-/react-icons-5.9.0.tgz#21367d0baf8213df72645fd1e60d53a47d95110c"
+  integrity sha512-TQATeHiMA/7OksTF+9F6JrL3Pyl9HVlyXp2XM6CfiFVD1QD9ez3NZqCuOmg+3Qoaz9+kakUYDGLE6ynZJS3NcA==
+  dependencies:
+    "@splunk/ui-utils" "^1.12.0"
     lodash "^4.17.14"
     prop-types "^15.6.2"
 
@@ -2199,6 +2290,30 @@
     tinycolor2 "^1.4.1"
     use-typed-event-listener "^3.0.0"
 
+"@splunk/react-ui@^5.7.0":
+  version "5.9.0"
+  resolved "https://registry.yarnpkg.com/@splunk/react-ui/-/react-ui-5.9.0.tgz#a9e95f10b6c8438a47a7a9b05bdcc49ca4ab58ee"
+  integrity sha512-SWpIfBRk+eyfn5fYBx7es/bIkU5iBQF/LSQI5CfKgHgkYfBkAXiu92Vw7syeCA4hOwUGB2TxXK5fhHRc8tmoYw==
+  dependencies:
+    "@dnd-kit/core" "^6.1.0"
+    "@dnd-kit/modifiers" "^7.0.0"
+    "@dnd-kit/sortable" "^8.0.0"
+    "@dnd-kit/utilities" "^3.2.2"
+    "@react-spring/web" "^9.7.5"
+    "@splunk/react-icons" "^5.9.0"
+    "@splunk/themes" "^1.6.0"
+    "@splunk/ui-utils" "^1.12.0"
+    decimal.js-light "^2.5.1"
+    intl-tel-input "^25.3.2"
+    lodash "^4.17.14"
+    moment "^2.29.4"
+    prop-types "^15.6.2"
+    react-markdown "^8.0.7"
+    remark-gfm "^1.0.0"
+    tinycolor2 "^1.4.1"
+    use-sync-external-store "^1.6.0"
+    use-typed-event-listener "^3.0.0"
+
 "@splunk/search-job@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@splunk/search-job/-/search-job-3.1.0.tgz#7e4962b55a1919fd82b78f2f2bf9c2d5c5065ece"
@@ -2264,6 +2379,15 @@
     lodash "^4.17.14"
     tinycolor2 "^1.4.1"
 
+"@splunk/themes@^1.4.1", "@splunk/themes@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@splunk/themes/-/themes-1.6.0.tgz#3a6f1e06f7fc3b399976de27007fca78b40fba00"
+  integrity sha512-dfvGPbqUHBVsTCdlmh7VGW1z8/dCAijT0Y6q3pl6lfYhhyaHe8zo71reYX82bgHIcqZkJdc6HSbAGtmVM0niog==
+  dependencies:
+    color-blend "^2.0.9"
+    lodash "^4.17.14"
+    tinycolor2 "^1.4.1"
+
 "@splunk/time-range-utils@^3.3.0":
   version "3.3.0"
   resolved "https://registry.yarnpkg.com/@splunk/time-range-utils/-/time-range-utils-3.3.0.tgz#fc2ea164db51f990ec03d8d27a6f259af01c5624"
@@ -2283,12 +2407,44 @@
     keycode "^2.1.9"
     lodash "^4.17.21"
 
+"@splunk/ui-utils@^1.12.0":
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/@splunk/ui-utils/-/ui-utils-1.12.0.tgz#5c7df19d8c3bcd1f225e4e825c8ec47f239b5dc2"
+  integrity sha512-2rWjQz0lX64TlKGU+BYTElLVEWXQ9EZ07Vi+uSpUtpVtSNBVh7QHM8KC4MhqkUyvJjrO1hm+C1TgDpVJfzHl6A==
+  dependencies:
+    keycode "^2.1.9"
+    lodash "^4.17.21"
+
+"@splunk/visualization-canvas@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualization-canvas/-/visualization-canvas-28.4.0.tgz#2968a33c8f3ee873394f805a5f8fbe6a47dd44d8"
+  integrity sha512-iCAA27rMuoe6U2a6ldsUnCTo81CTeFjUjtngCYmBLi9WE8cdYVrsTET30k3fIWYnYVZWv6uj9GN6LbdgHfTXig==
+  dependencies:
+    "@splunk/react-icons" "^5.5.0"
+    "@splunk/react-ui" "^5.7.0"
+    "@splunk/themes" "^1.4.1"
+    "@splunk/ui-utils" "^1.12.0"
+    d3-scale "^4.0.2"
+    d3-scale-chromatic "^3.0.0"
+    lodash "^4.17.20"
+    string-format-obj "^1.1.1"
+    temporal-polyfill "^0.1.1"
+    uplot "^1.6.31"
+    uplot-react "^1.2.4"
+
 "@splunk/visualization-color-palettes@28.1.0", "@splunk/visualization-color-palettes@^28.1.0":
   version "28.1.0"
   resolved "https://registry.yarnpkg.com/@splunk/visualization-color-palettes/-/visualization-color-palettes-28.1.0.tgz#01bb5861ba8b25bd90e800bde96a037942148928"
   integrity sha512-XLA/LnrqeMS20SNjClpT+qrtdRI1VZv8z5bM9D2FlDVZUvYhbfYs/7xIgZffhCdqTlc1mL56MhX4RbCts89S2g==
   dependencies:
     "@splunk/ui-utils" "^1.10.0"
+
+"@splunk/visualization-color-palettes@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualization-color-palettes/-/visualization-color-palettes-28.4.0.tgz#b530bd5c50578667629a78f49f4628f6eca88981"
+  integrity sha512-eKMbRaj/5m1bvHiOPUwzEbcnrJBzQogQ7yy0jpFXWePgTri21Be8BoXdbdPu67qODls5aFylmsnnq1W+EOpRRw==
+  dependencies:
+    "@splunk/ui-utils" "^1.12.0"
 
 "@splunk/visualization-context@^28.0.0":
   version "28.1.0"
@@ -2310,6 +2466,18 @@
     nearley "^2.20.1"
     numbro "2.5.0"
 
+"@splunk/visualization-encoding@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualization-encoding/-/visualization-encoding-28.4.0.tgz#4c7b543c62f5f3c9a889505f9e5b67613572cffa"
+  integrity sha512-L7AVWN3KRO2Jm0rrhT11KQJLXCQsDyzB2uRTvzXgw5A15HC/GBcbrijka5x09I78oqk95GfDYXjZmjkA3Bsuog==
+  dependencies:
+    "@splunk/moment" "^0.7.0"
+    "@splunk/visualization-schemas" "^28.4.0"
+    chroma-js "^3.1.2"
+    lodash "^4.17.21"
+    nearley "^2.20.1"
+    numbro "2.5.0"
+
 "@splunk/visualization-icons@28.1.0", "@splunk/visualization-icons@^28.1.0":
   version "28.1.0"
   resolved "https://registry.yarnpkg.com/@splunk/visualization-icons/-/visualization-icons-28.1.0.tgz#fe79014f476b4c895d4384e5655cfc4c759b3fe4"
@@ -2317,6 +2485,14 @@
   dependencies:
     "@splunk/react-icons" "^5.1.0"
     "@splunk/ui-utils" "^1.10.0"
+
+"@splunk/visualization-icons@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualization-icons/-/visualization-icons-28.4.0.tgz#8ae931d21b82f7517a2a7ed313ba3cc8fb2eceb3"
+  integrity sha512-s1oK8DroX/hp5zDOQRYxchItj98yNmLtQ9ETzccs583R7p4HdBOpQMgBw8yitQZ0Mpz/vl0SGYGmJgf4byAYFA==
+  dependencies:
+    "@splunk/react-icons" "^5.5.0"
+    "@splunk/ui-utils" "^1.12.0"
 
 "@splunk/visualization-migrations@28.1.0":
   version "28.1.0"
@@ -2335,12 +2511,28 @@
     "@splunk/visualization-color-palettes" "^28.1.0"
     "@types/json-schema" "^7.0.15"
 
+"@splunk/visualization-schemas@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualization-schemas/-/visualization-schemas-28.4.0.tgz#5870312e52beb8e4aa33ba2a557e93b41f5ec688"
+  integrity sha512-+3cCofhx5OByRk1wf6UxC5/0x9vCb3BQuRrAaUakqQdpo8g4dnO/8IRsPt0ru2TqNZEG8E/hoHxxfE47xNrUlg==
+  dependencies:
+    "@splunk/visualization-color-palettes" "^28.4.0"
+    "@types/json-schema" "^7.0.15"
+
 "@splunk/visualization-themes@^28.1.0":
   version "28.1.0"
   resolved "https://registry.yarnpkg.com/@splunk/visualization-themes/-/visualization-themes-28.1.0.tgz#26fd7bba679c3c3bbf30d92fce2dcaed80b7926d"
   integrity sha512-su7jrGguSRxr9UyxEBdUQyUmqYvE5tW8017G439p0TD6VI4EWRVIjFffMUCdKkzbxi5ZIW0yl415JcefUjnbpg==
   dependencies:
     "@splunk/themes" "^1.2.0"
+    lodash "^4.17.21"
+
+"@splunk/visualization-themes@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualization-themes/-/visualization-themes-28.4.0.tgz#76aca448b17918483482949b95c86adc292ebab2"
+  integrity sha512-YH/giJpGYkqgwFJa89M6MhwA10EVUMu/27rKSkjfjASp2MX+60JnoY/w9ME633abuzLyRQlAeHLMrhuf+XHrlw==
+  dependencies:
+    "@splunk/themes" "^1.4.1"
     lodash "^4.17.21"
 
 "@splunk/visualizations-shared@28.1.0", "@splunk/visualizations-shared@^28.1.0":
@@ -2356,6 +2548,25 @@
     "@splunk/ui-utils" "^1.10.0"
     "@splunk/visualization-encoding" "^28.1.0"
     "@splunk/visualization-schemas" "^28.1.0"
+    element-resize-detector "^1.2.4"
+    lodash "^4.17.21"
+    numeral "^2.0.6"
+    prop-types "^15.8.1"
+    xmlserializer "^0.6.1"
+
+"@splunk/visualizations-shared@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualizations-shared/-/visualizations-shared-28.4.0.tgz#82ba24992be419776a0af7770310712bd96f9ad9"
+  integrity sha512-djygAcjoWTYMayx7TOEAEWDEv6JDj8+aajhGV/YUhBLcra4MLthkMh6NCwt38eAgR848KtBDOdisrrhI0539nQ==
+  dependencies:
+    "@loki/create-async-callback" "^0.35.1"
+    "@splunk/moment" "^0.7.0"
+    "@splunk/react-icons" "^5.5.0"
+    "@splunk/react-ui" "^5.7.0"
+    "@splunk/themes" "^1.4.1"
+    "@splunk/ui-utils" "^1.12.0"
+    "@splunk/visualization-encoding" "^28.4.0"
+    "@splunk/visualization-schemas" "^28.4.0"
     element-resize-detector "^1.2.4"
     lodash "^4.17.21"
     numeral "^2.0.6"
@@ -2401,6 +2612,54 @@
     maplibre-gl "^5.2.0"
     prop-types "^15.8.1"
     react-event-listener "^0.6.6"
+    uplot "^1.6.31"
+    uplot-react "^1.2.4"
+    xpath "^0.0.32"
+
+"@splunk/visualizations@^28.4.0":
+  version "28.4.0"
+  resolved "https://registry.yarnpkg.com/@splunk/visualizations/-/visualizations-28.4.0.tgz#68e8335d2ebbc4046bdfd20a16f7c2657c755ae3"
+  integrity sha512-dSppDtcJwzGcG3GsCHHt7bQWvs5yh804bA/A12EtS+xXOo0jRim7oeG4B2zMbH03uQAcU1b2S7sxQ0NPiEVLxQ==
+  dependencies:
+    "@babel/runtime" "^7.28.4"
+    "@splunk/async-dynamic-options-evaluator" "^28.4.0"
+    "@splunk/charting-bundle" "^28.4.0"
+    "@splunk/moment" "^0.7.0"
+    "@splunk/react-events-viewer" "^28.4.0"
+    "@splunk/react-field-summary" "^28.4.0"
+    "@splunk/react-icons" "^5.5.0"
+    "@splunk/react-ui" "^5.7.0"
+    "@splunk/splunk-utils" "^3.3.0"
+    "@splunk/themes" "^1.4.1"
+    "@splunk/time-range-utils" "^3.3.0"
+    "@splunk/ui-utils" "^1.12.0"
+    "@splunk/visualization-canvas" "^28.4.0"
+    "@splunk/visualization-color-palettes" "^28.4.0"
+    "@splunk/visualization-encoding" "^28.4.0"
+    "@splunk/visualization-icons" "^28.4.0"
+    "@splunk/visualization-schemas" "^28.4.0"
+    "@splunk/visualization-themes" "^28.4.0"
+    "@splunk/visualizations-shared" "^28.4.0"
+    "@xmldom/xmldom" "^0.8.11"
+    chroma-js "^3.1.2"
+    cssesc "3.0.0"
+    d3-array "^3.2.4"
+    d3-axis "^2.1.0"
+    d3-brush "^2.1.0"
+    d3-collection "^1.0.7"
+    d3-drag "^2.0.0"
+    d3-force "^3.0.0"
+    d3-interpolate "^3.0.1"
+    d3-quadtree "^3.0.1"
+    d3-scale "^3.3.0"
+    d3-selection "^2.0.0"
+    d3-transition "^2.0.0"
+    d3-zoom "^2.0.0"
+    dagre "^0.8.5"
+    jexl "^2.3.0"
+    lodash "^4.17.21"
+    maplibre-gl "^5.8.0"
+    prop-types "^15.8.1"
     uplot "^1.6.31"
     uplot-react "^1.2.4"
     xpath "^0.0.32"
@@ -3232,7 +3491,7 @@
   resolved "https://registry.npmjs.org/@webpack-cli/serve/-/serve-2.0.5.tgz"
   integrity sha512-lqaoKnRYBdo1UgDX8uF24AfGMifWK19TxPmM5FHc2vAGxrJ/qtyUyFBWoY1tISZdelsQ5fBcOusifo5o5wSJxQ==
 
-"@xmldom/xmldom@^0.8.10":
+"@xmldom/xmldom@^0.8.10", "@xmldom/xmldom@^0.8.11":
   version "0.8.11"
   resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.11.tgz#b79de2d67389734c57c52595f7a7305e30c2d608"
   integrity sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==
@@ -3628,6 +3887,11 @@ asynckit@^0.4.0:
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
+atob@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
+  integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
+
 available-typed-arrays@^1.0.7:
   version "1.0.7"
   resolved "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.7.tgz"
@@ -3878,6 +4142,11 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
+btoa@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/btoa/-/btoa-1.2.1.tgz#01a9909f8b2c93f6bf680ba26131eb30f7fa3d73"
+  integrity sha512-SB4/MIGlsiVkMcHmT+pSmIPoNDoHg+7cMzmt3Uxt628MTz2487DKSqK/fuhFBrkuqrYv5UCEnACpF4dTFNKc/g==
+
 buffer-from@^1.0.0:
   version "1.1.2"
   resolved "https://registry.npmjs.org/buffer-from/-/buffer-from-1.1.2.tgz"
@@ -4001,9 +4270,9 @@ caniuse-lite@^1.0.30001733:
   resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001735.tgz"
   integrity sha512-EV/laoX7Wq2J9TQlyIXRxTJqIw4sxfXS4OYgudGxBYRuTv0q7AM6yMEpU/Vo1I94thg9U6EZ2NfZx9GJq83u7w==
 
-canvg@^3.0.11:
+canvg@^3.0.11, canvg@^3.0.6:
   version "3.0.11"
-  resolved "https://registry.npmjs.org/canvg/-/canvg-3.0.11.tgz"
+  resolved "https://registry.yarnpkg.com/canvg/-/canvg-3.0.11.tgz#4b4290a6c7fa36871fac2b14e432eff33b33cf2b"
   integrity sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==
   dependencies:
     "@babel/runtime" "^7.12.5"
@@ -4091,6 +4360,11 @@ chroma-js@^2.1.1, chroma-js@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-2.6.0.tgz#578743dd359698a75067a19fa5571dec54d0b70b"
   integrity sha512-BLHvCB9s8Z1EV4ethr6xnkl/P2YRFOGqfgvuMG/MyCbZPrTA+NeiByY6XvgF0zP4/2deU2CXnWyMa3zu1LqQ3A==
+
+chroma-js@^3.1.2:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/chroma-js/-/chroma-js-3.2.0.tgz#4e9e665290b9bbfece524fccf759d5120e351ff2"
+  integrity sha512-os/OippSlX1RlWWr+QDPcGUZs0uoqr32urfxESG9U93lhUfbnlyckte84Q8P1UQY/qth983AS1JONKmLS4T0nw==
 
 chrome-trace-event@^1.0.2:
   version "1.0.4"
@@ -4726,7 +5000,7 @@ d3-array@2, d3-array@^2.3.0:
   dependencies:
     internmap "^1.0.0"
 
-d3-array@^3.2.4:
+"d3-array@2 - 3", "d3-array@2.10.0 - 3", d3-array@^3.2.4:
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-3.2.4.tgz#15fec33b237f97ac5d7c986dc77da273a8ed0bb5"
   integrity sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==
@@ -4769,6 +5043,11 @@ d3-collection@^1.0.7:
   resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-2.0.0.tgz#8a18e16f76dd3fcaef42163c97b926aa9b55e7cf"
   integrity sha512-S/m2VsXI7gAti2pBoLClFFTMOO1HTtT0j99AuXLoGFKO6deHDdnv6ZGTxSTTUTgO1zVcv82fCOtDjYK4EECmWA==
 
+"d3-dispatch@1 - 3":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-3.0.1.tgz#5fc75284e9c2375c36c839411a0cf550cbfc4d5e"
+  integrity sha512-rzUyPU/S7rwUflMyLc1ETDeBj0NRuHKKAcvukozwhshr6g6c5d8zh4c2gQjY2bZ0dXeGLWc1PF174P2tVvKhfg==
+
 d3-drag@2, d3-drag@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-2.0.0.tgz#9eaf046ce9ed1c25c88661911c1d5a4d8eb7ea6d"
@@ -4782,10 +5061,24 @@ d3-drag@2, d3-drag@^2.0.0:
   resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-2.0.0.tgz#fd1762bfca00dae4bacea504b1d628ff290ac563"
   integrity sha512-68/n9JWarxXkOWMshcT5IcjbB+agblQUaIsbnXmrzejn2O82n3p2A9R2zEB9HIEFWKFwPAEDDN8gR0VdSAyyAQ==
 
+d3-force@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/d3-force/-/d3-force-3.0.0.tgz#3e2ba1a61e70888fe3d9194e30d6d14eece155c4"
+  integrity sha512-zxV/SsA+U4yte8051P4ECydjD/S+qeYtnaIyAs9tgHCqfguma/aAQDjo85A9Z6EKhBirHRJHXIgJUlffT4wdLg==
+  dependencies:
+    d3-dispatch "1 - 3"
+    d3-quadtree "1 - 3"
+    d3-timer "1 - 3"
+
 "d3-format@1 - 2":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-2.0.0.tgz#a10bcc0f986c372b729ba447382413aabf5b0767"
   integrity sha512-Ab3S6XuE/Q+flY96HXT0jOXcM4EAClYFnRGY5zsjRGNy6qCYrQsMffs7cV5Q9xejb35zxW5hf/guKw34kvIKsA==
+
+"d3-format@1 - 3":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/d3-format/-/d3-format-3.1.2.tgz#01fdb46b58beb1f55b10b42ad70b6e344d5eb2ae"
+  integrity sha512-AJDdYOdnyRDV5b6ArilzCPPwc1ejkHcoyFarqlPqT7zRYjhavcT3uSrqcMvsgh2CgoPbK3RCwyHaVyxYcP2Arg==
 
 "d3-interpolate@1 - 2", "d3-interpolate@1.2.0 - 2":
   version "2.0.1"
@@ -4794,12 +5087,25 @@ d3-drag@2, d3-drag@^2.0.0:
   dependencies:
     d3-color "1 - 2"
 
-d3-interpolate@^3.0.1:
+"d3-interpolate@1 - 3", "d3-interpolate@1.2.0 - 3", d3-interpolate@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-3.0.1.tgz#3c47aa5b32c5b3dfb56ef3fd4342078a632b400d"
   integrity sha512-3bYs1rOD33uo8aqJfKP3JWPAibgw8Zm2+L9vBKEHJ2Rg+viTR7o5Mmv5mZcieN+FRYaAOWX5SJATX6k1PWz72g==
   dependencies:
     d3-color "1 - 3"
+
+"d3-quadtree@1 - 3", d3-quadtree@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/d3-quadtree/-/d3-quadtree-3.0.1.tgz#6dca3e8be2b393c9a9d514dabbd80a92deef1a4f"
+  integrity sha512-04xDrxQTDTCFwP5H6hRhsRcb9xxv2RzkcsygFzmkSIOJy3PeRJP7sNk3VRIbKXcog561P9oU0/rVH6vDROAgUw==
+
+d3-scale-chromatic@^3.0.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/d3-scale-chromatic/-/d3-scale-chromatic-3.1.0.tgz#34c39da298b23c20e02f1a4b239bd0f22e7f1314"
+  integrity sha512-A3s5PWiZ9YCXFye1o246KoscMWqf8BsD9eRiJ3He7C9OBaxKhAd5TFCdEx/7VbKtxxTsu//1mMJFrEt572cEyQ==
+  dependencies:
+    d3-color "1 - 3"
+    d3-interpolate "1 - 3"
 
 d3-scale@^3.3.0:
   version "3.3.0"
@@ -4811,6 +5117,17 @@ d3-scale@^3.3.0:
     d3-interpolate "1.2.0 - 2"
     d3-time "^2.1.1"
     d3-time-format "2 - 3"
+
+d3-scale@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/d3-scale/-/d3-scale-4.0.2.tgz#82b38e8e8ff7080764f8dcec77bd4be393689396"
+  integrity sha512-GZW464g1SH7ag3Y7hXjf8RoUuAFIqklOAq3MRl4OaWabTFJY9PN/E1YklhXLh+OQ3fM9yS2nOkCoS+WLZ6kvxQ==
+  dependencies:
+    d3-array "2.10.0 - 3"
+    d3-format "1 - 3"
+    d3-interpolate "1.2.0 - 3"
+    d3-time "2.1.1 - 3"
+    d3-time-format "2 - 4"
 
 d3-selection@2, d3-selection@^2.0.0:
   version "2.0.0"
@@ -4824,6 +5141,13 @@ d3-selection@2, d3-selection@^2.0.0:
   dependencies:
     d3-time "1 - 2"
 
+"d3-time-format@2 - 4":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/d3-time-format/-/d3-time-format-4.1.0.tgz#7ab5257a5041d11ecb4fe70a5c7d16a195bb408a"
+  integrity sha512-dJxPBlzC7NugB2PDLwo9Q8JiTR3M3e4/XANkreKSUxF8vvXKqm1Yfq4Q5dl8budlunRVlUUaDUgFt7eA8D6NLg==
+  dependencies:
+    d3-time "1 - 3"
+
 "d3-time@1 - 2", d3-time@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/d3-time/-/d3-time-2.1.1.tgz#e9d8a8a88691f4548e68ca085e5ff956724a6682"
@@ -4831,12 +5155,24 @@ d3-selection@2, d3-selection@^2.0.0:
   dependencies:
     d3-array "2"
 
+"d3-time@1 - 3", "d3-time@2.1.1 - 3":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/d3-time/-/d3-time-3.1.0.tgz#9310db56e992e3c0175e1ef385e545e48a9bb5c7"
+  integrity sha512-VqKjzBLejbSMT4IgbmVgDjpkYrNWUYJnbCGo874u7MMKIWsILRX+OpX/gTk8MqjpT1A/c6HY2dCA77ZN0lkQ2Q==
+  dependencies:
+    d3-array "2 - 3"
+
 "d3-timer@1 - 2":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-2.0.0.tgz#055edb1d170cfe31ab2da8968deee940b56623e6"
   integrity sha512-TO4VLh0/420Y/9dO3+f9abDEFYeCUr2WZRlxJvbp4HPTQcSylXNiL6yZa9FIUvV1yRiFufl1bszTCLDqv9PWNA==
 
-d3-transition@2:
+"d3-timer@1 - 3":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-3.0.1.tgz#6284d2a2708285b1abb7e201eda4380af35e63b0"
+  integrity sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==
+
+d3-transition@2, d3-transition@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-2.0.0.tgz#366ef70c22ef88d1e34105f507516991a291c94c"
   integrity sha512-42ltAGgJesfQE3u9LuuBHNbGrI/AJjNL2OAUdclE70UE6Vy239GCBEYD38uBPoLeNsOhFStGpPI0BAOV+HMxog==
@@ -4846,6 +5182,25 @@ d3-transition@2:
     d3-ease "1 - 2"
     d3-interpolate "1 - 2"
     d3-timer "1 - 2"
+
+d3-zoom@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/d3-zoom/-/d3-zoom-2.0.0.tgz#f04d0afd05518becce879d04709c47ecd93fba54"
+  integrity sha512-fFg7aoaEm9/jf+qfstak0IYpnesZLiMX6GZvXtUSdv8RH2o4E2qeelgdU09eKS6wGuiGMfcnMI0nTIqWzRHGpw==
+  dependencies:
+    d3-dispatch "1 - 2"
+    d3-drag "2"
+    d3-interpolate "1 - 2"
+    d3-selection "2"
+    d3-transition "2"
+
+dagre@^0.8.5:
+  version "0.8.5"
+  resolved "https://registry.yarnpkg.com/dagre/-/dagre-0.8.5.tgz#ba30b0055dac12b6c1fcc247817442777d06afee"
+  integrity sha512-/aTqmnRta7x7MCCpExk7HQL2O4owCT2h8NT//9I1OQ9vt29Pa0BzSAkR5lwFUcQ7491yVi/3CXU9jQ5o0Mn2Sw==
+  dependencies:
+    graphlib "^2.1.8"
+    lodash "^4.17.15"
 
 damerau-levenshtein@^1.0.8:
   version "1.0.8"
@@ -4946,7 +5301,7 @@ decamelize@^5.0.0:
   resolved "https://registry.npmjs.org/decamelize/-/decamelize-5.0.1.tgz"
   integrity sha512-VfxadyCECXgQlkoEAjeghAr5gY3Hf+IKjKb+X8tGVDtveCjN+USwprd2q3QXBR9T1+x2DG0XZF5/w+7HAtSaXA==
 
-decimal.js-light@^2.2.3:
+decimal.js-light@^2.2.3, decimal.js-light@^2.5.1:
   version "2.5.1"
   resolved "https://registry.npmjs.org/decimal.js-light/-/decimal.js-light-2.5.1.tgz"
   integrity sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==
@@ -5163,6 +5518,11 @@ domhandler@^4.0.0, domhandler@^4.2.0, domhandler@^4.3.1:
   integrity sha512-GrwoxYN+uWlzO8uhUXRl0P+kHE4GtVPfYzVLcUxPL7KNdHKj66vvlhiweIHqYYXWlw+T8iLMp42Lm67ghw4WMQ==
   dependencies:
     domelementtype "^2.2.0"
+
+dompurify@^2.5.4:
+  version "2.5.8"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-2.5.8.tgz#2809d89d7e528dc7a071dea440d7376df676f824"
+  integrity sha512-o1vSNgrmYMQObbSSvF/1brBYEQPHhV1+gsmrusO7/GXtp1T9rCS8cXFqVxK/9crT1jA6Ccv+5MTSjBNqr7Sovw==
 
 dompurify@^3.2.4:
   version "3.2.6"
@@ -6542,6 +6902,13 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
+graphlib@^2.1.8:
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/graphlib/-/graphlib-2.1.8.tgz#5761d414737870084c92ec7b5dbcb0592c9d35da"
+  integrity sha512-jcLLfkpoVGmH7/InMC/1hIvOPSUh38oJtGhvrOFGzioE1DZ+0YW16RgmOJhHiuWTvGiJQ9Z1Ik43JvkRPRvE+A==
+  dependencies:
+    lodash "^4.17.15"
+
 handle-thing@^2.0.0:
   version "2.0.1"
   resolved "https://registry.npmjs.org/handle-thing/-/handle-thing-2.0.1.tgz"
@@ -6969,6 +7336,11 @@ interpret@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/interpret/-/interpret-3.1.1.tgz"
   integrity sha512-6xwYfHbajpoF0xLW+iwLkhwgvLoZDfjYfoFNu8ftMoXINzwuymNLd9u/KmwtdT2GbR+/Cz66otEGEVVUHX9QLQ==
+
+intl-tel-input@^25.3.2:
+  version "25.15.1"
+  resolved "https://registry.yarnpkg.com/intl-tel-input/-/intl-tel-input-25.15.1.tgz#52d8275c4c6e51bedd77d42ea67dbee8a416fed6"
+  integrity sha512-v3E/Cr3vjfcw43LxsEYRJ8kDHk96ByB5d0asU9zTYgDuLivLbYymOwcISaoZibqZVB1tndzfYWxtSrmFVumFSg==
 
 invert-kv@^1.0.0:
   version "1.0.0"
@@ -7988,6 +8360,21 @@ jsonparse@^1.2.0:
   resolved "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz"
   integrity sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==
 
+jspdf@^2.5.1:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/jspdf/-/jspdf-2.5.2.tgz#3c35bb1063ee3ad9428e6353852b0d685d1f923a"
+  integrity sha512-myeX9c+p7znDWPk0eTrujCzNjT+CXdXyk7YmJq5nD5V7uLLKmSXnlQ/Jn/kuo3X09Op70Apm0rQSnFWyGK8uEQ==
+  dependencies:
+    "@babel/runtime" "^7.23.2"
+    atob "^2.1.2"
+    btoa "^1.2.1"
+    fflate "^0.8.1"
+  optionalDependencies:
+    canvg "^3.0.6"
+    core-js "^3.6.0"
+    dompurify "^2.5.4"
+    html2canvas "^1.0.0-rc.5"
+
 jspdf@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/jspdf/-/jspdf-3.0.2.tgz"
@@ -8261,6 +8648,11 @@ lodash@^4.17.14, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
 
+lodash@^4.17.15:
+  version "4.17.23"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.23.tgz#f113b0378386103be4f6893388c73d0bde7f2c5a"
+  integrity sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==
+
 longest-streak@^2.0.0:
   version "2.0.4"
   resolved "https://registry.npmjs.org/longest-streak/-/longest-streak-2.0.4.tgz"
@@ -8382,6 +8774,34 @@ maplibre-gl@^5.2.0:
     "@types/supercluster" "^7.1.3"
     earcut "^3.0.2"
     geojson-vt "^4.0.2"
+    gl-matrix "^3.4.4"
+    kdbush "^4.0.2"
+    murmurhash-js "^1.0.0"
+    pbf "^4.0.1"
+    potpack "^2.1.0"
+    quickselect "^3.0.0"
+    supercluster "^8.0.1"
+    tinyqueue "^3.0.0"
+
+maplibre-gl@^5.8.0:
+  version "5.19.0"
+  resolved "https://registry.yarnpkg.com/maplibre-gl/-/maplibre-gl-5.19.0.tgz#70f6af711d61a4a7405c4b7bc8fffce5dd6c11b1"
+  integrity sha512-REhYUN8gNP3HlcIZS6QU2uy8iovl31cXsrNDkCcqWSQbCkcpdYLczqDz5PVIwNH42UQNyvukjes/RoHPDrOUmQ==
+  dependencies:
+    "@mapbox/geojson-rewind" "^0.5.2"
+    "@mapbox/jsonlint-lines-primitives" "^2.0.2"
+    "@mapbox/point-geometry" "^1.1.0"
+    "@mapbox/tiny-sdf" "^2.0.7"
+    "@mapbox/unitbezier" "^0.0.1"
+    "@mapbox/vector-tile" "^2.0.4"
+    "@mapbox/whoots-js" "^3.1.0"
+    "@maplibre/geojson-vt" "^5.0.4"
+    "@maplibre/maplibre-gl-style-spec" "^24.4.1"
+    "@maplibre/mlt" "^1.1.6"
+    "@maplibre/vt-pbf" "^4.2.1"
+    "@types/geojson" "^7946.0.16"
+    "@types/supercluster" "^7.1.3"
+    earcut "^3.0.2"
     gl-matrix "^3.4.4"
     kdbush "^4.0.2"
     murmurhash-js "^1.0.0"
@@ -11014,6 +11434,11 @@ stop-iteration-iterator@^1.1.0:
     es-errors "^1.3.0"
     internal-slot "^1.1.0"
 
+string-format-obj@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/string-format-obj/-/string-format-obj-1.1.1.tgz#c7612ca4e2ad923812a81db192dc291850aa1f65"
+  integrity sha512-Mm+sROy+pHJmx0P/0Bs1uxIX6UhGJGj6xDGQZ5zh9v/SZRmLGevp+p0VJxV7lirrkAmQ2mvva/gHKpnF/pTb+Q==
+
 string-length@^4.0.1:
   version "4.0.2"
   resolved "https://registry.npmjs.org/string-length/-/string-length-4.0.2.tgz"
@@ -11444,6 +11869,18 @@ tempfile@^1.1.1:
   dependencies:
     os-tmpdir "^1.0.0"
     uuid "^2.0.1"
+
+temporal-polyfill@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/temporal-polyfill/-/temporal-polyfill-0.1.1.tgz#093d3a5c29278b689362420502dd82a3f576b5c2"
+  integrity sha512-/5e4EVRA0wBI/bEhWLirSjwUg1lELhQyTXxw9zNbVhqjKvI9BLczs+3wtsoD9sn3HN2ImAMW5XJQwAiXgWT+GA==
+  dependencies:
+    temporal-spec "~0.1.0"
+
+temporal-spec@~0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/temporal-spec/-/temporal-spec-0.1.0.tgz#f50cf6eb3b5b40175743ee9fc84afe27c785324b"
+  integrity sha512-sMNggMeS6trCgMQuudgFHhX1gtBK3e+AT1zGrMsFYG1wlqtRT5E9rcvm3I1iNlvHpJX/3DO6L4qtWAuEl/T04Q==
 
 terser-webpack-plugin@^5.3.11:
   version "5.3.14"
@@ -11933,6 +12370,11 @@ use-sync-external-store@^1.0.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.5.0.tgz#55122e2a3edd2a6c106174c27485e0fd59bcfca0"
   integrity sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==
+
+use-sync-external-store@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
+  integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==
 
 use-typed-event-listener@^3.0.0:
   version "3.0.0"

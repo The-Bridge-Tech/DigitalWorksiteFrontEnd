@@ -42,18 +42,28 @@ const CheckInList = () => {
   }
 
   return (
-    <div style={{ maxWidth: '800px', margin: '20px auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>Site Check-Ins</h2>
+    <div style={{ maxWidth: '100%', margin: 'clamp(0.75rem, 3vw, 1.25rem) auto', padding: 'clamp(0.75rem, 3vw, 1.25rem)', overflow: 'hidden' }}>
+      <div style={{ 
+        display: 'flex', 
+        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+        justifyContent: 'space-between', 
+        alignItems: window.innerWidth < 768 ? 'stretch' : 'center', 
+        marginBottom: 'clamp(1rem, 3vw, 1.25rem)',
+        gap: 'clamp(0.5rem, 2vw, 1rem)'
+      }}>
+        <h2 style={{ margin: 0, fontSize: 'clamp(1.25rem, 5vw, 1.5rem)' }}>Site Check-Ins</h2>
         <button 
           onClick={loadCheckins}
           style={{ 
-            padding: '8px 16px', 
+            padding: 'clamp(0.5rem, 2vw, 0.5rem) clamp(0.75rem, 3vw, 1rem)', 
             backgroundColor: '#28a745', 
             color: 'white', 
             border: 'none', 
             borderRadius: '4px',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+            minHeight: '44px',
+            whiteSpace: 'nowrap'
           }}
         >
           Refresh
@@ -61,45 +71,50 @@ const CheckInList = () => {
       </div>
 
       {checkins.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+        <div style={{ textAlign: 'center', padding: 'clamp(2rem, 5vw, 2.5rem)', color: '#666' }}>
           No check-ins found
         </div>
       ) : (
-        <div style={{ display: 'grid', gap: '15px' }}>
+        <div style={{ display: 'grid', gap: 'clamp(0.75rem, 3vw, 0.9375rem)' }}>
           {checkins.map(checkin => (
             <div 
               key={checkin.id} 
               style={{ 
                 border: '1px solid #ddd', 
                 borderRadius: '8px', 
-                padding: '15px',
-                backgroundColor: '#f8f9fa'
+                padding: 'clamp(0.75rem, 3vw, 0.9375rem)',
+                backgroundColor: '#f8f9fa',
+                overflow: 'hidden'
               }}
             >
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                <div>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: window.innerWidth < 768 ? '1fr' : '1fr 1fr', 
+                gap: 'clamp(0.5rem, 2vw, 0.625rem)'
+              }}>
+                <div style={{ wordBreak: 'break-word' }}>
                   <strong>User:</strong> {checkin.user_name}
                 </div>
-                <div>
+                <div style={{ wordBreak: 'break-word' }}>
                   <strong>Role:</strong> {checkin.user_role}
                 </div>
-                <div>
+                <div style={{ wordBreak: 'break-word' }}>
                   <strong>Site:</strong> {checkin.site_id}
                 </div>
-                <div>
+                <div style={{ wordBreak: 'break-word' }}>
                   <strong>Time:</strong> {new Date(checkin.timestamp).toLocaleString()}
                 </div>
-                <div>
+                <div style={{ wordBreak: 'break-word' }}>
                   <strong>GPS:</strong> {checkin.gps_latitude && checkin.gps_longitude 
                     ? `${checkin.gps_latitude.toFixed(6)}, ${checkin.gps_longitude.toFixed(6)}`
                     : 'Not available'
                   }
                 </div>
-                <div>
+                <div style={{ wordBreak: 'break-word' }}>
                   <strong>Weather:</strong> {checkin.weather_conditions || 'Not available'}
                 </div>
               </div>
-              <div style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
+              <div style={{ marginTop: 'clamp(0.5rem, 2vw, 0.625rem)', fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)', color: '#666', wordBreak: 'break-all' }}>
                 QR Scan ID: {checkin.qr_scan_id} | Check-in ID: {checkin.checkin_id}
               </div>
             </div>

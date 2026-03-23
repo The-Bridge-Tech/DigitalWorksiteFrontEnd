@@ -22,8 +22,8 @@ export const getTemplates = async (folderId) => {
     }
     
     const url = folderId 
-      ? `${API_BASE_URL}/adm/templates?folderId=${encodeURIComponent(folderId)}`
-      : `${API_BASE_URL}/adm/templates`;
+      ? `${API_BASE_URL}adm/templates?folderId=${encodeURIComponent(folderId)}`
+      : `${API_BASE_URL}adm/templates`;
     
     const response = await fetch(url, {
       headers
@@ -65,7 +65,7 @@ export const getTemplate = async (templateId) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/templates/${templateId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/templates/${templateId}`, {
       headers
     });
     
@@ -118,7 +118,7 @@ export const createTemplate = async (templateData, folderId) => {
       folderId: folderId
     };
     
-    const response = await fetch(`${API_BASE_URL}/adm/templates`, {
+    const response = await fetch(`${API_BASE_URL}adm/templates`, {
       method: 'POST',
       headers,
       body: JSON.stringify(requestData)
@@ -163,7 +163,7 @@ export const updateTemplate = async (templateId, templateData) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/templates/${templateId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/templates/${templateId}`, {
       method: 'PUT',
       headers,
       body: JSON.stringify(templateData)
@@ -205,7 +205,7 @@ export const deleteTemplate = async (templateId) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
-    const response = await fetch(`${API_BASE_URL}/adm/templates/${templateId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/templates/${templateId}`, {
       method: 'DELETE',
       headers
     });

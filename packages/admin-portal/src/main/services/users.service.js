@@ -10,7 +10,7 @@ export const getUsers = async () => {
   try {
     const token = localStorage.getItem('auth_token');
     const splunkUser = window.$C?.USERNAME;
-    const response = await fetch(`${API_BASE_URL}/adm/users`, {
+    const response = await fetch(`${API_BASE_URL}adm/users`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export const createUser = async (userData) => {
 export const updateUser = async (userId, userData) => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetch(`${API_BASE_URL}/adm/users/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/users/${userId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -117,7 +117,7 @@ export const deleteUser = async (userId) => {
 export const getUser = async (userId) => {
   try {
     const token = localStorage.getItem('auth_token');
-    const response = await fetch(`${API_BASE_URL}/adm/users/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}adm/users/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'

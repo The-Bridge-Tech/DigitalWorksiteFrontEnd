@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Sidebar = ({ activeModule, onModuleChange, collapsed, onToggleCollapse }) => {
+const Sidebar = ({ activeModule, onModuleChange, collapsed, onToggleCollapse, mobileOpen }) => {
   const menuItems = [
     { id: 'overview', icon: '📊', label: 'Overview' },
     { id: 'sites', icon: '🏗️', label: 'Sites' },
@@ -17,16 +17,22 @@ const Sidebar = ({ activeModule, onModuleChange, collapsed, onToggleCollapse }) 
     { id: 'auth', icon: '🔐', label: 'Authentication' }
   ];
 
+  // On mobile, always show labels (ignore collapsed state)
+  const isMobile = window.innerWidth < 768;
+  const showLabels = isMobile || !collapsed;
+
   return (
-    <div className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
+    <div className={`sidebar ${collapsed && !isMobile ? 'collapsed' : ''} ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="sidebar-header">
         <div className="logo">
-          {!collapsed && <span>Digital Worksite</span>}
-          {collapsed && <span>DW</span>}
+          {showLabels && <span>Digital Worksite</span>}
+          {!showLabels && <span>DW</span>}
         </div>
-        <button className="toggle-btn" onClick={onToggleCollapse}>
-          {collapsed ? '→' : '←'}
-        </button>
+        {!isMobile && (
+          <button className="toggle-btn" onClick={onToggleCollapse}>
+            {collapsed ? '→' : '←'}
+          </button>
+        )}
       </div>
       
       <nav className="sidebar-nav">
@@ -35,10 +41,10 @@ const Sidebar = ({ activeModule, onModuleChange, collapsed, onToggleCollapse }) 
             key={item.id}
             className={`nav-item ${activeModule === item.id ? 'active' : ''}`}
             onClick={() => onModuleChange(item.id)}
-            title={collapsed ? item.label : ''}
+            title={!showLabels ? item.label : ''}
           >
             <span className="nav-icon">{item.icon}</span>
-            {!collapsed && <span className="nav-label">{item.label}</span>}
+            {showLabels && <span className="nav-label">{item.label}</span>}
           </button>
         ))}
       </nav>

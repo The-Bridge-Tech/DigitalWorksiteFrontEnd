@@ -56,7 +56,7 @@ const Overview = ({ onNavigate }) => {
         <>
         {/* Header Card */}
         <div style={{
-          background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+          background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
         borderRadius: '12px',
         padding: '30px',
         marginBottom: '30px',
@@ -86,7 +86,7 @@ const Overview = ({ onNavigate }) => {
         }}>
           <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🏗️</div>
           <h3 style={{ margin: '0 0 0.5rem 0', color: '#495057' }}>Total Sites</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0, color: '#007bff' }}>
+          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0, color: '#2DBE60' }}>
             {stats.totalSites}
           </p>
         </div>
@@ -100,7 +100,7 @@ const Overview = ({ onNavigate }) => {
         }}>
           <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>👥</div>
           <h3 style={{ margin: '0 0 0.5rem 0', color: '#495057' }}>Active Users</h3>
-          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0, color: '#28a745' }}>
+          <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0, color: '#2DBE60' }}>
             {stats.totalUsers}
           </p>
         </div>
@@ -114,7 +114,7 @@ const Overview = ({ onNavigate }) => {
         }}>
           <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📋</div>
           <h3 style={{ margin: '0 0 0.5rem 0', color: '#495057' }}>System Status</h3>
-          <p style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: 0, color: '#28a745' }}>
+          <p style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: 0, color: '#2DBE60' }}>
             ✅ Operational
           </p>
         </div>
@@ -132,39 +132,72 @@ const Overview = ({ onNavigate }) => {
           <button 
             onClick={() => onNavigate && onNavigate('checkins')}
             style={{
-              backgroundColor: '#007bff',
+              background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
               color: 'white',
               border: 'none',
               padding: '0.75rem 1.5rem',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 8px rgba(45, 190, 96, 0.3)',
+              minHeight: '44px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onTouchEnd={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
             }}>
             📱 Start Check-in
           </button>
           <button 
             onClick={() => onNavigate && onNavigate('inspections')}
             style={{
-              backgroundColor: '#28a745',
-              color: 'white',
+              background: 'linear-gradient(135deg, #F2C300 0%, #D4A900 100%)',
+              color: 'black',
               border: 'none',
               padding: '0.75rem 1.5rem',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 8px rgba(242, 195, 0, 0.3)',
+              minHeight: '44px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onTouchEnd={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
             }}>
             📋 New Inspection
           </button>
           <button 
             onClick={() => onNavigate && onNavigate('documents')}
             style={{
-              backgroundColor: '#17a2b8',
+              background: 'linear-gradient(135deg, #E31E24 0%, #B71C1C 100%)',
               color: 'white',
               border: 'none',
               padding: '0.75rem 1.5rem',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontWeight: '500'
+              fontWeight: '500',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 2px 8px rgba(227, 30, 36, 0.3)',
+              minHeight: '44px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent'
+            }}
+            onTouchStart={(e) => {
+              e.currentTarget.style.transform = 'scale(0.98)';
+            }}
+            onTouchEnd={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
             }}>
             📁 Upload Document
           </button>

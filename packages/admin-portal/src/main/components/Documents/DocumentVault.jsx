@@ -217,35 +217,20 @@ const DocumentVault = ({ siteId = null }) => {
   }
 
   return (
-    <div style={{ padding: '2rem' }}>
-      {/* Header Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
-        borderRadius: '12px',
-        padding: '30px',
-        marginBottom: '30px',
-        color: 'white',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
-      }}>
-        <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>
-          📁 Document Vault
-        </h1>
-        <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>
-          Manage permits, inspection requests, reports and documentation
-        </p>
-      </div>
-      
+    <div style={{ padding: 'clamp(0.75rem, 3vw, 1.25rem)', overflow: 'hidden' }}>
       {error && (
         <div style={{ 
           backgroundColor: '#f8d7da', 
           color: '#721c24', 
-          padding: '15px 20px', 
-          borderRadius: '8px', 
-          marginBottom: '20px',
+          padding: 'clamp(0.75rem, 3vw, 1rem) clamp(1rem, 4vw, 1.25rem)', 
+          borderRadius: '6px', 
+          marginBottom: 'clamp(0.75rem, 3vw, 1.25rem)',
           border: '1px solid #f5c6cb',
           display: 'flex',
           justifyContent: 'space-between',
-          alignItems: 'center'
+          alignItems: 'center',
+          fontSize: 'clamp(0.875rem, 3vw, 1rem)',
+          wordBreak: 'break-word'
         }}>
           <span>{error}</span>
           <button 
@@ -254,9 +239,11 @@ const DocumentVault = ({ siteId = null }) => {
               background: 'none', 
               border: 'none', 
               color: '#721c24',
-              fontSize: '18px',
+              fontSize: 'clamp(1rem, 4vw, 1.125rem)',
               cursor: 'pointer',
-              padding: '0 5px'
+              padding: '0 0.25rem',
+              minWidth: '24px',
+              minHeight: '24px'
             }}
           >
             ×
@@ -267,37 +254,40 @@ const DocumentVault = ({ siteId = null }) => {
       {/* Filters Card */}
       <div style={{
         backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '12px',
-        marginBottom: '20px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
-        border: '1px solid #e9ecef'
+        padding: 'clamp(0.75rem, 3vw, 1.25rem)',
+        borderRadius: '8px',
+        marginBottom: 'clamp(0.75rem, 3vw, 1.25rem)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        border: '1px solid #e9ecef',
+        overflow: 'hidden'
       }}>
-        <h3 style={{ margin: '0 0 15px 0', color: '#495057', fontSize: '18px' }}>Filters & Actions</h3>
+        <h3 style={{ margin: '0 0 clamp(0.75rem, 3vw, 1rem) 0', color: '#495057', fontSize: 'clamp(1rem, 4vw, 1.125rem)' }}>Filters & Actions</h3>
         <div style={{ 
           display: 'flex', 
-          gap: '15px', 
+          gap: 'clamp(0.5rem, 2vw, 0.75rem)', 
           flexWrap: 'wrap',
-          alignItems: 'center'
+          alignItems: 'flex-end'
         }}>
           {/* Status Filter */}
-          <div>
+          <div style={{ minWidth: 'min(120px, 100%)' }}>
             <label style={{ 
               display: 'block',
-              marginBottom: '5px',
+              marginBottom: '0.25rem',
               fontWeight: '500',
               color: '#495057',
-              fontSize: '14px'
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
             }}>Status:</label>
             <select 
               value={statusFilter} 
               onChange={(e) => setStatusFilter(e.target.value)}
               style={{ 
-                padding: '8px 12px',
-                borderRadius: '6px',
+                padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                borderRadius: '4px',
                 border: '1px solid #ced4da',
-                fontSize: '14px',
-                minWidth: '140px'
+                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                width: '100%',
+                minHeight: '36px',
+                boxSizing: 'border-box'
               }}
             >
               <option value="all">All Status</option>
@@ -308,28 +298,30 @@ const DocumentVault = ({ siteId = null }) => {
           </div>
 
           {/* Type Filter */}
-          <div>
+          <div style={{ minWidth: 'min(140px, 100%)' }}>
             <label style={{ 
               display: 'block',
-              marginBottom: '5px',
+              marginBottom: '0.25rem',
               fontWeight: '500',
               color: '#495057',
-              fontSize: '14px'
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
             }}>Type:</label>
             <select 
               value={typeFilter} 
               onChange={(e) => setTypeFilter(e.target.value)}
               style={{ 
-                padding: '8px 12px',
-                borderRadius: '6px',
+                padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                borderRadius: '4px',
                 border: '1px solid #ced4da',
-                fontSize: '14px',
-                minWidth: '160px'
+                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                width: '100%',
+                minHeight: '36px',
+                boxSizing: 'border-box'
               }}
             >
               <option value="all">All Types</option>
               <option value="permit">📋 Permits</option>
-              <option value="inspection_request">🔍 Inspection Requests</option>
+              <option value="inspection_request">🔍 Inspection</option>
               <option value="report">📊 Reports</option>
               <option value="general">📄 General</option>
             </select>
@@ -337,23 +329,25 @@ const DocumentVault = ({ siteId = null }) => {
 
           {/* Site Filter */}
           {!siteId && (
-            <div>
+            <div style={{ minWidth: 'min(120px, 100%)' }}>
               <label style={{ 
                 display: 'block',
-                marginBottom: '5px',
+                marginBottom: '0.25rem',
                 fontWeight: '500',
                 color: '#495057',
-                fontSize: '14px'
+                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)'
               }}>Site:</label>
               <select 
                 value={selectedSiteId || ''} 
                 onChange={(e) => setSelectedSiteId(e.target.value || null)}
                 style={{ 
-                  padding: '8px 12px',
-                  borderRadius: '6px',
+                  padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1rem)',
+                  borderRadius: '4px',
                   border: '1px solid #ced4da',
-                  fontSize: '14px',
-                  minWidth: '140px'
+                  fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                  width: '100%',
+                  minHeight: '36px',
+                  boxSizing: 'border-box'
                 }}
               >
                 <option value="">All Sites</option>
@@ -365,7 +359,7 @@ const DocumentVault = ({ siteId = null }) => {
           )}
 
           {/* Upload Button */}
-          <div style={{ marginLeft: 'auto' }}>
+          <div style={{ marginLeft: 'auto', minWidth: 'min(140px, 100%)' }}>
             <button
               onClick={() => {
                 const targetSiteId = selectedSiteId || sites[0]?.id;
@@ -374,33 +368,27 @@ const DocumentVault = ({ siteId = null }) => {
                   documentType: 'general', 
                   siteId: targetSiteId
                 });
-                // Auto-select the site if none is selected
                 if (!selectedSiteId && sites[0]?.id) {
                   setSelectedSiteId(sites[0].id);
                 }
               }}
+              className="theme-bg-primary"
               style={{
-                background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
                 color: 'white',
                 border: 'none',
-                padding: '10px 20px',
-                borderRadius: '8px',
+                padding: 'clamp(0.625rem, 2.5vw, 0.75rem) clamp(1rem, 4vw, 1.25rem)',
+                borderRadius: '6px',
                 cursor: 'pointer',
-                fontSize: '14px',
+                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                 fontWeight: '500',
-                boxShadow: '0 4px 12px rgba(0,123,255,0.3)',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 6px 16px rgba(0,123,255,0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(0,123,255,0.3)';
+                boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                transition: 'all 0.2s ease',
+                width: '100%',
+                minHeight: '44px',
+                whiteSpace: 'nowrap'
               }}
             >
-              📤 Upload Document
+              📤 Upload
             </button>
           </div>
         </div>
@@ -409,121 +397,136 @@ const DocumentVault = ({ siteId = null }) => {
       {/* Documents Table */}
       <div style={{ 
         backgroundColor: 'white', 
-        borderRadius: '12px', 
+        borderRadius: '8px', 
         overflow: 'hidden', 
-        boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         border: '1px solid #e9ecef'
       }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead style={{ backgroundColor: '#f8f9fa' }}>
-            <tr>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #dee2e6' }}>Document</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #dee2e6' }}>Type</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #dee2e6' }}>Site</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #dee2e6' }}>Status</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #dee2e6' }}>Version</th>
-              <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #dee2e6' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {documents.length === 0 ? (
+        <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+            <thead style={{ backgroundColor: '#f8f9fa' }}>
               <tr>
-                <td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: '#6c757d' }}>
-                  No documents found
-                </td>
+                <th style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', textAlign: 'left', borderBottom: '1px solid #dee2e6', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600', whiteSpace: 'nowrap' }}>Document</th>
+                <th style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', textAlign: 'left', borderBottom: '1px solid #dee2e6', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600', whiteSpace: 'nowrap' }}>Type</th>
+                <th style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', textAlign: 'left', borderBottom: '1px solid #dee2e6', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600', whiteSpace: 'nowrap' }}>Site</th>
+                <th style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', textAlign: 'left', borderBottom: '1px solid #dee2e6', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600', whiteSpace: 'nowrap' }}>Status</th>
+                <th style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', textAlign: 'left', borderBottom: '1px solid #dee2e6', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600', whiteSpace: 'nowrap' }}>Version</th>
+                <th style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', textAlign: 'left', borderBottom: '1px solid #dee2e6', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600', whiteSpace: 'nowrap' }}>Actions</th>
               </tr>
-            ) : (
-              documents.map(doc => {
-                return (
-                  <tr key={doc.id} style={{ borderBottom: '1px solid #dee2e6' }}>
-                    <td style={{ padding: '12px' }}>{doc.name}</td>
-                    <td style={{ padding: '12px' }}>
-                      {doc.document_type === 'permit' && '📋 Permit'}
-                      {doc.document_type === 'inspection_request' && '🔍 Inspection Request'}
-                      {doc.document_type === 'report' && '📊 Report'}
-                      {doc.document_type === 'general' && '📄 General'}
-                    </td>
-                    <td style={{ padding: '12px' }}>{doc.site_name || 'Unknown'}</td>
-                    <td style={{ padding: '12px' }}>
-                      <span style={{
-                        backgroundColor: getStatusColor(doc.status),
-                        color: 'white',
-                        padding: '4px 8px',
-                        borderRadius: '12px',
-                        fontSize: '12px'
-                      }}>
-                        {doc.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px' }}>v{doc.version}</td>
-                    <td style={{ padding: '12px' }}>
-                      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                        <select
-                          value={doc.status}
-                          onChange={(e) => handleStatusUpdate(doc.id, e.target.value)}
-                          style={{ padding: '4px', fontSize: '12px' }}
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="approved">Approved</option>
-                          <option value="expired">Expired</option>
-                        </select>
-                        {doc.file_id && (
-                          <>
-                            <button
-                              onClick={() => handlePreview(doc)}
-                              style={{
-                                backgroundColor: '#17a2b8',
-                                color: 'white',
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '3px',
-                                fontSize: '11px',
-                                cursor: 'pointer'
-                              }}
-                              title="Preview"
-                            >
-                              👁️
-                            </button>
-                            <button
-                              onClick={() => handleDownload(doc)}
-                              style={{
-                                backgroundColor: '#28a745',
-                                color: 'white',
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '3px',
-                                fontSize: '11px',
-                                cursor: 'pointer'
-                              }}
-                              title="Download"
-                            >
-                              📥
-                            </button>
-                            <button
-                              onClick={() => handlePrint(doc)}
-                              style={{
-                                backgroundColor: '#6f42c1',
-                                color: 'white',
-                                border: 'none',
-                                padding: '4px 8px',
-                                borderRadius: '3px',
-                                fontSize: '11px',
-                                cursor: 'pointer'
-                              }}
-                              title="Print"
-                            >
-                              🖨️
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {documents.length === 0 ? (
+                <tr>
+                  <td colSpan="6" style={{ padding: 'clamp(1rem, 4vw, 1.25rem)', textAlign: 'center', color: '#6c757d', fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
+                    No documents found
+                  </td>
+                </tr>
+              ) : (
+                documents.map(doc => {
+                  return (
+                    <tr key={doc.id} style={{ borderBottom: '1px solid #dee2e6' }}>
+                      <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.name}>{doc.name}</td>
+                      <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', whiteSpace: 'nowrap' }}>
+                        {doc.document_type === 'permit' && '📋 Permit'}
+                        {doc.document_type === 'inspection_request' && '🔍 Inspection'}
+                        {doc.document_type === 'report' && '📊 Report'}
+                        {doc.document_type === 'general' && '📄 General'}
+                      </td>
+                      <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.site_name || 'Unknown'}>{doc.site_name || 'Unknown'}</td>
+                      <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)' }}>
+                        <span style={{
+                          backgroundColor: getStatusColor(doc.status),
+                          color: 'white',
+                          padding: 'clamp(0.125rem, 1vw, 0.25rem) clamp(0.25rem, 2vw, 0.5rem)',
+                          borderRadius: '8px',
+                          fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                          whiteSpace: 'nowrap'
+                        }}>
+                          {doc.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', whiteSpace: 'nowrap' }}>v{doc.version}</td>
+                      <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)' }}>
+                        <div style={{ display: 'flex', gap: 'clamp(0.125rem, 1vw, 0.25rem)', flexWrap: 'wrap', minWidth: '200px' }}>
+                          <select
+                            value={doc.status}
+                            onChange={(e) => handleStatusUpdate(doc.id, e.target.value)}
+                            style={{ 
+                              padding: 'clamp(0.125rem, 1vw, 0.25rem)', 
+                              fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                              borderRadius: '3px',
+                              border: '1px solid #ced4da',
+                              minWidth: '80px'
+                            }}
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="expired">Expired</option>
+                          </select>
+                          {doc.file_id && (
+                            <>
+                              <button
+                                onClick={() => handlePreview(doc)}
+                                className="theme-bg-secondary"
+                                style={{
+                                  color: 'black',
+                                  border: 'none',
+                                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
+                                  borderRadius: '3px',
+                                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                                  cursor: 'pointer',
+                                  minWidth: '28px',
+                                  minHeight: '28px'
+                                }}
+                                title="Preview"
+                              >
+                                👁️
+                              </button>
+                              <button
+                                onClick={() => handleDownload(doc)}
+                                className="theme-bg-primary"
+                                style={{
+                                  color: 'white',
+                                  border: 'none',
+                                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
+                                  borderRadius: '3px',
+                                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                                  cursor: 'pointer',
+                                  minWidth: '28px',
+                                  minHeight: '28px'
+                                }}
+                                title="Download"
+                              >
+                                📥
+                              </button>
+                              <button
+                                onClick={() => handlePrint(doc)}
+                                className="theme-bg-secondary"
+                                style={{
+                                  color: 'black',
+                                  border: 'none',
+                                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
+                                  borderRadius: '3px',
+                                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                                  cursor: 'pointer',
+                                  minWidth: '28px',
+                                  minHeight: '28px'
+                                }}
+                                title="Print"
+                              >
+                                🖨️
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Document Preview Modal */}
@@ -601,35 +604,43 @@ const DocumentVault = ({ siteId = null }) => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          zIndex: 1000,
-          backdropFilter: 'blur(4px)'
+          zIndex: 9999,
+          backdropFilter: 'blur(4px)',
+          padding: 'clamp(0.5rem, 2vw, 1rem)',
+          boxSizing: 'border-box'
         }}>
           <div style={{
             backgroundColor: 'white',
-            padding: '0',
-            borderRadius: '16px',
-            minWidth: '600px',
-            maxWidth: '90vw',
-            maxHeight: '90vh',
+            borderRadius: '8px',
+            width: '100%',
+            maxWidth: 'min(600px, 95vw)',
+            maxHeight: '95vh',
             overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
+            boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+            display: 'flex',
+            flexDirection: 'column'
           }}>
             {/* Modal Header */}
-            <div style={{
-              background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
-              padding: '25px 30px',
-              color: 'white'
+            <div className="theme-gradient-primary" style={{
+              padding: 'clamp(1rem, 4vw, 1.5625rem) clamp(1.25rem, 5vw, 1.875rem)',
+              color: 'white',
+              flexShrink: 0
             }}>
-              <h2 style={{ margin: '0', fontSize: '24px', fontWeight: '600' }}>
+              <h2 style={{ margin: '0', fontSize: 'clamp(1.25rem, 5vw, 1.5rem)', fontWeight: '600' }}>
                 📤 Upload Document
               </h2>
-              <p style={{ margin: '5px 0 0 0', opacity: 0.9, fontSize: '14px' }}>
+              <p style={{ margin: '5px 0 0 0', opacity: 0.9, fontSize: 'clamp(0.75rem, 3vw, 0.875rem)' }}>
                 Add a new document to the vault
               </p>
             </div>
             
-            {/* Modal Content */}
-            <div style={{ padding: '30px' }}>
+            {/* Modal Content - Scrollable */}
+            <div style={{ 
+              padding: 'clamp(1rem, 4vw, 1.875rem)', 
+              overflowY: 'auto',
+              flex: 1,
+              WebkitOverflowScrolling: 'touch'
+            }}>
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ 
                   display: 'block',
@@ -800,11 +811,12 @@ const DocumentVault = ({ siteId = null }) => {
 
               <div style={{ 
                 display: 'flex', 
-                gap: '12px', 
+                gap: 'clamp(0.5rem, 2vw, 0.75rem)', 
                 justifyContent: 'flex-end', 
-                marginTop: '30px',
-                paddingTop: '20px',
-                borderTop: '1px solid #e9ecef'
+                marginTop: 'clamp(1rem, 4vw, 1.875rem)',
+                paddingTop: 'clamp(0.75rem, 3vw, 1.25rem)',
+                borderTop: '1px solid #e9ecef',
+                flexWrap: 'wrap'
               }}>
                 <button
                   onClick={() => {
@@ -820,12 +832,14 @@ const DocumentVault = ({ siteId = null }) => {
                     backgroundColor: '#6c757d',
                     color: 'white',
                     border: 'none',
-                    padding: '12px 24px',
+                    padding: 'clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1.5rem)',
                     borderRadius: '8px',
                     cursor: 'pointer',
-                    fontSize: '14px',
+                    fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
                     fontWeight: '500',
-                    transition: 'all 0.2s ease'
+                    transition: 'all 0.2s ease',
+                    minHeight: '44px',
+                    whiteSpace: 'nowrap'
                   }}
                   onMouseOver={(e) => e.target.style.backgroundColor = '#5a6268'}
                   onMouseOut={(e) => e.target.style.backgroundColor = '#6c757d'}

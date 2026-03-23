@@ -36,16 +36,12 @@ const GoogleAuth = ({ onAuthChange }) => {
     setError(null);
     
     try {
-      console.log('Checking auth status...');
-      
       // Get token from localStorage
       const token = localStorage.getItem('auth_token');
       
       if (!token) {
-        console.log('No auth token found');
         setIsAuthenticated(false);
         setUser(null);
-
         return;
       }
       
@@ -56,8 +52,20 @@ const GoogleAuth = ({ onAuthChange }) => {
         }
       });
       
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.warn('Auth status endpoint returned non-JSON response');
+        localStorage.removeItem('auth_token');
+        setIsAuthenticated(false);
+        setUser(null);
+        if (onAuthChange) {
+          onAuthChange(false);
+        }
+        return;
+      }
+      
       const data = await response.json();
-      console.log('Auth status response:', data);
       
       // Update state based on response
       setIsAuthenticated(data.authenticated);
@@ -87,7 +95,6 @@ const GoogleAuth = ({ onAuthChange }) => {
 
   // Handle login button click
   const handleLogin = () => {
-    console.log('Initiating Google sign-in...');
     // Redirect to the OAuth endpoint
     window.location.href = `${API_BASE_URL}${API_ENDPOINTS.AUTH_GOOGLE}`;
   };
@@ -97,8 +104,6 @@ const GoogleAuth = ({ onAuthChange }) => {
     setIsLoading(true);
     
     try {
-      console.log('Logging out...');
-      
       // Remove token from localStorage
       localStorage.removeItem('auth_token');
       localStorage.removeItem('selected_site_id');
@@ -120,8 +125,6 @@ const GoogleAuth = ({ onAuthChange }) => {
       if (onAuthChange) {
         onAuthChange(false);
       }
-      
-      console.log('Successfully logged out');
       
       // Force page refresh to ensure clean state
       setTimeout(() => {

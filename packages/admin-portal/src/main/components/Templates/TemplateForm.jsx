@@ -373,7 +373,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
     <div style={{ padding: '20px', maxWidth: '900px', margin: '0 auto' }}>
       {/* Header Card */}
       <div style={{
-        background: 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)',
+        background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
         borderRadius: '12px',
         padding: '30px',
         marginBottom: '30px',
@@ -478,7 +478,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#6f42c1'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -528,7 +528,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                 boxSizing: 'border-box',
                 resize: 'vertical'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#6f42c1'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -541,7 +541,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                   type="button"
                   onClick={handleFolderSelect}
                   style={{
-                    backgroundColor: '#6f42c1',
+                    backgroundColor: '#2DBE60',
                     color: 'white',
                     border: 'none',
                     padding: '10px 16px',
@@ -551,7 +551,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                     cursor: 'pointer',
                     transition: 'background-color 0.3s ease'
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#5a32a3'}
+                  onMouseEnter={(e) => e.target.style.backgroundColor = '#1E8E4A'}
                   onMouseLeave={(e) => e.target.style.backgroundColor = '#6f42c1'}
                 >
                   📁 Select Folder
@@ -736,9 +736,9 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                 type="button"
                 onClick={addQuestion}
                 style={{
-                  backgroundColor: '#6f42c1',
+                  backgroundColor: '#2DBE60',
                   color: 'white',
-                  border: '2px dashed rgba(111, 66, 193, 0.3)',
+                  border: '2px dashed rgba(45, 190, 96, 0.3)',
                   padding: '16px 24px',
                   borderRadius: '8px',
                   fontSize: '16px',
@@ -748,12 +748,12 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                   alignSelf: 'center'
                 }}
                 onMouseEnter={(e) => {
-                  e.target.style.backgroundColor = '#5a32a3';
-                  e.target.style.borderColor = '#5a32a3';
+                  e.target.style.backgroundColor = '#1E8E4A';
+                  e.target.style.borderColor = '#1E8E4A';
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.backgroundColor = '#6f42c1';
-                  e.target.style.borderColor = 'rgba(111, 66, 193, 0.3)';
+                  e.target.style.backgroundColor = '#2DBE60';
+                  e.target.style.borderColor = 'rgba(45, 190, 96, 0.3)';
                 }}
               >
                 ➕ Add Question
@@ -818,7 +818,7 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
               type="submit"
               disabled={isSaving || isLoading}
               style={{
-                backgroundColor: (isSaving || isLoading) ? '#ccc' : '#6f42c1',
+                backgroundColor: (isSaving || isLoading) ? '#ccc' : '#2DBE60',
                 color: 'white',
                 border: 'none',
                 padding: '12px 24px',
@@ -828,8 +828,8 @@ const TemplateForm = ({ templateId, onSave, onCancel }) => {
                 cursor: (isSaving || isLoading) ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.3s ease'
               }}
-              onMouseEnter={(e) => !(isSaving || isLoading) && (e.target.style.backgroundColor = '#5a32a3')}
-              onMouseLeave={(e) => !(isSaving || isLoading) && (e.target.style.backgroundColor = '#6f42c1')}
+              onMouseEnter={(e) => !(isSaving || isLoading) && (e.target.style.backgroundColor = '#1E8E4A')}
+              onMouseLeave={(e) => !(isSaving || isLoading) && (e.target.style.backgroundColor = '#2DBE60')}
             >
               {isSaving ? '⏳ Saving...' : (isEditing ? '✏️ Update Template' : '💾 Save Template')}
             </button>

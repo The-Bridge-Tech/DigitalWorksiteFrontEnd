@@ -238,6 +238,8 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
           margin: 0;
           box-shadow: none;
           border: none;
+          overflow: hidden;
+          word-wrap: break-word;
         }
         .upload-form {
           display: flex;
@@ -270,6 +272,9 @@ const FileUpload = ({ folderId, onUploadComplete }) => {
           padding: 12px 16px;
           border-radius: 8px;
           border: 1px solid #007bff;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          hyphens: auto;
         }
         .selected-file p {
           margin: 0;

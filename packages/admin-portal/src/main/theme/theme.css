@@ -1,0 +1,38 @@
+/* Digital Worksite Theme CSS Variables */
+:root {
+  --theme-primary-main: #2DBE60;
+  --theme-primary-dark: #1E8E4A;
+  --theme-primary-light: #4DD17A;
+  --theme-primary-contrast: #ffffff;
+  
+  --theme-secondary-main: #F2C300;
+  --theme-secondary-dark: #D4A900;
+  --theme-secondary-light: #F5D333;
+  --theme-secondary-contrast: #000000;
+  
+  --theme-secondary2-main: #E31E24;
+  --theme-secondary2-dark: #B71C1C;
+  --theme-secondary2-light: #EF5350;
+  --theme-secondary2-contrast: #ffffff;
+  
+  --theme-neutral-white: #ffffff;
+  --theme-neutral-light: #f8f9fa;
+  --theme-neutral-medium: #6c757d;
+  --theme-neutral-dark: #343a40;
+  --theme-neutral-black: #000000;
+  
+  --theme-gradient-primary: linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%);
+  --theme-gradient-secondary: linear-gradient(135deg, #F2C300 0%, #D4A900 100%);
+  --theme-gradient-secondary2: linear-gradient(135deg, #E31E24 0%, #B71C1C 100%);
+}
+
+/* Utility classes for quick theme application */
+.theme-bg-primary { background-color: var(--theme-primary-main) !important; }
+.theme-bg-secondary { background-color: var(--theme-secondary-main) !important; }
+.theme-bg-secondary2 { background-color: var(--theme-secondary2-main) !important; }
+.theme-text-primary { color: var(--theme-primary-main) !important; }
+.theme-text-secondary { color: var(--theme-secondary-main) !important; }
+.theme-text-secondary2 { color: var(--theme-secondary2-main) !important; }
+.theme-gradient-primary { background: var(--theme-gradient-primary) !important; }
+.theme-gradient-secondary { background: var(--theme-gradient-secondary) !important; }
+.theme-gradient-secondary2 { background: var(--theme-gradient-secondary2) !important; }

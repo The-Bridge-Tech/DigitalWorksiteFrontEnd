@@ -37,13 +37,13 @@ const AccessGuard = ({ children }) => {
 
   const getSplunkUserContext = async () => {
     try {
-      console.log('🔍 Getting Splunk user context...');
+
       
       // Check if we're in Splunk environment
       const isSplunkEnvironment = window.$C && window.$C.SPLUNKD_PATH;
       
       if (isSplunkEnvironment) {
-        console.log('✅ Splunk environment detected');
+
         
         // Use Splunk REST API to get current user context
         const xhr = new XMLHttpRequest();
@@ -54,15 +54,14 @@ const AccessGuard = ({ children }) => {
         
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
-          console.log('📊 Splunk API response:', response);
-          console.log('📊 Entry content:', response.entry?.[0]?.content);
+
           
           if (response && response.entry && response.entry[0] && response.entry[0].content) {
             const content = response.entry[0].content;
             const userRoles = Array.isArray(content.roles) ? content.roles : (content.roles ? [content.roles] : []);
             const username = window.$C.USERNAME || content.username || 'splunk_user';
             
-            console.log('✅ Got user context:', { username, roles: userRoles, fullContent: content });
+
             
             return {
               username: username,
@@ -70,13 +69,13 @@ const AccessGuard = ({ children }) => {
             };
           }
         } else {
-          console.warn('⚠️ Splunk API failed with status:', xhr.status);
+
         }
       }
       
       return null;
     } catch (error) {
-      console.error('❌ Failed to get Splunk user context:', error);
+
       return null;
     }
   };

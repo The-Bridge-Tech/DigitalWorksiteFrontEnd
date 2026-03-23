@@ -145,14 +145,7 @@ const InspectionCalendar = () => {
         next_run: eventData.start.toISOString()
       };
       
-      const response = await authFetch(`${API_BASE_URL}${API_ENDPOINTS.TASK_CREATE}`, {
-        method: 'POST',
-        body: JSON.stringify(taskData)
-      });
-      
-      const data = await response.json();
-      console.log('Save task response:', data);
-      return data;
+
     } catch (error) {
       console.error('Error saving task:', error);
       throw error;
@@ -203,7 +196,7 @@ const InspectionCalendar = () => {
           (now - calendarCache.timestamp < CACHE_DURATION);
         
         if (useCache) {
-          console.log('Calendar: Using cached data');
+
           setSites(calendarCache.sites || []);
           setUsers(calendarCache.users || []);
           setEvents(calendarCache.tasks || []);
@@ -211,7 +204,7 @@ const InspectionCalendar = () => {
           return;
         }
         
-        console.log('Calendar: Loading fresh data');
+
         
         // Load sites first (fastest)
         const loadedSites = await getSites().catch(() => []);
@@ -341,9 +334,7 @@ const InspectionCalendar = () => {
       const updatedEvents = [...events, newEvent];
       setEvents(updatedEvents);
       
-      // Update cache
-      calendarCache.tasks = updatedEvents;
-      console.log('Event saved successfully:', savedTask);
+
       
       // Close modal
       setShowAssignModal(false);
@@ -418,8 +409,7 @@ const InspectionCalendar = () => {
   const [newInspector, setNewInspector] = useState('');
   
   const handleCalendarEventClick = (info) => {
-    const currentInspector = info.event.extendedProps?.assignedTo;
-    console.log('Event clicked:', info.event.title, 'Assigned to:', currentInspector);
+
     
     setSelectedEvent({
       event: info.event,
@@ -461,14 +451,7 @@ const InspectionCalendar = () => {
       });
       
       if (response.ok) {
-        // Update local state with new inspector
-        const updatedEvents = events.map(e => {
-          if (e.id === selectedEvent.event.id) {
-            console.log('Updating event:', e.title, 'from', e.extendedProps?.assignedTo, 'to', newInspector);
-            return { ...e, extendedProps: { ...e.extendedProps, assignedTo: newInspector } };
-          }
-          return e;
-        });
+
         setEvents(updatedEvents);
         calendarCache.tasks = updatedEvents;
         
@@ -557,7 +540,7 @@ const InspectionCalendar = () => {
             overflow: 'hidden'
           }}>
             <div style={{
-              background: 'linear-gradient(135deg, #007bff 0%, #6610f2 100%)',
+              background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
               padding: '1.5rem',
               color: 'white'
             }}>
@@ -708,7 +691,7 @@ const InspectionCalendar = () => {
             overflow: 'hidden'
           }}>
             <div style={{
-              background: 'linear-gradient(135deg, #007bff 0%, #6610f2 100%)',
+              background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
               padding: '2rem',
               color: 'white'
             }}>
@@ -797,19 +780,6 @@ const InspectionCalendar = () => {
                     );
                   })}
                 </select>
-                
-                {/* Debug info */}
-                <div style={{
-                  marginTop: '0.5rem',
-                  padding: '8px 12px',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '6px',
-                  fontSize: '11px',
-                  color: '#6c757d',
-                  fontFamily: 'monospace'
-                }}>
-                  Debug: Current = {selectedEvent?.currentInspector || 'null'}
-                </div>
               </div>
               
               <div style={{ 
@@ -845,7 +815,7 @@ const InspectionCalendar = () => {
                   disabled={!newInspector}
                   style={{
                     padding: '12px 24px',
-                    background: newInspector ? 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)' : '#ccc',
+                    background: newInspector ? 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)' : '#ccc',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -853,7 +823,7 @@ const InspectionCalendar = () => {
                     fontSize: '14px',
                     fontWeight: '500',
                     transition: 'all 0.2s ease',
-                    boxShadow: newInspector ? '0 4px 12px rgba(0,123,255,0.3)' : 'none'
+                    boxShadow: newInspector ? '0 4px 12px rgba(45, 190, 96, 0.3)' : 'none'
                   }}
                 >
                   Update Inspector
@@ -986,7 +956,7 @@ const InspectionCalendar = () => {
             overflow: 'hidden'
           }}>
             <div style={{
-              background: 'linear-gradient(135deg, #007bff 0%, #6610f2 100%)',
+              background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
               padding: '2rem',
               color: 'white'
             }}>
@@ -1056,7 +1026,7 @@ const InspectionCalendar = () => {
                   disabled={!selectedUser}
                   style={{
                     padding: '12px 24px',
-                    background: selectedUser ? 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)' : '#ccc',
+                    background: selectedUser ? 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)' : '#ccc',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
@@ -1064,7 +1034,7 @@ const InspectionCalendar = () => {
                     fontSize: '14px',
                     fontWeight: '500',
                     transition: 'all 0.2s ease',
-                    boxShadow: selectedUser ? '0 4px 12px rgba(0,123,255,0.3)' : 'none'
+                    boxShadow: selectedUser ? '0 4px 12px rgba(45, 190, 96, 0.3)' : 'none'
                   }}
                 >
                   Assign Inspector
@@ -1078,12 +1048,14 @@ const InspectionCalendar = () => {
       {/* Modern Tab Navigation */}
       <div style={{
         display: 'flex',
-        gap: '1rem',
-        marginBottom: '2rem',
-        padding: '0.5rem',
+        gap: 'clamp(0.5rem, 2vw, 1rem)',
+        marginBottom: 'clamp(1rem, 3vw, 2rem)',
+        padding: 'clamp(0.25rem, 1vw, 0.5rem)',
         backgroundColor: '#f8f9fa',
         borderRadius: '12px',
-        border: '1px solid #e9ecef'
+        border: '1px solid #e9ecef',
+        flexWrap: 'wrap',
+        overflow: 'hidden'
       }}>
         {[
           { id: 'calendar', label: '📅 Calendar', icon: '📅' },
@@ -1095,35 +1067,46 @@ const InspectionCalendar = () => {
             onClick={() => setActiveView(tab.id)}
             style={{
               flex: 1,
-              padding: '1rem 1.5rem',
+              minWidth: 'clamp(80px, 25vw, 150px)',
+              padding: 'clamp(0.75rem, 2vw, 1rem) clamp(0.5rem, 2vw, 1.5rem)',
               border: 'none',
               borderRadius: '8px',
               cursor: 'pointer',
-              fontSize: '14px',
+              fontSize: 'clamp(0.75rem, 2.5vw, 0.875rem)',
               fontWeight: '600',
               transition: 'all 0.3s ease',
               background: activeView === tab.id 
-                ? 'linear-gradient(135deg, #007bff 0%, #6610f2 100%)'
+                ? 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)'
                 : 'transparent',
               color: activeView === tab.id ? 'white' : '#6c757d',
-              boxShadow: activeView === tab.id ? '0 4px 12px rgba(0,123,255,0.3)' : 'none'
+              boxShadow: activeView === tab.id ? '0 4px 12px rgba(45, 190, 96, 0.3)' : 'none',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
             }}
           >
-            {tab.label}
+            {window.innerWidth < 768 ? tab.icon : tab.label}
           </button>
         ))}
       </div>
 
       {/* Calendar View */}
       {activeView === 'calendar' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '2rem', height: '600px' }}>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: window.innerWidth < 768 ? '1fr' : '300px 1fr', 
+          gap: 'clamp(1rem, 3vw, 2rem)', 
+          minHeight: window.innerWidth < 768 ? 'auto' : '600px'
+        }}>
           {/* Enhanced Draggable Sites Panel */}
           <div style={{
             background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
             borderRadius: '16px',
-            padding: '1.5rem',
+            padding: 'clamp(1rem, 3vw, 1.5rem)',
             border: '1px solid #e9ecef',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            maxHeight: window.innerWidth < 768 ? '300px' : 'auto',
+            overflow: 'hidden'
           }}>
             <h3 style={{ 
               margin: '0 0 1rem 0', 
@@ -1145,7 +1128,7 @@ const InspectionCalendar = () => {
               Drag sites onto the calendar to schedule inspections
             </p>
             
-            <div ref={externalRef} style={{ maxHeight: '450px', overflowY: 'auto' }}>
+            <div ref={externalRef} style={{ maxHeight: window.innerWidth < 768 ? '200px' : '450px', overflowY: 'auto' }}>
               {sites.map(site => {
                 const isScheduled = events.some(e => e.extendedProps?.siteId === site.id);
                 const cityData = cityCoordinates[site.location];
@@ -1160,8 +1143,8 @@ const InspectionCalendar = () => {
                       margin: '0 0 0.75rem 0',
                       padding: '1rem',
                       background: isScheduled 
-                        ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)'
-                        : 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                        ? 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)'
+                        : 'linear-gradient(135deg, #F2C300 0%, #D4A900 100%)',
                       color: 'white',
                       borderRadius: '12px',
                       cursor: isScheduled ? 'default' : 'grab',
@@ -1221,9 +1204,10 @@ const InspectionCalendar = () => {
           <div style={{
             backgroundColor: 'white',
             borderRadius: '16px',
-            padding: '1.5rem',
+            padding: 'clamp(0.75rem, 3vw, 1.5rem)',
             boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-            border: '1px solid #e9ecef'
+            border: '1px solid #e9ecef',
+            overflow: 'hidden'
           }}>
             <FullCalendar
               ref={calendarRef}
@@ -1240,10 +1224,10 @@ const InspectionCalendar = () => {
               eventReceive={handleEventReceive}
               eventDrop={handleEventDrop}
               eventClick={handleCalendarEventClick}
-              height="500px"
+              height={window.innerWidth < 768 ? "400px" : "500px"}
               eventDisplay="block"
-              eventBackgroundColor="#007bff"
-              eventBorderColor="#0056b3"
+              eventBackgroundColor="#2DBE60"
+              eventBorderColor="#1E8E4A"
               eventTextColor="white"
               dayMaxEvents={3}
               moreLinkClick="popover"
@@ -1535,7 +1519,7 @@ const InspectionCalendar = () => {
                       style={{
                         width: '100%',
                         padding: '0.75rem 1rem',
-                        background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                        background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
                         color: 'white',
                         border: 'none',
                         borderRadius: '8px',
@@ -1543,7 +1527,7 @@ const InspectionCalendar = () => {
                         fontWeight: '600',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
-                        boxShadow: '0 4px 12px rgba(0,123,255,0.3)'
+                        boxShadow: '0 4px 12px rgba(45, 190, 96, 0.3)'
                       }}
                       onMouseOver={(e) => {
                         e.target.style.transform = 'translateY(-1px)';

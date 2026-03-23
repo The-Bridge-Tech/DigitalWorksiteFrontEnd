@@ -118,7 +118,7 @@ const EditSite = ({ site, onSave, onCancel }) => {
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       {/* Header Card */}
       <div style={{
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(135deg, #2DBE60 0%, #1E8E4A 100%)',
         borderRadius: '12px',
         padding: '30px',
         marginBottom: '30px',
@@ -265,7 +265,7 @@ const EditSite = ({ site, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -291,7 +291,7 @@ const EditSite = ({ site, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -345,7 +345,7 @@ const EditSite = ({ site, onSave, onCancel }) => {
                 outline: 'none',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
             <small style={{ color: '#6c757d', fontSize: '14px', marginTop: '4px', display: 'block' }}>
@@ -375,7 +375,7 @@ const EditSite = ({ site, onSave, onCancel }) => {
                 fontFamily: 'inherit',
                 boxSizing: 'border-box'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
+              onFocus={(e) => e.target.style.borderColor = '#2DBE60'}
               onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
             />
           </div>
@@ -407,7 +407,7 @@ const EditSite = ({ site, onSave, onCancel }) => {
               type="submit"
               disabled={isSubmitting || !isDirty}
               style={{
-                backgroundColor: (isSubmitting || !isDirty) ? '#ccc' : '#667eea',
+                backgroundColor: (isSubmitting || !isDirty) ? '#ccc' : '#2DBE60',
                 color: 'white',
                 border: 'none',
                 padding: '12px 24px',
@@ -417,8 +417,8 @@ const EditSite = ({ site, onSave, onCancel }) => {
                 cursor: (isSubmitting || !isDirty) ? 'not-allowed' : 'pointer',
                 transition: 'background-color 0.3s ease'
               }}
-              onMouseEnter={(e) => !(isSubmitting || !isDirty) && (e.target.style.backgroundColor = '#5a67d8')}
-              onMouseLeave={(e) => !(isSubmitting || !isDirty) && (e.target.style.backgroundColor = '#667eea')}
+              onMouseEnter={(e) => !(isSubmitting || !isDirty) && (e.target.style.backgroundColor = '#1E8E4A')}
+              onMouseLeave={(e) => !(isSubmitting || !isDirty) && (e.target.style.backgroundColor = '#2DBE60')}
             >
               {isSubmitting ? '⏳ Saving...' : '💾 Save Changes'}
             </button>

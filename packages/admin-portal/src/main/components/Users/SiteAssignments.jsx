@@ -62,7 +62,7 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                     });
                     if (response.ok) {
                         const data = await response.json();
-                        return data.filter(assignment => assignment.user_email === user.email).map(assignment => ({
+                        return data.filter(assignment => assignment.email === user.email).map(assignment => ({
                             ...assignment,
                             site_name: site.name,
                             site_location: site.location
@@ -76,7 +76,6 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
 
             const results = await Promise.all(assignmentPromises);
             const userAssignments = results.flat();
-            console.log('Fetched user assignments:', userAssignments);
             setAssignments(userAssignments);
         } catch (error) {
             console.error('Error fetching user assignments:', error);
@@ -101,7 +100,6 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
             headers['X-Splunk-Username'] = splunkUser;
             headers['X-Splunk-Roles'] = Array.isArray(splunkRoles) ? splunkRoles.join(',') : splunkRoles;
             
-            console.log('Assigning user to site with role:', selectedRole);
             const response = await fetch(`${API_BASE_URL}/api/sites/${selectedSite}/users`, {
                 method: 'POST',
                 headers,
@@ -168,22 +166,23 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
     }
 
     return (
-        <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ padding: 'clamp(0.75rem, 3vw, 1.25rem)', maxWidth: '100%', margin: '0 auto', overflow: 'hidden' }}>
             {/* Header Card */}
             <div style={{
                 backgroundColor: 'white',
                 borderRadius: '12px',
-                padding: '30px',
-                marginBottom: '30px',
+                padding: 'clamp(1.5rem, 4vw, 1.875rem)',
+                marginBottom: 'clamp(1.5rem, 4vw, 1.875rem)',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                border: '1px solid #e9ecef'
+                border: '1px solid #e9ecef',
+                overflow: 'hidden'
             }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', justifyContent: 'space-between', alignItems: window.innerWidth < 768 ? 'stretch' : 'center', gap: 'clamp(0.75rem, 3vw, 1rem)' }}>
                     <div>
-                        <h3 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: '24px' }}>
+                        <h3 style={{ margin: '0 0 10px 0', color: '#2c3e50', fontSize: 'clamp(1.25rem, 5vw, 1.5rem)' }}>
                             🎯 Site Assignments for {user.displayName || user.name}
                         </h3>
-                        <p style={{ margin: 0, color: '#6c757d', fontSize: '16px' }}>
+                        <p style={{ margin: 0, color: '#6c757d', fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>
                             Manage which sites this user can access and their role at each site
                         </p>
                     </div>
@@ -194,10 +193,12 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                                 backgroundColor: '#6c757d',
                                 color: 'white',
                                 border: 'none',
-                                padding: '8px 16px',
+                                padding: 'clamp(0.5rem, 2vw, 0.5rem) clamp(0.75rem, 3vw, 1rem)',
                                 borderRadius: '6px',
                                 cursor: 'pointer',
-                                fontSize: '14px'
+                                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                                whiteSpace: 'nowrap',
+                                minHeight: '44px'
                             }}
                         >
                             ← Back to Users
@@ -209,16 +210,22 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
             {/* Add New Assignment */}
             <div style={{
                 backgroundColor: 'white',
-                padding: '30px',
+                padding: 'clamp(1.5rem, 4vw, 1.875rem)',
                 borderRadius: '12px',
-                marginBottom: '30px',
+                marginBottom: 'clamp(1.5rem, 4vw, 1.875rem)',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-                border: '1px solid #e9ecef'
+                border: '1px solid #e9ecef',
+                overflow: 'hidden'
             }}>
-                <h4 style={{ margin: '0 0 15px 0', color: '#495057' }}>Assign to New Site</h4>
-                <div style={{ display: 'flex', gap: '15px', alignItems: 'end' }}>
-                    <div style={{ flex: 1 }}>
-                        <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '600' }}>
+                <h4 style={{ margin: '0 0 clamp(0.75rem, 3vw, 0.9375rem) 0', color: '#495057', fontSize: 'clamp(1rem, 4vw, 1.125rem)' }}>Assign to New Site</h4>
+                <div style={{ 
+                    display: 'flex', 
+                    flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                    gap: 'clamp(0.75rem, 3vw, 0.9375rem)', 
+                    alignItems: window.innerWidth < 768 ? 'stretch' : 'end'
+                }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <label style={{ display: 'block', marginBottom: '0.3125rem', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600' }}>
                             Site:
                         </label>
                         <select
@@ -226,10 +233,12 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                             onChange={(e) => setSelectedSite(e.target.value)}
                             style={{
                                 width: '100%',
-                                padding: '10px',
+                                padding: 'clamp(0.5rem, 2vw, 0.625rem)',
                                 border: '1px solid #ced4da',
                                 borderRadius: '4px',
-                                fontSize: '14px'
+                                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                                minHeight: '40px',
+                                boxSizing: 'border-box'
                             }}
                         >
                             <option value="">Select a site...</option>
@@ -242,8 +251,8 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                             ))}
                         </select>
                     </div>
-                    <div style={{ flex: 1 }}>
-                        <label style={{ display: 'block', marginBottom: '5px', fontSize: '14px', fontWeight: '600' }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                        <label style={{ display: 'block', marginBottom: '0.3125rem', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', fontWeight: '600' }}>
                             Role:
                         </label>
                         <select
@@ -251,10 +260,12 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                             onChange={(e) => setSelectedRole(e.target.value)}
                             style={{
                                 width: '100%',
-                                padding: '10px',
+                                padding: 'clamp(0.5rem, 2vw, 0.625rem)',
                                 border: '1px solid #ced4da',
                                 borderRadius: '4px',
-                                fontSize: '14px'
+                                fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                                minHeight: '40px',
+                                boxSizing: 'border-box'
                             }}
                         >
                             <option value="contractor">Contractor</option>
@@ -268,14 +279,17 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                         onClick={assignToSite}
                         disabled={!selectedSite}
                         style={{
-                            padding: '10px 20px',
+                            padding: 'clamp(0.5rem, 2vw, 0.625rem) clamp(0.75rem, 3vw, 1.25rem)',
                             backgroundColor: selectedSite ? '#28a745' : '#ccc',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px',
                             cursor: selectedSite ? 'pointer' : 'not-allowed',
-                            fontSize: '14px',
-                            fontWeight: '500'
+                            fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+                            fontWeight: '500',
+                            minHeight: '44px',
+                            whiteSpace: 'nowrap',
+                            minWidth: window.innerWidth < 768 ? '100%' : 'auto'
                         }}
                     >
                         Assign
@@ -301,7 +315,7 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                         No site assignments yet. Assign this user to sites above.
                     </div>
                 ) : (
-                    <div style={{ display: 'grid', gap: '15px' }}>
+                    <div style={{ display: 'grid', gap: 'clamp(0.75rem, 3vw, 0.9375rem)' }}>
                         {assignments.map((assignment) => {
                             const site = sites.find(s => s.id === assignment.site_id);
                             return (
@@ -309,46 +323,57 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
                                     key={`${assignment.site_id}-${assignment.user_email}`}
                                     style={{
                                         backgroundColor: 'white',
-                                        padding: '20px',
+                                        padding: 'clamp(1rem, 4vw, 1.25rem)',
                                         borderRadius: '8px',
                                         border: '1px solid #e9ecef',
                                         display: 'flex',
+                                        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
                                         justifyContent: 'space-between',
-                                        alignItems: 'center'
+                                        alignItems: window.innerWidth < 768 ? 'stretch' : 'center',
+                                        gap: 'clamp(0.5rem, 2vw, 0.625rem)',
+                                        overflow: 'hidden'
                                     }}
                                 >
-                                    <div>
-                                        <h5 style={{ margin: '0 0 5px 0', color: '#495057' }}>
+                                    <div style={{ flex: 1, minWidth: 0 }}>
+                                        <h5 style={{ margin: '0 0 0.3125rem 0', color: '#495057', fontSize: 'clamp(1rem, 4vw, 1.125rem)', wordBreak: 'break-word' }}>
                                             {site?.name || 'Unknown Site'}
                                         </h5>
-                                        <p style={{ margin: '0 0 5px 0', color: '#6c757d', fontSize: '14px' }}>
+                                        <p style={{ margin: '0 0 0.3125rem 0', color: '#6c757d', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', wordBreak: 'break-word' }}>
                                             📍 {site?.location || 'Unknown Location'}
                                         </p>
                                         <span style={{
-                                            padding: '4px 8px',
+                                            padding: 'clamp(0.25rem, 1vw, 0.25rem) clamp(0.5rem, 2vw, 0.5rem)',
                                             backgroundColor: getRoleColor(assignment.role),
                                             color: 'white',
                                             borderRadius: '12px',
-                                            fontSize: '12px',
-                                            fontWeight: '500'
+                                            fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                                            fontWeight: '500',
+                                            display: 'inline-block'
                                         }}>
-                                            {assignment.role.toUpperCase()}
+                                            {(assignment.role || '').replace(/^dwa_/i, '').replace(/_/g, ' ').toUpperCase()}
                                         </span>
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                        <small style={{ color: '#6c757d' }}>
+                                    <div style={{ 
+                                        display: 'flex', 
+                                        flexDirection: window.innerWidth < 768 ? 'column' : 'row',
+                                        alignItems: window.innerWidth < 768 ? 'stretch' : 'center', 
+                                        gap: 'clamp(0.5rem, 2vw, 0.625rem)'
+                                    }}>
+                                        <small style={{ color: '#6c757d', fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)', whiteSpace: 'nowrap' }}>
                                             Assigned: {new Date(assignment.assigned_at).toLocaleDateString()}
                                         </small>
                                         <button
                                             onClick={() => removeAssignment(assignment.site_id)}
                                             style={{
-                                                padding: '6px 12px',
+                                                padding: 'clamp(0.375rem, 1.5vw, 0.375rem) clamp(0.75rem, 3vw, 0.75rem)',
                                                 backgroundColor: '#dc3545',
                                                 color: 'white',
                                                 border: 'none',
                                                 borderRadius: '4px',
                                                 cursor: 'pointer',
-                                                fontSize: '12px'
+                                                fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                                                minHeight: '32px',
+                                                whiteSpace: 'nowrap'
                                             }}
                                         >
                                             Remove
@@ -365,6 +390,8 @@ const SiteAssignments = ({ user, onUpdate, onCancel }) => {
 };
 
 const getRoleColor = (role) => {
+    // Strip dwa_ prefix if present
+    const cleanRole = (role || '').replace(/^dwa_/i, '').toLowerCase();
     const colors = {
         admin: '#dc3545',
         site_manager: '#007bff',
@@ -373,7 +400,7 @@ const getRoleColor = (role) => {
         inspector: '#17a2b8',
         viewer: '#6c757d'
     };
-    return colors[role] || '#6c757d';
+    return colors[cleanRole] || '#6c757d';
 };
 
 export default SiteAssignments;

@@ -3,6 +3,17 @@ import React, { useEffect, useMemo, useState, ChangeEvent } from "react";
 // @ts-ignore
 import Pie from '@splunk/visualizations/Pie';
 import { SplunkThemeProvider } from '@splunk/themes';
+// @ts-ignore
+import SearchJob from '@splunk/search-job';
+import { useSite } from '../../admin-portal/src/main/components/SiteContext';
+
+// Import theme colors
+const theme = {
+  primary: { main: '#2DBE60', dark: '#1E8E4A', light: '#4DD17A', contrast: '#ffffff' },
+  secondary: { main: '#F2C300', dark: '#D4A900', light: '#F5D333', contrast: '#000000' },
+  secondary2: { main: '#E31E24', dark: '#B71C1C', light: '#EF5350', contrast: '#ffffff' },
+  neutral: { white: '#ffffff', light: '#f8f9fa', medium: '#6c757d', dark: '#343a40', black: '#000000' }
+};
 
 // --------------------------------------------------
 // Types
@@ -75,6 +86,7 @@ export default function ReportingCenter() {
 }
 
 function ReportingCenterContent() {
+  const { userSites, isAdmin } = useSite();
   const [reports, setReports] = useState<ReportMeta[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -92,48 +104,68 @@ function ReportingCenterContent() {
 
   // Fetch reports from backend on mount
   useEffect(() => {
-    void loadReports();
-  }, []);
+    if (userSites.length > 0 || isAdmin()) {
+      void loadReports();
+    }
+  }, [userSites]);
 
   async function loadReports() {
     setLoading(true);
     setError(null);
     try {
-      // Direct Splunk query to get reports from index
-      const splunkQuery = `
-        search index=reports_index sourcetype=reports
-        | eval createdAt=strftime(_time, "%Y-%m-%dT%H:%M:%S")
-        | table id title project location user type status createdAt
-        | sort -_time
-      `;
+      const userSiteNames = userSites.map(s => s.name);
       
-      // Use Splunk REST API to execute the search
-      const resp = await fetch('/splunkd/__raw/services/search/jobs/export', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Splunk ' + sessionStorage.getItem('splunk_token')
-        },
-        body: new URLSearchParams({
-          search: splunkQuery,
-          output_mode: 'json',
-          earliest_time: '-7d@d',
-          latest_time: 'now'
-        })
+      const searchQuery = 'index=dwa_inspections sourcetype=inspections | eval id=inspection_id | eval title="Inspection Report" | eval project=asset_id | eval location=asset_id | eval user=inspector | eval type="Daily" | eval createdAt=strftime(_time, "%Y-%m-%dT%H:%M:%S") | table id title project location user type status createdAt asset_id | sort -_time | head 1000';
+      
+      const searchJob = SearchJob.create({
+        search: searchQuery,
+        earliest_time: '-30d@d',
+        latest_time: 'now'
       });
       
-      if (!resp.ok) throw new Error(`Splunk query failed: ${resp.status}`);
-      
-      const text = await resp.text();
-      const lines = text.trim().split('\n').filter(line => line.trim());
-      const results = lines.map(line => JSON.parse(line).result || JSON.parse(line));
-      
-      setReports(results.filter(r => r && r.id));
+      searchJob.getResults().subscribe({
+        next: (resultsData: any) => {
+          const results = resultsData?.results || resultsData?.rows || resultsData || [];
+          
+          if (Array.isArray(results)) {
+            let formattedResults = results.map((row: any) => {
+              const rawStatus = row.status || 'Submitted';
+              const normalizedStatus = rawStatus.charAt(0).toUpperCase() + rawStatus.slice(1).toLowerCase();
+              return {
+                id: row.id || '',
+                title: row.title || 'Inspection Report',
+                project: row.project || '',
+                location: row.location || '',
+                user: row.user || '',
+                type: (row.type || 'Daily') as ReportType,
+                status: normalizedStatus as Status,
+                createdAt: row.createdAt || '',
+                asset_id: row.asset_id || row.project || ''
+              };
+            });
+            
+            if (!isAdmin() && userSiteNames.length > 0) {
+              const lowerSiteNames = userSiteNames.map(s => s.toLowerCase().replace(/\s+/g, '_'));
+              formattedResults = formattedResults.filter(r => {
+                const assetId = (r.asset_id || '').toLowerCase();
+                return lowerSiteNames.some(site => assetId.includes(site));
+              });
+            }
+            
+            setReports(formattedResults);
+          }
+          setLoading(false);
+        },
+        error: (err: any) => {
+          setError(err?.message ?? 'Failed to load reports from Splunk');
+          setReports([]);
+          setLoading(false);
+        }
+      });
     } catch (err: any) {
-      console.error("loadReports error:", err);
+
       setError(err?.message ?? "Failed to load reports from Splunk");
       setReports([]);
-    } finally {
       setLoading(false);
     }
   }
@@ -180,26 +212,15 @@ function ReportingCenterContent() {
     alert("Report details:\n\n" + JSON.stringify(report, null, 2));
   }
 
-  async function handleExportPDF(report: ReportMeta) {
-    try {
-      // Calls backend API to export report as PDF
-      // Use inspections endpoint since no reports endpoint exists
-      const resp = await fetch(`/inspections/${report.id}/export-pdf`);
-      if (!resp.ok) throw new Error("Export failed");
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${report.id}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("PDF export error:", err);
-      alert("Failed to export PDF for this report.");
-    }
+  // ---------------- Render ----------------
+  if (!isAdmin() && userSites.length === 0) {
+    return (
+      <div style={{ padding: 20, textAlign: 'center' }}>
+        No sites assigned to your account. Please contact an administrator.
+      </div>
+    );
   }
 
-  // ---------------- Render ----------------
   return (
     <div
       style={{
@@ -223,7 +244,24 @@ function ReportingCenterContent() {
         <h1 style={{ margin: 0 }}>Reporting Center</h1>
         <button
           onClick={loadReports}
-          style={buttonPrimaryStyle}
+          style={{
+            padding: "8px 12px",
+            border: "none",
+            borderRadius: 4,
+            background: '#2DBE60',
+            color: 'white',
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+            minHeight: '44px',
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent'
+          }}
+          onTouchStart={(e) => {
+            e.currentTarget.style.transform = 'scale(0.98)';
+          }}
+          onTouchEnd={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
           aria-label="Refresh report list"
         >
           Refresh
@@ -342,17 +380,21 @@ function ReportingCenterContent() {
                   <td style={tdStyle}>
                     <button
                       onClick={() => handleViewReport(r)}
-                      style={smallBtnStyle}
+                      style={{
+                        ...smallBtnStyle,
+                        minHeight: '44px',
+                        touchAction: 'manipulation',
+                        WebkitTapHighlightColor: 'transparent'
+                      }}
+                      onTouchStart={(e) => {
+                        e.currentTarget.style.transform = 'scale(0.98)';
+                      }}
+                      onTouchEnd={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
                       aria-label={`View report ${r.id}`}
                     >
                       View
-                    </button>
-                    <button
-                      onClick={() => handleExportPDF(r)}
-                      style={smallBtnStyle}
-                      aria-label={`Export report ${r.id} to PDF`}
-                    >
-                      Export PDF
                     </button>
                   </td>
                 </tr>
@@ -410,13 +452,13 @@ const StatusChart: React.FC<{ reports: ReportMeta[] }> = ({ reports }) => {
                 height: "100%",
                 width: `${(count / max) * 100}%`,
                 background:
-                  status === "Draft" ? "#fbbf24" :
-                  status === "Submitted" ? "#3b82f6" :
-                  status === "Approved" ? "#10b981" : "#ef4444",
+                  status === "Draft" ? theme.secondary.main :
+                  status === "Submitted" ? theme.primary.main :
+                  status === "Approved" ? theme.primary.dark : theme.secondary2.main,
               }}
             />
           </div>
-          <div style={{ width: 30, fontSize: 12, textAlign: "right" }}>{count}</div>
+          <div style={{ width: 30, fontSize: 12, textAlign: "right" }}>{String(count)}</div>
         </div>
       ))}
     </div>
@@ -443,11 +485,11 @@ const TypeChart: React.FC<{ reports: ReportMeta[] }> = ({ reports }) => {
               style={{
                 height: "100%",
                 width: `${(count / max) * 100}%`,
-                background: "#6366f1",
+                background: theme.primary.main,
               }}
             />
           </div>
-          <div style={{ width: 30, fontSize: 12, textAlign: "right" }}>{count}</div>
+          <div style={{ width: 30, fontSize: 12, textAlign: "right" }}>{String(count)}</div>
         </div>
       ))}
     </div>
@@ -477,6 +519,7 @@ const ProjectDistribution: React.FC<{ reports: ReportMeta[] }> = ({ reports }) =
         <p style={{ fontSize: 12, color: "#666" }}>No data</p>
       ) : (
         <Pie
+          mode="view"
           width="100%"
           height={180}
           options={{
@@ -519,9 +562,9 @@ const UserActivity: React.FC<{ reports: ReportMeta[] }> = ({ reports }) => {
           <div key={user} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
             <div style={{ width: 80, fontSize: 12 }}>{user}</div>
             <div style={{ flex: 1, height: 16, background: "#f0f0f0", borderRadius: 4, overflow: "hidden" }}>
-              <div style={{ height: "100%", width: `${(count / max) * 100}%`, background: "#34d399" }} />
+              <div style={{ height: "100%", width: `${(count / max) * 100}%`, background: theme.primary.light }} />
             </div>
-            <div style={{ width: 30, fontSize: 12, textAlign: "right" }}>{count}</div>
+            <div style={{ width: 30, fontSize: 12, textAlign: "right" }}>{String(count)}</div>
           </div>
         ))
       )}
@@ -586,17 +629,22 @@ const buttonPrimaryStyle: React.CSSProperties = {
   padding: "8px 12px",
   border: "none",
   borderRadius: 4,
-  background: "#007bff",
-  color: "#fff",
+  background: '#2DBE60',
+  color: 'white',
   cursor: "pointer",
+  transition: "all 0.2s ease",
 };
 const smallBtnStyle: React.CSSProperties = {
   padding: "4px 8px",
-  border: "1px solid #ddd",
+  border: `1px solid ${theme.primary.main}`,
   borderRadius: 4,
-  background: "#fff",
-  color: "#333",
+  background: `linear-gradient(135deg, ${theme.primary.main} 0%, ${theme.primary.dark} 100%)`,
+  color: theme.primary.contrast,
   fontSize: 12,
   cursor: "pointer",
   marginRight: 4,
+  transition: "all 0.2s ease",
+  minHeight: '44px',
+  touchAction: 'manipulation',
+  WebkitTapHighlightColor: 'transparent'
 };

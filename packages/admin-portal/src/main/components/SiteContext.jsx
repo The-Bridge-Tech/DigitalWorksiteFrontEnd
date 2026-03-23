@@ -170,14 +170,12 @@ export const SiteProvider = ({ children }) => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             
-            // If no root folder found, show modal for admin
-            if (!response.ok) {
+            // Only show modal if root folder is not configured (404)
+            if (response.status === 404) {
                 setShowRootFolderModal(true);
             }
         } catch (error) {
             console.error('Error checking root folder:', error);
-            // Show modal on error (likely means not set up)
-            setShowRootFolderModal(true);
         }
     };
 

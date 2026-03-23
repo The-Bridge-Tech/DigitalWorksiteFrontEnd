@@ -187,20 +187,20 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: 'clamp(0.75rem, 3vw, 1.25rem)', maxWidth: '100%', margin: '0 auto', overflow: 'hidden' }}>
       {/* Header Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)',
+      <div className="theme-gradient-secondary" style={{
         borderRadius: '12px',
-        padding: '30px',
-        marginBottom: '30px',
-        color: 'white',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+        padding: 'clamp(1.5rem, 4vw, 1.875rem)',
+        marginBottom: 'clamp(1.5rem, 4vw, 1.875rem)',
+        color: 'black',
+        boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+        overflow: 'hidden'
       }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: window.innerWidth < 768 ? 'column' : 'row', justifyContent: 'space-between', alignItems: window.innerWidth < 768 ? 'stretch' : 'center', gap: 'clamp(0.75rem, 3vw, 1rem)' }}>
           <div>
-            <h1 style={{ margin: '0 0 10px 0', fontSize: '28px', fontWeight: '600' }}>📁 Document Management</h1>
-            <p style={{ margin: 0, opacity: 0.9, fontSize: '16px' }}>View and manage files in the selected folder</p>
+            <h1 style={{ margin: '0 0 10px 0', fontSize: 'clamp(1.25rem, 5vw, 1.75rem)', fontWeight: '600' }}>📁 Document Management</h1>
+            <p style={{ margin: 0, opacity: 0.9, fontSize: 'clamp(0.875rem, 3vw, 1rem)' }}>View and manage files in the selected folder</p>
           </div>
           <button 
             onClick={fetchFiles} 
@@ -208,14 +208,17 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
             style={{
               backgroundColor: 'rgba(255,255,255,0.2)',
               color: 'white',
-              padding: '12px 20px',
+              padding: 'clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1.25rem)',
               border: '2px solid rgba(255,255,255,0.3)',
               borderRadius: '8px',
               fontWeight: '500',
               cursor: (isLoading || !folderId) ? 'not-allowed' : 'pointer',
               transition: 'all 0.3s ease',
               backdropFilter: 'blur(10px)',
-              opacity: (isLoading || !folderId) ? 0.6 : 1
+              opacity: (isLoading || !folderId) ? 0.6 : 1,
+              fontSize: 'clamp(0.75rem, 3vw, 0.875rem)',
+              whiteSpace: 'nowrap',
+              minHeight: '44px'
             }}
           >
             🔄 Refresh
@@ -268,7 +271,7 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
           <p style={{ margin: 0, color: '#6c757d' }}>This folder appears to be empty.</p>
         </div>
       ) : files.length > 0 ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(auto-fill, minmax(320px, 1fr))', gap: 'clamp(1rem, 3vw, 1.25rem)', overflow: 'hidden' }}>
           {files.map(file => {
             const fileIcon = getFileIcon(file.mimeType);
             return (
@@ -328,8 +331,8 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
                 <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => handleViewFile(file)}
+                    className="theme-bg-primary"
                     style={{
-                      backgroundColor: '#007bff',
                       color: 'white',
                       border: 'none',
                       padding: '6px 12px',
@@ -337,10 +340,8 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
                       fontSize: '12px',
                       fontWeight: '500',
                       cursor: 'pointer',
-                      transition: 'background-color 0.3s ease'
+                      transition: 'all 0.2s ease'
                     }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
                   >
                     👁️ View
                   </button>
@@ -349,18 +350,16 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
                     href={file.webViewLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
+                    className="theme-bg-secondary"
                     style={{
-                      backgroundColor: '#28a745',
-                      color: 'white',
+                      color: 'black',
                       padding: '6px 12px',
                       textDecoration: 'none',
                       borderRadius: '6px',
                       fontSize: '12px',
                       fontWeight: '500',
-                      transition: 'background-color 0.3s ease'
+                      transition: 'all 0.2s ease'
                     }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#1e7e34'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#28a745'}
                   >
                     🔗 Open
                   </a>
@@ -368,8 +367,8 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
                   {onFileSelect && (
                     <button
                       onClick={() => onFileSelect(file)}
+                      className="theme-bg-primary"
                       style={{
-                        backgroundColor: '#6f42c1',
                         color: 'white',
                         border: 'none',
                         padding: '6px 12px',
@@ -377,10 +376,8 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
                         fontSize: '12px',
                         fontWeight: '500',
                         cursor: 'pointer',
-                        transition: 'background-color 0.3s ease'
+                        transition: 'all 0.2s ease'
                       }}
-                      onMouseEnter={(e) => e.target.style.backgroundColor = '#5a32a3'}
-                      onMouseLeave={(e) => e.target.style.backgroundColor = '#6f42c1'}
                     >
                       ✅ Select
                     </button>
@@ -429,13 +426,14 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
           <div style={{
             backgroundColor: 'white',
             borderRadius: '16px',
-            width: '90%',
+            width: 'clamp(90%, 95vw, 800px)',
             maxWidth: '800px',
             maxHeight: '90%',
             boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
             border: '1px solid #e9ecef',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            overflow: 'hidden'
           }}>
             
             {/* Modal Header */}
@@ -507,18 +505,16 @@ const FileList = ({ folderId, onFileSelect, onRefreshNeeded }) => {
                     href={selectedFile.webViewLink} 
                     target="_blank" 
                     rel="noopener noreferrer"
+                    className="theme-bg-primary"
                     style={{
-                      backgroundColor: '#007bff',
                       color: 'white',
                       padding: '12px 24px',
                       textDecoration: 'none',
                       borderRadius: '8px',
                       fontSize: '16px',
                       fontWeight: '500',
-                      transition: 'background-color 0.3s ease'
+                      transition: 'all 0.2s ease'
                     }}
-                    onMouseEnter={(e) => e.target.style.backgroundColor = '#0056b3'}
-                    onMouseLeave={(e) => e.target.style.backgroundColor = '#007bff'}
                   >
                     🔗 Open in Google Drive
                   </a>

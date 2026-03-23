@@ -1,18 +1,17 @@
 import styled from 'styled-components';
-import { variables, mixins } from '@splunk/themes';
+import { theme } from '../../theme/colors.js';
 
 const StyledContainer = styled.div`
-    ${mixins.reset('inline')};
     display: block;
-    font-size: ${variables.fontSizeLarge};
+    font-size: 1.125rem;
     line-height: 200%;
-    margin: ${variables.spacingXXLarge} ${variables.spacingXXLarge};
+    margin: 3rem;
 `;
 
 const StyledGreeting = styled.div`
     font-weight: bold;
-    color: ${variables.infoColor};
-    font-size: ${variables.fontSizeXXLarge};
+    color: ${theme.secondary.main};
+    font-size: 1.5rem;
 `;
 
 export { StyledContainer, StyledGreeting };
