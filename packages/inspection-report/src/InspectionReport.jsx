@@ -60,6 +60,25 @@ export default function InspectionReportForm() {
     }));
   };
 
+  // Check if there are any "no" answers to determine if deadline should be shown
+  const hasIssues = () => {
+    // Check safety fields
+    for (let i = 0; i < 4; i++) {
+      if (formData[`safety${i}`] === "no") return true;
+    }
+    // Check environmental fields
+    for (let i = 0; i < 5; i++) {
+      if (formData[`env${i}`] === "no") return true;
+    }
+    // Check work quality fields
+    for (let i = 0; i < 4; i++) {
+      if (formData[`work${i}`] === "no") return true;
+    }
+    // Check if there are written issues
+    if (formData.issues && formData.issues.trim()) return true;
+    return false;
+  };
+
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,31 +86,29 @@ export default function InspectionReportForm() {
     try {
       const payload = new FormData();
 
-      // Map form fields to backend expectations
+      // Use flat fields to match backend expectations
       payload.append("asset_id", formData.site_name || "N/A");
+      payload.append("site_id", formData.site_name || "");
+      payload.append("site_location", formData.site_location || "");
+      payload.append("address", formData.site_location || "");
+      payload.append("inspection_date", formData.inspection_date || "");
       payload.append("inspector", formData.inspector || "");
-      payload.append("scheduled_for", formData.inspection_date || "");
-      payload.append("task_id", formData.task_id || "");
       payload.append("signature", formData.signature || "");
+      payload.append("position", formData.position || "");
+      payload.append("comments", formData.comments || "");
+      payload.append("deadline", formData.deadline || "");
 
-      // Build checklist JSON
-      const checklist = [];
-
-      // Safety section
+      // Safety fields
       [
         "Is PPE compliance being followed?",
         "Are fall protection systems in place?",
         "Are first aid kits / fire extinguishers available?",
         "Are emergency exits and routes clear?",
       ].forEach((item, idx) => {
-        checklist.push({
-          item,
-          status: formData[`safety${idx}`] || "N/A",
-          notes: "",
-        });
+        payload.append(`safety${idx}`, formData[`safety${idx}`] || "N/A");
       });
 
-      // Environmental section
+      // Environmental fields
       [
         "Is site drainage adequate?",
         "Is erosion/dust control being maintained?",
@@ -99,41 +116,26 @@ export default function InspectionReportForm() {
         "Are noise levels within acceptable limits?",
         "Is fuel/chemical storage safe?",
       ].forEach((item, idx) => {
-        checklist.push({
-          item,
-          status: formData[`env${idx}`] || "N/A",
-          notes: formData[`env${idx}_notes`] || "",
-        });
+        payload.append(`env${idx}`, formData[`env${idx}`] || "N/A");
+        payload.append(`env${idx}_notes`, formData[`env${idx}_notes`] || "");
       });
 
-      // Work quality section
+      // Work quality fields
       [
         "Is the work schedule being adhered to?",
         "Are materials stored correctly?",
         "Is machinery in good condition?",
         "Is housekeeping maintained?",
       ].forEach((item, idx) => {
-        checklist.push({
-          item,
-          status: formData[`work${idx}`] || "N/A",
-          notes: formData[`work${idx}_notes`] || "",
-        });
+        payload.append(`work${idx}`, formData[`work${idx}`] || "N/A");
+        payload.append(`work${idx}_notes`, formData[`work${idx}_notes`] || "");
       });
 
       // Deficiencies
-      checklist.push({
-        item: "Observed Issues",
-        status: "N/A",
-        notes: formData.issues || "",
-      });
-      checklist.push({
-        item: "Corrective Actions Needed",
-        status: "N/A",
-        notes: formData.actions || "",
-      });
+      payload.append("issues", formData.issues || "");
+      payload.append("actions", formData.actions || "");
 
-      // Append checklist JSON string
-      payload.append("checklist", JSON.stringify(checklist));
+
 
       // Submit to Flask backend
       const API_BASE_URL = process.env.REACT_APP_API_URL;
@@ -158,7 +160,7 @@ export default function InspectionReportForm() {
 
       const data = await res.json();
       if (data.ok) {
-        setMessage(`✅ Report submitted.`);
+        setMessage(`Report submitted.`);
 
         // --- reset form using ref ---
         setFormData({});
@@ -174,7 +176,7 @@ export default function InspectionReportForm() {
       }
     } catch (err) {
       console.error(err);
-      setMessage("❌ Failed to submit report.");
+      setMessage("Failed to submit report.");
       setTimeout(() => setMessage(""), 4000);
     }
   };
@@ -474,10 +476,12 @@ export default function InspectionReportForm() {
           <label>Corrective Actions Needed:</label>
           <textarea name="actions" onChange={handleChange} />
         </div>
-        <div className="form-row">
-          <label>Deadline for Correction:</label>
-          <input type="date" name="deadline" onChange={handleChange} />
-        </div>
+        {hasIssues() && (
+          <div className="form-row">
+            <label>Deadline for Correction:</label>
+            <input type="date" name="deadline" onChange={handleChange} />
+          </div>
+        )}
       </section>
 
       {/* Comments */}

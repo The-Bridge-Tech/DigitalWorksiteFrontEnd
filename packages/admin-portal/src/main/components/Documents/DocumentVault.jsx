@@ -320,6 +320,7 @@ const DocumentVault = ({ siteId = null }) => {
               }}
             >
               <option value="all">All Types</option>
+              <option value="inspection_report">📋 Inspection Reports</option>
               <option value="permit">📋 Permits</option>
               <option value="inspection_request">🔍 Inspection</option>
               <option value="report">📊 Reports</option>
@@ -429,95 +430,130 @@ const DocumentVault = ({ siteId = null }) => {
                       <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', whiteSpace: 'nowrap' }}>
                         {doc.document_type === 'permit' && '📋 Permit'}
                         {doc.document_type === 'inspection_request' && '🔍 Inspection'}
+                        {doc.document_type === 'inspection_report' && '📋 Inspection Report'}
                         {doc.document_type === 'report' && '📊 Report'}
                         {doc.document_type === 'general' && '📄 General'}
                       </td>
                       <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', maxWidth: '100px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={doc.site_name || 'Unknown'}>{doc.site_name || 'Unknown'}</td>
                       <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)' }}>
                         <span style={{
-                          backgroundColor: getStatusColor(doc.status),
+                          backgroundColor: doc.hazard_flag ? '#dc3545' : getStatusColor(doc.status),
                           color: 'white',
                           padding: 'clamp(0.125rem, 1vw, 0.25rem) clamp(0.25rem, 2vw, 0.5rem)',
                           borderRadius: '8px',
                           fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
-                          whiteSpace: 'nowrap'
+                          whiteSpace: 'nowrap',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          maxWidth: 'fit-content'
                         }}>
+                          {doc.hazard_flag && '⚠️'}
                           {doc.status}
                         </span>
                       </td>
                       <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)', fontSize: 'clamp(0.75rem, 3vw, 0.875rem)', whiteSpace: 'nowrap' }}>v{doc.version}</td>
                       <td style={{ padding: 'clamp(0.5rem, 2vw, 0.75rem)' }}>
                         <div style={{ display: 'flex', gap: 'clamp(0.125rem, 1vw, 0.25rem)', flexWrap: 'wrap', minWidth: '200px' }}>
-                          <select
-                            value={doc.status}
-                            onChange={(e) => handleStatusUpdate(doc.id, e.target.value)}
-                            style={{ 
-                              padding: 'clamp(0.125rem, 1vw, 0.25rem)', 
-                              fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
-                              borderRadius: '3px',
-                              border: '1px solid #ced4da',
-                              minWidth: '80px'
-                            }}
-                          >
-                            <option value="pending">Pending</option>
-                            <option value="approved">Approved</option>
-                            <option value="expired">Expired</option>
-                          </select>
-                          {doc.file_id && (
-                            <>
-                              <button
-                                onClick={() => handlePreview(doc)}
-                                className="theme-bg-secondary"
-                                style={{
-                                  color: 'black',
-                                  border: 'none',
-                                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
-                                  borderRadius: '3px',
-                                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
-                                  cursor: 'pointer',
-                                  minWidth: '28px',
-                                  minHeight: '28px'
-                                }}
-                                title="Preview"
-                              >
-                                👁️
-                              </button>
-                              <button
-                                onClick={() => handleDownload(doc)}
-                                className="theme-bg-primary"
-                                style={{
-                                  color: 'white',
-                                  border: 'none',
-                                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
-                                  borderRadius: '3px',
-                                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
-                                  cursor: 'pointer',
-                                  minWidth: '28px',
-                                  minHeight: '28px'
-                                }}
-                                title="Download"
-                              >
-                                📥
-                              </button>
-                              <button
-                                onClick={() => handlePrint(doc)}
-                                className="theme-bg-secondary"
-                                style={{
-                                  color: 'black',
-                                  border: 'none',
-                                  padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
-                                  borderRadius: '3px',
-                                  fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
-                                  cursor: 'pointer',
-                                  minWidth: '28px',
-                                  minHeight: '28px'
-                                }}
-                                title="Print"
-                              >
-                                🖨️
-                              </button>
-                            </>
+                          {/* Only show status selector for non-inspection documents */}
+                          {!doc.id.startsWith('inspection_') && (
+                            <select
+                              value={doc.status}
+                              onChange={(e) => handleStatusUpdate(doc.id, e.target.value)}
+                              style={{ 
+                                padding: 'clamp(0.125rem, 1vw, 0.25rem)', 
+                                fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                                borderRadius: '3px',
+                                border: '1px solid #ced4da',
+                                minWidth: '80px'
+                              }}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="approved">Approved</option>
+                              <option value="expired">Expired</option>
+                            </select>
                           )}
+                          
+                          {/* Preview button - works for both regular docs and inspections */}
+                          <button
+                            onClick={() => {
+                              if (doc.id.startsWith('inspection_')) {
+                                window.open(doc.view_url, '_blank');
+                              } else {
+                                handlePreview(doc);
+                              }
+                            }}
+                            className="theme-bg-secondary"
+                            style={{
+                              color: 'black',
+                              border: 'none',
+                              padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
+                              borderRadius: '3px',
+                              fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                              cursor: 'pointer',
+                              minWidth: '28px',
+                              minHeight: '28px'
+                            }}
+                            title="Preview"
+                          >
+                            👁️
+                          </button>
+                          
+                          {/* Download button - works for both regular docs and inspections */}
+                          <button
+                            onClick={() => {
+                              if (doc.id.startsWith('inspection_')) {
+                                const link = document.createElement('a');
+                                link.href = doc.pdf_url;
+                                link.download = doc.name;
+                                link.target = '_blank';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              } else {
+                                handleDownload(doc);
+                              }
+                            }}
+                            className="theme-bg-primary"
+                            style={{
+                              color: 'white',
+                              border: 'none',
+                              padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
+                              borderRadius: '3px',
+                              fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                              cursor: 'pointer',
+                              minWidth: '28px',
+                              minHeight: '28px'
+                            }}
+                            title="Download"
+                          >
+                            📥
+                          </button>
+                          
+                          {/* Print button - works for both regular docs and inspections */}
+                          <button
+                            onClick={() => {
+                              if (doc.id.startsWith('inspection_')) {
+                                window.open(doc.view_url, '_blank');
+                              } else {
+                                handlePrint(doc);
+                              }
+                            }}
+                            className="theme-bg-secondary"
+                            style={{
+                              color: 'black',
+                              border: 'none',
+                              padding: 'clamp(0.25rem, 1vw, 0.375rem) clamp(0.375rem, 1.5vw, 0.5rem)',
+                              borderRadius: '3px',
+                              fontSize: 'clamp(0.625rem, 2.5vw, 0.75rem)',
+                              cursor: 'pointer',
+                              minWidth: '28px',
+                              minHeight: '28px'
+                            }}
+                            title="Print"
+                          >
+                            🖨️
+                          </button>
                         </div>
                       </td>
                     </tr>

@@ -3,34 +3,52 @@ import { API_BASE_URL } from '../../config/api.config.js';
 
 const CheckInList = () => {
   const [checkins, setCheckins] = useState([]);
+  const [sites, setSites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    loadCheckins();
+    loadData();
   }, []);
 
-  const loadCheckins = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/checkins`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-        }
-      });
+      
+      // Load both checkins and sites
+      const [checkinsResponse, sitesResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/checkins`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        }),
+        fetch(`${API_BASE_URL}/sites`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+          }
+        })
+      ]);
 
-      if (response.ok) {
-        const data = await response.json();
-        setCheckins(data);
+      if (checkinsResponse.ok && sitesResponse.ok) {
+        const checkinsData = await checkinsResponse.json();
+        const sitesData = await sitesResponse.json();
+        
+        setCheckins(checkinsData);
+        setSites(sitesData);
       } else {
-        setError('Failed to load check-ins');
+        setError('Failed to load data');
       }
     } catch (error) {
-      console.error('Error loading check-ins:', error);
-      setError('Error loading check-ins');
+      console.error('Error loading data:', error);
+      setError('Error loading data');
     } finally {
       setLoading(false);
     }
+  };
+
+  const getSiteName = (siteId) => {
+    const site = sites.find(s => s.id === siteId);
+    return site ? `${site.name} (${siteId})` : siteId;
   };
 
   if (loading) {
@@ -53,7 +71,7 @@ const CheckInList = () => {
       }}>
         <h2 style={{ margin: 0, fontSize: 'clamp(1.25rem, 5vw, 1.5rem)' }}>Site Check-Ins</h2>
         <button 
-          onClick={loadCheckins}
+          onClick={loadData}
           style={{ 
             padding: 'clamp(0.5rem, 2vw, 0.5rem) clamp(0.75rem, 3vw, 1rem)', 
             backgroundColor: '#28a745', 
@@ -99,7 +117,7 @@ const CheckInList = () => {
                   <strong>Role:</strong> {checkin.user_role}
                 </div>
                 <div style={{ wordBreak: 'break-word' }}>
-                  <strong>Site:</strong> {checkin.site_id}
+                  <strong>Site:</strong> {getSiteName(checkin.site_id)}
                 </div>
                 <div style={{ wordBreak: 'break-word' }}>
                   <strong>Time:</strong> {new Date(checkin.timestamp).toLocaleString()}

@@ -207,21 +207,31 @@ const CheckIn = () => {
         siteAddress = qrId;
       }
 
-      // Find matching site
+      // Find matching site - prioritize exact matches
       const sites = await getSites();
       
-      const site = sites?.find(s => {
-        return (
-          (siteLocation && s.location?.toLowerCase().includes(siteLocation?.toLowerCase())) ||
-          (siteAddress && s.name?.toLowerCase().includes(siteAddress?.toLowerCase())) ||
-          (siteAddress && s.address?.toLowerCase().includes(siteAddress?.toLowerCase())) ||
-          (s.id?.toString() === siteAddress) ||
-          (s.id?.toString() === qrId) ||
-          (s.location?.toLowerCase() === siteLocation?.toLowerCase()) ||
-          (s.name?.toLowerCase() === siteAddress?.toLowerCase()) ||
-          (s.address?.toLowerCase() === siteAddress?.toLowerCase())
-        );
-      });
+      let site = null;
+      
+      // First, try exact ID match (highest priority)
+      if (qrId) {
+        site = sites?.find(s => s.id === qrId);
+      }
+      
+      // If no exact ID match, try site address as ID
+      if (!site && siteAddress) {
+        site = sites?.find(s => s.id === siteAddress);
+      }
+      
+      // If still no match, try name/location matching (lower priority)
+      if (!site) {
+        site = sites?.find(s => {
+          return (
+            (siteLocation && s.location?.toLowerCase() === siteLocation?.toLowerCase()) ||
+            (siteAddress && s.name?.toLowerCase() === siteAddress?.toLowerCase()) ||
+            (siteAddress && s.address?.toLowerCase() === siteAddress?.toLowerCase())
+          );
+        });
+      }
       
       if (!site) {
         setMessage('Site not found in system');
